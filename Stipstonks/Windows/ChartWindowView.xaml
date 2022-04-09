@@ -1,0 +1,113 @@
+﻿<Window x:Class="Stip.Stipstonks.Windows.ChartWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        WindowStyle="{Binding WindowStyle}"
+        WindowState="{Binding WindowState}"
+        Background="{Binding BackgroundColor}">
+    <DockPanel>
+
+        <ProgressBar x:Name="CrashProgressBar"
+                     Style="{StaticResource StonkMarketEventProgressBar}"
+                     DataContext="{Binding CrashProgressItem}"
+                     Foreground="{Binding Color}">
+            <i:Interaction.Triggers>
+                <i:DataTrigger Binding="{Binding IsRunning}"
+                               Value="True">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Play">
+                            <i:ControlStoryboardAction.Storyboard>
+                                <Storyboard x:Name="CrashStoryBoard">
+                                    <DoubleAnimation From="1"
+                                                     To="0"
+                                                     Storyboard.TargetProperty="Value"
+                                                     Storyboard.TargetName="CrashProgressBar"
+                                                     Duration="{Binding Duration}"/>
+                                </Storyboard>
+                            </i:ControlStoryboardAction.Storyboard>
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+                <i:DataTrigger Binding="{Binding IsRunning}"
+                               Value="False">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Stop"
+                                                   Storyboard="{Binding ElementName=CrashStoryBoard}">
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+            </i:Interaction.Triggers>
+        </ProgressBar>
+        
+        <ProgressBar x:Name="PriceUpdateProgressBar"
+                     Style="{StaticResource StonkMarketEventProgressBar}"
+                     DataContext="{Binding PriceUpdateProgressItem}"
+                     Foreground="{Binding Color}">
+            <i:Interaction.Triggers>
+                <i:DataTrigger Binding="{Binding IsRunning}"
+                               Value="True">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Play">
+                            <i:ControlStoryboardAction.Storyboard>
+                                <Storyboard x:Name="PriceUpdateStoryBoard">
+                                    <DoubleAnimation From="1"
+                                                     To="0"
+                                                     Storyboard.TargetProperty="Value"
+                                                     Storyboard.TargetName="PriceUpdateProgressBar"
+                                                     Duration="{Binding Duration}"/>
+                                </Storyboard>
+                            </i:ControlStoryboardAction.Storyboard>
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+                <i:DataTrigger Binding="{Binding IsRunning}"
+                               Value="False">
+                    <i:DataTrigger.Actions>
+                        <i:ControlStoryboardAction ControlStoryboardOption="Stop"
+                                                   Storyboard="{Binding ElementName=PriceUpdateStoryBoard}">
+                        </i:ControlStoryboardAction>
+                    </i:DataTrigger.Actions>
+                </i:DataTrigger>
+            </i:Interaction.Triggers>
+        </ProgressBar>
+
+        <ItemsControl ItemsSource="{Binding ChartItems}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel Style="{StaticResource ChartItemPanel}">
+                        <TextBlock Text="{Binding PriceString}"
+                                   Style="{StaticResource ChartPriceTextBlock}"/>
+                        <TextBlock Text="{Binding Name}"
+                                   Style="{StaticResource ChartNameTextBlock}"/>
+
+                        <ProgressBar Style="{StaticResource ProgressBar}"
+                                     Value="{Binding Level}">
+                            <ProgressBar.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </ProgressBar.LayoutTransform>
+                            <ProgressBar.Template>
+                                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                                    <Grid>
+                                        <Rectangle Name="PART_Track"/>
+
+                                        <Border x:Name="PART_Indicator"
+                                                Style="{StaticResource ChartItemTrackBorder}"/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </ProgressBar.Template>
+                        </ProgressBar>
+                    </DockPanel>
+                    
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </DockPanel>
+</Window>

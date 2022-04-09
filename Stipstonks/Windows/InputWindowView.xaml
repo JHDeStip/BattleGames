@@ -1,0 +1,105 @@
+﻿<Window x:Class="Stip.Stipstonks.Windows.InputWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:root="clr-namespace:Stip.Stipstonks"
+        xmlns:cal="http://caliburnmicro.com"
+        mc:Ignorable="d"
+        Height="450" Width="800"
+        IsEnabled="{Binding UIEnabled}"
+        Background="{Binding BackgroundColor}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Style="{StaticResource TotalPriceLabelTextBlock}"
+                   Text="{x:Static root:UIStrings.Input_TotalLabel}"/>
+        <TextBlock Grid.Row="0" Grid.Column="1"
+                   Style="{StaticResource TotalPriceTextBlock}"
+                   Text="{Binding TotalPriceString}"/>
+
+        <Button Grid.Row="0" Grid.Column="2"
+                x:Name="CommitOrder"
+                Style="{StaticResource CommitOrderButton}"
+                Content="{x:Static root:UIStrings.Input_Checkout}"
+                IsEnabled="{Binding IsRunning}"/>
+        
+        <ItemsControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                      ItemsSource="{Binding InputItems}">
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsPresenter/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border IsEnabled="{Binding Path=DataContext.IsRunning, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            Style="{StaticResource InputItemBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="0"
+                                       Grid.ColumnSpan="2"
+                                       Style="{StaticResource InputNameTextBlock}"
+                                       Text="{Binding Name}"/>
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="0"
+                                       Grid.ColumnSpan="2"
+                                       Style="{StaticResource InputAmountTextBlock}"
+                                       Text="{Binding Amount}"/>
+                            <Button Grid.Row="2"
+                                    Grid.Column="0"
+                                    Style="{StaticResource DecrementButton}"
+                                    Content="{x:Static root:UIStrings.Input_Decrement}"
+                                    cal:Message.Attach="[Event Click] = [Action Decrement]"/>
+                            <Button Grid.Row="2"
+                                    Grid.Column="1"
+                                    Style="{StaticResource IncrementButton}"
+                                    Content="{x:Static root:UIStrings.Input_Increment}"
+                                    cal:Message.Attach="[Event Click] = [Action Increment]"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                    Orientation="Horizontal">
+            <Button x:Name="Start"
+                    IsEnabled="{Binding IsNotRunning}"
+                    Content="{x:Static root:UIStrings.Input_Start}"/>
+            <Button x:Name="Stop"
+                    IsEnabled="{Binding IsRunning}"
+                    Content="{x:Static root:UIStrings.Input_Stop}"/>
+            <Button x:Name="Reset"
+                    IsEnabled="{Binding IsNotRunning}"
+                    Content="{x:Static root:UIStrings.Input_Reset}"/>
+            <Button x:Name="ToggleChartWindowState"
+                    Content="{x:Static root:UIStrings.Input_ToggleChartWindowState}"/>
+        </StackPanel>
+    </Grid>
+</Window>

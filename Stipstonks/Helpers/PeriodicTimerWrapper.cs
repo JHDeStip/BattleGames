@@ -1,0 +1,20 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Stip.Stipstonks.Helpers
+{
+    public class PeriodicTimerWrapper : IPeriodicTimer
+    {
+        private readonly PeriodicTimer _timer;
+
+        public PeriodicTimerWrapper(TimeSpan period)
+            => _timer = new(period);
+
+        public ValueTask<bool> WaitForNextTickAsync(CancellationToken ct = default)
+            => _timer.WaitForNextTickAsync(ct);
+
+        public void Dispose()
+            => _timer.Dispose();
+    }
+}

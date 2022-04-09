@@ -1,0 +1,50 @@
+{
+    "priceUpdateIntervalInSeconds": 10,
+    "crashIntervalInSeconds": 30,
+    "crashDurationInSeconds": 5,
+    "maxPriceDeviationFactor": 0.5,
+    "priceResolutionInCents": 5,
+    "allowPriceUpdatesDuringOrder": true,
+    "windowBackgroundColor": "#AFC0E3",
+    "crashChartWindowBackgroundColor": "#FF756D",
+    "priceUpdateProgressBarColor": "#85DE77",
+    "crashProgressBarColor": "#FF756D",
+    "products":
+    [
+        {
+            "name": "Pintekens",
+            "color": "#70C6DC",
+            "basePriceInCents": 100,
+            "totalAmountSold": 0,
+            "virtualAmountSold": 0
+        },
+        {
+            "name": "Wijn",
+            "color": "#FDEBC8",
+            "basePriceInCents": 250,
+            "totalAmountSold": 0,
+            "virtualAmountSold": 0
+        },
+        {
+            "name": "Frisdrank",
+            "color": "#FDB6D5",
+            "basePriceInCents": 120,
+            "totalAmountSold": 0,
+            "virtualAmountSold": 0
+        },
+        {
+            "name": "Zware bieren",
+            "color": "#B18ABD",
+            "basePriceInCents": 200,
+            "totalAmountSold": 0,
+            "virtualAmountSold": 0
+        },
+        {
+            "name": "Chips",
+            "color": "#C6DFC8",
+            "basePriceInCents": 100,
+            "totalAmountSold": 0,
+            "virtualAmountSold": 0
+        }
+    ]
+}
