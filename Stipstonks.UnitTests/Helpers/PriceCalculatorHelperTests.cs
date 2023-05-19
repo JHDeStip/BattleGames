@@ -21,7 +21,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             products[1].CurrentPriceInCents = 8;
             products[2].CurrentPriceInCents = 5;
 
-            var referenceProducts = products.ShallowCloneEnumerable();
+            var referenceProducts = products.Select(x => x with { }).ToList();
 
             var target = fixture.Create<PriceCalculatorHelper>();
 
@@ -50,7 +50,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 .CreateMany()
                 .ToList();
 
-            var referenceProducts = products.ShallowCloneEnumerable();
+            var referenceProducts = products.Select(x => x with { }).ToList();
 
             var target = fixture.Create<PriceCalculatorHelper>();
 
@@ -75,7 +75,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                .With(x => x.BasePriceInCents, 123)
                .Create();
 
-            var referenceProduct = product.ShallowClone();
+            var referenceProduct = product with { };
 
             var roundedPrice = fixture.Create<int>();
 
@@ -113,7 +113,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var fixture = FixtureFactory.Create();
 
             var product = fixture.Create<Product>();
-            var referenceProduct = product.ShallowClone();
+            var referenceProduct = product with { };
 
             var target = fixture.Create<PriceCalculatorHelper>();
 
@@ -131,7 +131,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var fixture = FixtureFactory.Create();
 
             var product = fixture.Create<Product>();
-            var referenceProduct = product.ShallowClone();
+            var referenceProduct = product with { };
 
             var target = fixture.Create<PriceCalculatorHelper>();
 
@@ -161,7 +161,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 .With(x => x.VirtualAmountSold, virtualAmountSold)
                 .With(x => x.BasePriceInCents, 345)
                 .Create();
-            var referenceProduct = product.ShallowClone();
+            var referenceProduct = product with { };
 
             var mockMathHelper = fixture.FreezeMock<MathHelper>();
             mockMathHelper

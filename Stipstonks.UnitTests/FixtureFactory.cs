@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -10,7 +11,7 @@ namespace Stip.Stipstonks.UnitTests
 {
     public static class FixtureFactory
     {
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new();
 
         public static Fixture Create()
         {
@@ -18,11 +19,27 @@ namespace Stip.Stipstonks.UnitTests
 
             fixture.Customize<double>(x => x.FromFactory<int>(y => y * Random.NextDouble()));
 
+            fixture.Customizations.Add(new IReadOnlyListResolver());
             fixture.Customizations.Add(new DependencyObjectOmiter());
             fixture.Customizations.Add(new StyleOmitter());
             fixture.Customizations.Add(new UnmockedDependencyOmitter(fixture));
 
             return fixture;
+        }
+
+        private class IReadOnlyListResolver : ISpecimenBuilder
+        {
+            public object Create(object request, ISpecimenContext context)
+            {
+                if (request is PropertyInfo propertyInfo
+                    && propertyInfo.PropertyType.IsGenericType
+                    && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+                {
+                    return context.Resolve(typeof(List<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()));
+                }
+
+                return new NoSpecimen();
+            }
         }
 
         private class DependencyObjectOmiter : ISpecimenBuilder

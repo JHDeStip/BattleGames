@@ -1,11 +1,31 @@
 ﻿namespace Stip.Stipstonks.JsonModels
 {
-    public class Product
+    public record Product
     {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public int BasePriceInCents { get; set; }
-        public int TotalAmountSold { get; set; }
-        public int VirtualAmountSold { get; set; }
+        public required string Name { get; init; }
+        public required string Color { get; init; }
+        public required int BasePriceInCents { get; init; }
+        public required int TotalAmountSold { get; init; }
+        public required int VirtualAmountSold { get; init; }
+
+        public Models.Product ToModel()
+            => new()
+            {
+                Name = Name,
+                Color = Color,
+                BasePriceInCents = BasePriceInCents,
+                TotalAmountSold = TotalAmountSold,
+                VirtualAmountSold = VirtualAmountSold
+            };
+
+        public static Product From(Models.Product product)
+            => new()
+            {
+                Name = product.Name,
+                Color = product.Color,
+                BasePriceInCents = product.BasePriceInCents,
+                TotalAmountSold = product.TotalAmountSold,
+                VirtualAmountSold = product.VirtualAmountSold
+            };
     }
 }

@@ -18,7 +18,8 @@ namespace Stip.Stipstonks.Extensions
 
         public void Dispose()
         {
-            if (!(Component is IEnumerable collection))
+            GC.SuppressFinalize(this);
+            if (Component is not IEnumerable collection)
             {
                 _container.Release(Component);
                 return;
@@ -35,6 +36,7 @@ namespace Stip.Stipstonks.Extensions
                 {
                     ReleaseCollection(nestedCollection);
                 }
+
                 _container.Release(item);
             }
         }

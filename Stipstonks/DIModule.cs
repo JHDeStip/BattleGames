@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -14,15 +13,9 @@ namespace Stip.Stipstonks
     public class DIModule : IWindsorInstaller
     {
         private readonly IApp _app;
-        private readonly IMapper _mapper;
 
-        public DIModule(
-            IApp app,
-            IMapper mapper)
-        {
-            _app = app;
-            _mapper = mapper;
-        }
+        public DIModule(IApp app)
+            => _app = app;
 
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
@@ -39,7 +32,6 @@ namespace Stip.Stipstonks
         private void InstallInfrastructure(IWindsorContainer container)
         {
             container.Register(Component.For<IApp>().Instance(_app));
-            container.Register(Component.For<IMapper>().Instance(_mapper));
             container.Register(Component.For<IWindsorContainer>().Instance(container));
             container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().LifestyleSingleton());
             container.Register(Component.For<IWindowManager>().ImplementedBy<WindowManager>().LifestyleSingleton());

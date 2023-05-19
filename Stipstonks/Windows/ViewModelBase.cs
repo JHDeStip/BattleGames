@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using Stip.Stipstonks.Helpers;
 
 namespace Stip.Stipstonks.Windows
@@ -8,7 +7,6 @@ namespace Stip.Stipstonks.Windows
     {
         public ApplicationContext ApplicationContext { get; set; }
         public IEventAggregator EventAggregator { get; set; }
-        public IMapper Mapper { get; set; }
         public PriceFormatHelper PriceFormatHelper { get; set; }
 
         public ViewModelBase()

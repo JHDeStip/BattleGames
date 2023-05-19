@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Stip.Stipstonks.Common;
-using Stip.Stipstonks.Models;
+﻿using Stip.Stipstonks.Common;
+using Stip.Stipstonks.JsonModels;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
@@ -11,7 +11,6 @@ namespace Stip.Stipstonks.Helpers
         public EnvironmentHelper EnvironmentHelper { get; set; }
         public FileHelper FileHelper { get; set; }
         public JsonHelper JsonHelper { get; set; }
-        public IMapper Mapper { get; set; }
         public ApplicationContext ApplicationContext { get; set; }
 
         private string DataFilePath
@@ -27,17 +26,15 @@ namespace Stip.Stipstonks.Helpers
                 return ActionResult.Failure;
             }
 
-            var deserializeResult = await JsonHelper.DeserializeFromUtf8StreamAsync<JsonModels.Data>(
+            var deserializeResult = await JsonHelper.DeserializeFromUtf8StreamAsync<Data>(
                 fileStreamResult.Data);
             if (!deserializeResult.IsSuccess)
             {
                 return ActionResult.Failure;
             }
 
-            var mapped = Mapper.Map<Data>(deserializeResult.Data);
-
-            ApplicationContext.Config = mapped.Config;
-            ApplicationContext.Products = mapped.Products;
+            ApplicationContext.Config = deserializeResult.Data.ToConfig();
+            ApplicationContext.Products = deserializeResult.Data.Products.Select(x => x.ToModel()).ToList();
 
             return ActionResult.Success;
         }
@@ -55,11 +52,9 @@ namespace Stip.Stipstonks.Helpers
             using (var fileStream = fileStreamResult.Data)
             {
                 return await JsonHelper.SerializeToUtf8StreamAsync(
-                    Mapper.Map<JsonModels.Data>(new Data
-                    {
-                        Config = ApplicationContext.Config,
-                        Products = ApplicationContext.Products
-                    }),
+                    Data.From(
+                        ApplicationContext.Config,
+                        ApplicationContext.Products),
                     fileStreamResult.Data);
             }
         }

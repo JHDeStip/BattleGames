@@ -1,12 +1,9 @@
 ﻿using AutoFixture;
-using AutoMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Models;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Stip.Stipstonks.UnitTests.Factories
@@ -24,19 +21,8 @@ namespace Stip.Stipstonks.UnitTests.Factories
         {
             var fixture = FixtureFactory.Create();
 
-            var products = fixture.CreateMany<Product>(3);
+            var products = fixture.CreateMany<Product>(3).ToList();
             var existingInputItems = fixture.CreateMany<InputItem>(nExistingItems).ToList();
-
-            var inputItems = fixture
-                .Build<InputItem>()
-                .With(x => x.Amount, 0)
-                .CreateMany(4)
-                .ToList();
-
-            var mockMapper = fixture.FreezeMock<IMapper>();
-            mockMapper
-                .Setup(x => x.Map<List<InputItem>>(It.IsAny<object>()))
-                .Returns(inputItems);
 
             var priceFormatHelper = fixture.Freeze<PriceFormatHelper>();
 
@@ -49,7 +35,7 @@ namespace Stip.Stipstonks.UnitTests.Factories
                 existingInputItems,
                 totalPriceChangedCallback);
 
-            Assert.AreSame(inputItems, actual);
+            Assert.IsTrue(actual.Select(x => x.Name).SequenceEqual(products.Select(x => x.Name)));
 
             foreach (var item in actual)
             {

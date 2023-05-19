@@ -31,5 +31,14 @@ namespace Stip.Stipstonks.Items
 
         public string PriceString
             => PriceFormatHelper.Format(PriceInCents);
+
+        public static T From<T>(Product product) where T : ProductItemBase, new()
+            => new()
+            {
+                Product = product,
+                Name = product.Name,
+                Color = product.Color,
+                PriceInCents = product.CurrentPriceInCents
+            };
     }
 }

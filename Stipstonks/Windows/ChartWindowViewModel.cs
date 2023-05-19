@@ -2,6 +2,7 @@
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Messages;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,8 +19,8 @@ namespace Stip.Stipstonks.Windows
         public StonkMarketEventProgressItem PriceUpdateProgressItem { get; set; } = new();
         public StonkMarketEventProgressItem CrashProgressItem { get; set; } = new();
 
-        private List<ChartItem> _chartItems = new();
-        public List<ChartItem> ChartItems { get => _chartItems; set => Set(ref _chartItems, value); }
+        private IReadOnlyList<ChartItem> _chartItems = new List<ChartItem>();
+        public IReadOnlyList<ChartItem> ChartItems { get => _chartItems; set => Set(ref _chartItems, value); }
 
         private string _backgroundColor;
         public string BackgroundColor { get => _backgroundColor; set => Set(ref _backgroundColor, value); }
@@ -131,7 +132,7 @@ namespace Stip.Stipstonks.Windows
 
         private void RefreshChart()
         {
-            var chartItems = Mapper.Map<List<ChartItem>>(ApplicationContext.Products);
+            var chartItems = ApplicationContext.Products.Select(ChartItem.From).ToList();
             chartItems.ForEach(x => x.PriceFormatHelper = PriceFormatHelper);
             ChartItems = chartItems;
         }

@@ -13,6 +13,5 @@ namespace Stip.Stipstonks.Items
 
         private string _color;
         public string Color { get => _color; set => Set(ref _color, value); }
-
     }
 }
