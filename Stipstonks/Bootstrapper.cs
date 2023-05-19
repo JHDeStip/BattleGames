@@ -154,7 +154,7 @@ namespace Stip.Stipstonks
 
             MessageBox.Show(stackTrace?.Length <= maxStackTraceLength
                 ? stackTrace
-                : stackTrace?.Substring(0, maxStackTraceLength));
+                : stackTrace?[..maxStackTraceLength]);
         }
     }
 }

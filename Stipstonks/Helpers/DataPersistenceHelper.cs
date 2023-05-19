@@ -48,15 +48,14 @@ namespace Stip.Stipstonks.Helpers
             {
                 return ActionResult.Failure;
             }
-            
-            using (var fileStream = fileStreamResult.Data)
-            {
-                return await JsonHelper.SerializeToUtf8StreamAsync(
-                    Data.From(
-                        ApplicationContext.Config,
-                        ApplicationContext.Products),
-                    fileStreamResult.Data);
-            }
+
+            using var fileStream = fileStreamResult.Data;
+
+            return await JsonHelper.SerializeToUtf8StreamAsync(
+                Data.From(
+                    ApplicationContext.Config,
+                    ApplicationContext.Products),
+                fileStreamResult.Data);
         }
     }
 }

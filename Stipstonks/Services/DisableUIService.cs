@@ -27,6 +27,7 @@ namespace Stip.Stipstonks.Services
 
         public virtual void Dispose()
         {
+            GC.SuppressFinalize(this);
             lock (_viewModels)
             {
                 if (_viewModels.Any())

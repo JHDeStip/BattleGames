@@ -15,6 +15,9 @@ namespace Stip.Stipstonks.Helpers
             => _timer.WaitForNextTickAsync(ct);
 
         public void Dispose()
-            => _timer.Dispose();
+        {
+            GC.SuppressFinalize(this);
+            _timer.Dispose();
+        }
     }
 }

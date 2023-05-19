@@ -34,18 +34,17 @@ namespace Stip.Stipstonks.Helpers
         {
             var cancellationToken = _cancellationTokenSource.Token;
 
-            using (var timer = PeriodicTimerFactory.Create(timerInterval))
+            using var timer = PeriodicTimerFactory.Create(timerInterval);
+
+            try
             {
-                try
+                while (true)
                 {
-                    while (true)
-                    {
-                        await timer.WaitForNextTickAsync(cancellationToken);
-                        await OnTimerExpiredAsync(cancellationToken);
-                    }
+                    await timer.WaitForNextTickAsync(cancellationToken);
+                    await OnTimerExpiredAsync(cancellationToken);
                 }
-                catch (OperationCanceledException) { }
             }
+            catch (OperationCanceledException) { }
         }
 
         protected abstract Task OnTimerExpiredAsync(CancellationToken ct);

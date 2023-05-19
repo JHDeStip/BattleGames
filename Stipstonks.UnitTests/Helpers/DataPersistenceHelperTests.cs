@@ -24,7 +24,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var fixture = FixtureFactory.Create();
 
             var executableDirectory = fixture.Create<string>();
-            var fileStream = new MemoryStream();
+            using var fileStream = new MemoryStream();
             var jsonData = fixture.Create<Data>();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
@@ -94,7 +94,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var fixture = FixtureFactory.Create();
 
             var executableDirectory = fixture.Create<string>();
-            var fileStream = new MemoryStream();
+            using var fileStream = new MemoryStream();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
 

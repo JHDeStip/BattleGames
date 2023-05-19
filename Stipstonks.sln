@@ -1,8 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32014.148
-MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stipstonks", "Stipstonks\Stipstonks.csproj", "{F4DAA94A-CCC4-4892-9CE0-6887915AA070}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stipstonks.UnitTests", "Stipstonks.UnitTests\Stipstonks.UnitTests.csproj", "{F0548011-1E5E-459E-977F-6403A46CCCB1}"

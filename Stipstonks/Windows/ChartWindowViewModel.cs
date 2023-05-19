@@ -66,7 +66,7 @@ namespace Stip.Stipstonks.Windows
 
         public override async Task<bool> CanCloseAsync(CancellationToken ct)
             => canClose
-            && await base.CanCloseAsync();
+            && await base.CanCloseAsync(ct);
 
         public override Task TryCloseAsync(bool? dialogResult = null)
         {
