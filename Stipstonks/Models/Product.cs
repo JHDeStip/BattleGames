@@ -1,12 +1,12 @@
 ﻿namespace Stip.Stipstonks.Models
 {
-    public class Product
+    public record Product
     {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public int BasePriceInCents { get; set; }
-        public int TotalAmountSold { get; set; }
-        public int VirtualAmountSold { get; set; }
+        public required string Name { get; set; }
+        public required string Color { get; set; }
+        public required int BasePriceInCents { get; set; }
+        public required int TotalAmountSold { get; set; }
+        public required int VirtualAmountSold { get; set; }
         public int CurrentPriceInCents { get; set; }
         public double Level { get; set; }
     }

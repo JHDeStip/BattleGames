@@ -6,7 +6,7 @@ namespace Stip.Stipstonks
     public class ApplicationContext : IInjectable
     {
         public Config Config { get; set; }
-        public List<Product> Products { get; set; } = new();
+        public IReadOnlyList<Product> Products { get; set; } = new List<Product>();
         public bool HasCrashed { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 Value2 = 123
             };
 
-            var stream = new MemoryStream();
+            using var stream = new MemoryStream();
             if (!canWriteStream)
             {
                 stream.Dispose();
@@ -54,7 +54,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
         public async Task DeserializeFromUtf8StreamAsync_CorrectlyDeserializes(
             bool canReadStream)
         {
-            var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
+            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
             if (!canReadStream)
             {
                 stream.Dispose();
@@ -76,7 +76,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
         [TestMethod]
         public async Task DeserializeFromUtf8StreamAsync_DoesNotDeserializeWrongType()
         {
-            var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
+            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
 
             var target = new JsonHelper();
 
@@ -88,7 +88,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
         [TestMethod]
         public async Task DeserializeFromUtf8StreamAsync_DoesNotDeserializeMalformedJson()
         {
-            var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString.Substring(1)));
+            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString[1..]));
 
             var target = new JsonHelper();
 

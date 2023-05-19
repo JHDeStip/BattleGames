@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stip.Stipstonks.Models;
+using System;
 
 namespace Stip.Stipstonks.Items
 {
@@ -47,5 +48,8 @@ namespace Stip.Stipstonks.Items
 
         public void Increment()
             => ++Amount;
+
+        public static InputItem From(Product product)
+            => From<InputItem>(product);
     }
 }

@@ -31,8 +31,8 @@ namespace Stip.Stipstonks.Windows
         private bool _uiEnabled = true;
         public bool UIEnabled { get => _uiEnabled; set => Set(ref _uiEnabled, value); }
 
-        private List<InputItem> _inputItems = new();
-        public List<InputItem> InputItems { get => _inputItems; set => Set(ref _inputItems, value); }
+        private IReadOnlyList<InputItem> _inputItems = new List<InputItem>();
+        public IReadOnlyList<InputItem> InputItems { get => _inputItems; set => Set(ref _inputItems, value); }
 
         private string _totalPriceString;
         public string TotalPriceString { get => _totalPriceString; private set => Set(ref _totalPriceString, value); }
@@ -99,7 +99,7 @@ namespace Stip.Stipstonks.Windows
         {
             using (DisableUIService.Disable())
             {
-                InputItems.ForEach(x =>
+                InputItems.Apply(x =>
                 {
                     x.Product.TotalAmountSold += x.Amount;
 
@@ -161,7 +161,6 @@ namespace Stip.Stipstonks.Windows
 
                 await EventAggregator.PublishOnCurrentThreadAsync(new PricesUpdatedMessage());
 
-                InputItems.Clear();
                 UpdateItems();
 
                 await SaveDataAsync();

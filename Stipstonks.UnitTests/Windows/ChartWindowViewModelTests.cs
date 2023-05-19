@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using AutoMapper;
 using Caliburn.Micro;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -62,16 +61,9 @@ namespace Stip.Stipstonks.UnitTests.Windows
         {
             var fixture = FixtureFactory.Create();
 
-            var chartItems = fixture.CreateMany<ChartItem>(3).ToList();
-
             var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
-
-            var mockMapper = fixture.FreezeMock<IMapper>();
-            mockMapper
-                .Setup(x => x.Map<List<ChartItem>>(It.IsAny<object>()))
-                .Returns(chartItems);
 
             var priceFormatHelper = fixture.Freeze<PriceFormatHelper>();
 
@@ -79,19 +71,16 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             await target.OnActivateAsync(CancellationToken.None);
 
-            Assert.AreSame(chartItems, target.ChartItems);
+            Assert.IsTrue(target.ChartItems.Select(x => x.Name).SequenceEqual(applicationContext.Products.Select(x => x.Name)));
 
-            foreach (var chartItem in chartItems)
+            foreach (var chartItem in target.ChartItems)
             {
                 Assert.AreSame(priceFormatHelper, chartItem.PriceFormatHelper);
             }
 
             mockEventAggregator.VerifySubscribeOnce(target);
 
-            mockMapper.Verify(x => x.Map<List<ChartItem>>(applicationContext.Products), Times.Once);
-
             mockEventAggregator.VerifyNoOtherCalls();
-            mockMapper.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]
@@ -146,21 +135,15 @@ namespace Stip.Stipstonks.UnitTests.Windows
         {
             var fixture = FixtureFactory.Create();
 
-            var chartItems = fixture.CreateMany<ChartItem>(3).ToList();
-
-
             var applicationContext = fixture.Freeze<ApplicationContext>();
             applicationContext.HasCrashed = hasCrashed;
-
-            var mockMapper = fixture.FreezeMock<IMapper>();
-            mockMapper
-                .Setup(x => x.Map<List<ChartItem>>(It.IsAny<object>()))
-                .Returns(chartItems);
 
             var priceFormatHelper = fixture.Freeze<PriceFormatHelper>();
 
             var target = fixture.Create<ChartWindowViewModel>();
+            target.PriceUpdateProgressItem.IsNotifying = true;
             target.PriceUpdateProgressItem.IsRunning = true;
+            target.CrashProgressItem.IsNotifying = true;
             target.CrashProgressItem.IsRunning = true;
 
             var setPriceUpdateProgressItemRunningStates = new List<bool>();
@@ -187,9 +170,9 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 new PricesUpdatedMessage(),
                 CancellationToken.None);
 
-            Assert.AreSame(chartItems, target.ChartItems);
+            Assert.IsTrue(target.ChartItems.Select(x => x.Name).SequenceEqual(applicationContext.Products.Select(x => x.Name)));
 
-            foreach (var chartItem in chartItems)
+            foreach (var chartItem in target.ChartItems)
             {
                 Assert.AreSame(priceFormatHelper, chartItem.PriceFormatHelper);
             }
@@ -218,10 +201,6 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
                 Assert.AreEqual(applicationContext.Config.WindowBackgroundColor, target.BackgroundColor);
             }
-
-            mockMapper.Verify(x => x.Map<List<ChartItem>>(applicationContext.Products), Times.Once);
-
-            mockMapper.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]

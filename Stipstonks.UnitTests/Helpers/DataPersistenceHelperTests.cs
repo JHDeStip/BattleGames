@@ -1,11 +1,11 @@
 ﻿using AutoFixture;
-using AutoMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Common;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.JsonModels;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.UnitTests.Helpers
@@ -24,9 +24,8 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var fixture = FixtureFactory.Create();
 
             var executableDirectory = fixture.Create<string>();
-            var fileStream = new MemoryStream();
+            using var fileStream = new MemoryStream();
             var jsonData = fixture.Create<Data>();
-            var data = fixture.Create<Models.Data>();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
 
@@ -45,11 +44,6 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 .Setup(x => x.DeserializeFromUtf8StreamAsync<Data>(It.IsAny<Stream>()))
                 .ReturnsAsync(new ActionResult<Data>(deserializeFromUtf8StreamAsyncSuccess, jsonData));
 
-            var mockMapper = fixture.FreezeMock<IMapper>();
-            mockMapper
-                .Setup(x => x.Map<Models.Data>(It.IsAny<object>()))
-                .Returns(data);
-
             var target = fixture.Create<DataPersistenceHelper>();
 
             void VerifyNoOtherCalls()
@@ -57,7 +51,6 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 mockEnvironmentHelper.VerifyNoOtherCalls();
                 mockFileHelper.VerifyNoOtherCalls();
                 mockJsonHelper.VerifyNoOtherCalls();
-                mockMapper.VerifyNoOtherCalls();
             }
 
             var actual = await target.LoadDataAsync();
@@ -67,14 +60,14 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             if (openStreamSuccess
                 && deserializeFromUtf8StreamAsyncSuccess)
             {
-                Assert.AreSame(data.Config, applicationContext.Config);
-                Assert.AreSame(data.Products, applicationContext.Products);
+                Assert.AreEqual(jsonData.ToConfig(), applicationContext.Config);
+                Assert.IsTrue(jsonData.Products.Select(x => x.ToModel()).SequenceEqual(applicationContext.Products));
             }
 
             mockEnvironmentHelper.VerifyGet(x => x.ExecutableDirectory, Times.Once);
-            
+
             mockFileHelper.Verify(x => x.OpenStream(Path.Combine(executableDirectory, "Data.json"), FileMode.Open), Times.Once);
-            
+
             if (!openStreamSuccess)
             {
                 VerifyNoOtherCalls();
@@ -88,8 +81,6 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 VerifyNoOtherCalls();
                 return;
             }
-
-            mockMapper.Verify(x => x.Map<Models.Data>(jsonData), Times.Once);
         }
 
         [DataTestMethod]
@@ -103,8 +94,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var fixture = FixtureFactory.Create();
 
             var executableDirectory = fixture.Create<string>();
-            var fileStream = new MemoryStream();
-            var jsonData = fixture.Create<Data>();
+            using var fileStream = new MemoryStream();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
 
@@ -118,11 +108,6 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 .Setup(x => x.OpenStream(It.IsAny<string>(), It.IsAny<FileMode>()))
                 .Returns(new ActionResult<Stream>(openStreamSuccess, fileStream));
 
-            var mockMapper = fixture.FreezeMock<IMapper>();
-            mockMapper
-                .Setup(x => x.Map<Data>(It.IsAny<object>()))
-                .Returns(jsonData);
-
             var mockJsonHelper = fixture.FreezeMock<JsonHelper>();
             mockJsonHelper
                 .Setup(x => x.SerializeToUtf8StreamAsync(It.IsAny<object>(), It.IsAny<Stream>()))
@@ -135,7 +120,6 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 mockEnvironmentHelper.VerifyNoOtherCalls();
                 mockFileHelper.VerifyNoOtherCalls();
                 mockJsonHelper.VerifyNoOtherCalls();
-                mockMapper.VerifyNoOtherCalls();
             }
 
             var actual = await target.SaveDataAsync();
@@ -152,11 +136,13 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 return;
             }
 
-            mockMapper.Verify(x => x.Map<Data>(It.Is<Models.Data>(
-                y => y.Config == applicationContext.Config
-                && y.Products == applicationContext.Products)), Times.Once);
-
-            mockJsonHelper.Verify(x => x.SerializeToUtf8StreamAsync(jsonData, fileStream), Times.Once);
+            mockJsonHelper.Verify(
+                x => x.SerializeToUtf8StreamAsync(
+                    It.Is<Data>(x
+                        => x.PriceResolutionInCents == applicationContext.Config.PriceResolutionInCents
+                        && x.Products.Count == applicationContext.Products.Count),
+                    fileStream),
+                Times.Once);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Models;
@@ -10,7 +9,6 @@ namespace Stip.Stipstonks.Factories
 {
     public class InputItemsFactory : IInjectable
     {
-        public IMapper Mapper { get; set; }
         public PriceFormatHelper PriceFormatHelper { get; set; }
 
         public virtual List<InputItem> Create(
@@ -18,7 +16,7 @@ namespace Stip.Stipstonks.Factories
             IEnumerable<InputItem> existingInputItems,
             System.Action totalPriceChangedCallback)
         {
-            var items = Mapper.Map<List<InputItem>>(products);
+            var items = products.Select(InputItem.From).ToList();
 
             items.ForEach(x =>
             {

@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
+using Stip.Stipstonks.Common;
 using Stip.Stipstonks.Extensions;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Services;
@@ -29,7 +29,7 @@ namespace Stip.Stipstonks
         }
 
         protected override void Configure()
-            => _container = ConfigureContainer(ConfigureAutoMapper());
+            => _container = ConfigureContainer();
 
         protected override object GetInstance(Type service, string key)
             => key == null
@@ -38,7 +38,12 @@ namespace Stip.Stipstonks
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
-            await InitializeApplicationContextAsync();
+            if (!(await InitializeApplicationContextAsync()).IsSuccess)
+            {
+                Application.Current.Shutdown(1);
+                return;
+            }
+
             InitializeDisableUIService();
 
             var settings = new Dictionary<string, object>
@@ -59,23 +64,6 @@ namespace Stip.Stipstonks
             base.OnExit(sender, e);
         }
 
-        private static IMapper ConfigureAutoMapper()
-        {
-            var configuration = new MapperConfiguration(config =>
-            {
-                config.AddMaps(
-                    typeof(AutoMapperProfile));
-            });
-
-#if DEBUG
-            configuration.AssertConfigurationIsValid();
-#endif
-
-            configuration.CompileMappings();
-
-            return configuration.CreateMapper();
-        }
-
         private static void SetCulture()
         {
             var culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
@@ -91,19 +79,17 @@ namespace Stip.Stipstonks
             CultureInfo.CurrentUICulture = uiCulture;
         }
 
-        private static IWindsorContainer ConfigureContainer(IMapper mapper)
+        private static IWindsorContainer ConfigureContainer()
         {
             var container = new WindsorContainer();
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 
-            container.Install(new DIModule(
-                (IApp)Application.Current,
-                mapper));
+            container.Install(new DIModule((IApp)Application.Current));
 
             return container;
         }
 
-        private async Task InitializeApplicationContextAsync()
+        private async Task<ActionResult> InitializeApplicationContextAsync()
         {
             using (_container.ResolveComponent<DataPersistenceHelper>(out var dataPersistenceHelper))
             {
@@ -114,7 +100,8 @@ namespace Stip.Stipstonks
                     {
                         dialogService.ShowError(UIStrings.Error_CannotLoadData);
                     }
-                    return;
+
+                    return ActionResult.Failure;
                 }
             }
 
@@ -126,6 +113,8 @@ namespace Stip.Stipstonks
                     applicationContext.Config.MaxPriceDeviationFactor,
                     applicationContext.Config.PriceResolutionInCents);
             }
+
+            return ActionResult.Success;
         }
 
         private void InitializeDisableUIService()
@@ -165,7 +154,7 @@ namespace Stip.Stipstonks
 
             MessageBox.Show(stackTrace?.Length <= maxStackTraceLength
                 ? stackTrace
-                : stackTrace?.Substring(0, maxStackTraceLength));
+                : stackTrace?[..maxStackTraceLength]);
         }
     }
 }

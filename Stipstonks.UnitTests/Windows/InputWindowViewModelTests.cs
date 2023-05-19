@@ -99,7 +99,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             await target.OnActivateAsync(CancellationToken.None);
 
-            Assert.AreSame(inputItems, target.InputItems);
+            Assert.IsTrue(target.InputItems.SequenceEqual(inputItems));
             Assert.AreEqual(totalPriceStrings[0], target.TotalPriceString);
 
             mockEventAggregator.VerifySubscribeOnce(target);
@@ -271,7 +271,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 Assert.AreEqual(0, initialInputItems[i].Amount);
             }
 
-            Assert.AreSame(inputItems, target.InputItems);
+            Assert.IsTrue(target.InputItems.SequenceEqual(inputItems));
             Assert.AreEqual(totalPriceStrings[0], target.TotalPriceString);
 
             mockDisableUIService.VerifyUIDisabledAndEnabledAtLeastOnce();
@@ -456,7 +456,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             if (shouldReset)
             {
-                Assert.AreSame(inputItems, target.InputItems);
+                Assert.IsTrue(target.InputItems.SequenceEqual(inputItems));
                 Assert.AreEqual(totalPriceStrings[0], target.TotalPriceString);
 
                 mockDisableUIService.VerifyUIDisabledAndEnabledAtLeastOnce();
@@ -523,7 +523,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             var fixture = FixtureFactory.Create();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
-            applicationContext.Config.AllowPriceUpdatesDuringOrder = allowPriceUpdatesDuringOrder;
+            applicationContext.Config = applicationContext.Config with { AllowPriceUpdatesDuringOrder = allowPriceUpdatesDuringOrder };
 
             var inputItems = fixture.CreateMany<InputItem>(3).ToList();
             var totalPriceStrings = fixture.CreateMany<string>(2).ToList();
@@ -549,7 +549,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 .Returns(totalPriceStrings[1]);
 
             var target = fixture.Create<TestInputWindowViewModel>();
-            target.InputItems.ForEach(x => x.Amount = 0);
+            target.InputItems.Apply(x => x.Amount = 0);
                 target.InputItems[1].Amount = secondProductAmount;
 
             void VerifyNoOtherCalls()
@@ -571,7 +571,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 return;
             }
 
-            Assert.AreSame(inputItems, target.InputItems);
+            Assert.IsTrue(target.InputItems.SequenceEqual(inputItems));
             Assert.AreEqual(totalPriceStrings[0], target.TotalPriceString);
 
             mockInputItemsFactory.Verify(
