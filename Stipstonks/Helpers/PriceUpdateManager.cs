@@ -1,4 +1,4 @@
-﻿using Caliburn.Micro;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using Stip.Stipstonks.Messages;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +17,9 @@ namespace Stip.Stipstonks.Helpers
                 ApplicationContext.Config.MaxPriceDeviationFactor,
                 ApplicationContext.Config.PriceResolutionInCents);
 
-            return EventAggregator.PublishOnCurrentThreadAsync(
-                new PricesUpdatedMessage(),
-                ct);
+            Messenger.Send<PricesUpdatedMessage>();
+
+            return Task.CompletedTask;
         }
     }
 }

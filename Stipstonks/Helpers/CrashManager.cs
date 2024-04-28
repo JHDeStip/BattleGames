@@ -1,4 +1,4 @@
-﻿using Caliburn.Micro;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using Stip.Stipstonks.Messages;
 using System;
 using System.Threading;
@@ -12,11 +12,11 @@ namespace Stip.Stipstonks.Helpers
         public DelayHelper DelayHelper { get; set; }
 
         private Func<Task> _stonkMarketWillCrashAction;
-        private System.Action _stonkMarketCrashEndedAction;
+        private Action _stonkMarketCrashEndedAction;
 
         public virtual void Start(
             Func<Task> stonkMarketWillCrashAction,
-            System.Action stonkMarketCrashEndedAction)
+            Action stonkMarketCrashEndedAction)
         {
             _stonkMarketWillCrashAction = stonkMarketWillCrashAction;
             _stonkMarketCrashEndedAction = stonkMarketCrashEndedAction;
@@ -37,9 +37,7 @@ namespace Stip.Stipstonks.Helpers
 
             try
             {
-                await EventAggregator.PublishOnCurrentThreadAsync(
-                    new PricesUpdatedMessage(),
-                    ct);
+                Messenger.Send<PricesUpdatedMessage>();
 
                 await DataPersistenceHelper.SaveDataAsync();
 
@@ -51,9 +49,7 @@ namespace Stip.Stipstonks.Helpers
 
                 ApplicationContext.HasCrashed = false;
 
-                await EventAggregator.PublishOnCurrentThreadAsync(
-                    new PricesUpdatedMessage(),
-                    ct);
+                Messenger.Send<PricesUpdatedMessage>();
 
                 _stonkMarketCrashEndedAction();
             }

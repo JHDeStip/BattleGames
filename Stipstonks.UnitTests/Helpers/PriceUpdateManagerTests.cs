@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Caliburn.Micro;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Factories;
@@ -51,16 +51,13 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 .Setup(x => x.Create(It.IsAny<TimeSpan>()))
                 .Returns(mockPeriodicTimer.Object);
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             if (otherOperationIsCancelled)
             {
-                mockEventAggregator
-                .Setup(x => x.PublishAsync(
-                    It.IsAny<object>(),
-                    It.IsAny<Func<Func<Task>, Task>>(),
-                    It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new OperationCanceledException());
+                mockMessenger
+                    .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<AnyToken>()))
+                    .Throws(new OperationCanceledException());
             }
 
             var mockPriceCalculator = fixture.FreezeMock<PriceCalculator>();
@@ -71,7 +68,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             {
                 mockPeriodicTimer.VerifyNoOtherCalls();
                 mockPeriodicTimerFactory.VerifyNoOtherCalls();
-                mockEventAggregator.VerifyNoOtherCalls();
+                mockMessenger.VerifyNoOtherCalls();
                 mockPriceCalculator.VerifyNoOtherCalls();
             }
 
@@ -102,7 +99,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                     applicationContext.Config.PriceResolutionInCents),
                 Times.Once);
 
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Once);
+            mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Once());
 
             if (otherOperationIsCancelled)
             {
@@ -124,7 +121,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                     applicationContext.Config.PriceResolutionInCents),
                 Times.Exactly(2));
 
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Exactly(2));
+            mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Exactly(2));
 
             mockPeriodicTimer.Verify(x => x.WaitForNextTickAsync(It.Is<CancellationToken>(y => y != CancellationToken.None)), Times.Exactly(3));
 

@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Castle.Windsor;
+using CommunityToolkit.Mvvm.Messaging;
 using Stip.Stipstonks.Extensions;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
@@ -16,7 +17,7 @@ namespace Stip.Stipstonks.Windows
     public class InputWindowViewModel
         : ViewModelBase,
         IUIEnabled,
-        IHandle<PricesUpdatedMessage>
+        IRecipient<PricesUpdatedMessage>
     {
         public DataPersistenceHelper DataPersistenceHelper { get; set; }
         public StonkMarketManager StonkMarketManager { get; set; }
@@ -66,7 +67,7 @@ namespace Stip.Stipstonks.Windows
         {
             await base.OnActivateAsync(ct);
 
-            EventAggregator.SubscribeOnUIThread(this);
+            Messenger.RegisterAll(this);
             UpdateItems();
         }
 
@@ -74,7 +75,7 @@ namespace Stip.Stipstonks.Windows
             bool close,
             CancellationToken ct)
         {
-            EventAggregator.Unsubscribe(this);
+            Messenger.UnregisterAll(this);
 
             if (close)
             {
@@ -117,13 +118,13 @@ namespace Stip.Stipstonks.Windows
             } 
         }
 
-        public Task Start()
+        public void Start()
         {
             StonkMarketManager.Start();
 
             IsRunning = true;
 
-            return EventAggregator.PublishOnCurrentThreadAsync(new StartedMessage());
+            Messenger.Send<StartedMessage>();
         }
 
         public async Task Stop()
@@ -142,7 +143,7 @@ namespace Stip.Stipstonks.Windows
                 IsRunning = false;
             }
 
-            await EventAggregator.PublishOnCurrentThreadAsync(new StoppedMessage());
+            Messenger.Send<StoppedMessage>();
         }
 
         public async Task Reset()
@@ -159,7 +160,7 @@ namespace Stip.Stipstonks.Windows
                 PriceCalculator.ResetEntirely(
                     ApplicationContext.Products);
 
-                await EventAggregator.PublishOnCurrentThreadAsync(new PricesUpdatedMessage());
+                Messenger.Send<PricesUpdatedMessage>();
 
                 UpdateItems();
 
@@ -167,21 +168,20 @@ namespace Stip.Stipstonks.Windows
             }
         }
 
-        public Task ToggleChartWindowState()
-            => EventAggregator.PublishOnCurrentThreadAsync(new ToggleChartWindowStateMessage());
+        public void ToggleChartWindowState()
+            => Messenger.Send<ToggleChartWindowStateMessage>();
 
-        public async Task HandleAsync(
-            PricesUpdatedMessage _,
-            CancellationToken ct)
-        {
-            if (!ApplicationContext.Config.AllowPriceUpdatesDuringOrder
-                && InputItems.Any(x => x.Amount != 0))
+        public void Receive(PricesUpdatedMessage message)
+            => OnUIThread(() =>
             {
-                return;
-            }
+                if (!ApplicationContext.Config.AllowPriceUpdatesDuringOrder
+                                && InputItems.Any(x => x.Amount != 0))
+                {
+                    return;
+                }
 
-            UpdateItems();
-        }
+                UpdateItems();
+            });
 
         private void UpdateItems()
         {

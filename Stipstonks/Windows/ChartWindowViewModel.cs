@@ -1,4 +1,4 @@
-﻿using Caliburn.Micro;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Messages;
 using System.Collections.Generic;
@@ -11,10 +11,10 @@ namespace Stip.Stipstonks.Windows
 {
     public class ChartWindowViewModel
         : ViewModelBase,
-        IHandle<PricesUpdatedMessage>,
-        IHandle<ToggleChartWindowStateMessage>,
-        IHandle<StartedMessage>,
-        IHandle<StoppedMessage>
+        IRecipient<PricesUpdatedMessage>,
+        IRecipient<ToggleChartWindowStateMessage>,
+        IRecipient<StartedMessage>,
+        IRecipient<StoppedMessage>
     {
         public StonkMarketEventProgressItem PriceUpdateProgressItem { get; set; } = new();
         public StonkMarketEventProgressItem CrashProgressItem { get; set; } = new();
@@ -51,7 +51,7 @@ namespace Stip.Stipstonks.Windows
         {
             await base.OnActivateAsync(ct);
 
-            EventAggregator.SubscribeOnUIThread(this);
+            Messenger.RegisterAll(this);
             RefreshChart();
         }
 
@@ -61,7 +61,7 @@ namespace Stip.Stipstonks.Windows
                 close,
                 ct);
 
-            EventAggregator.Unsubscribe(this);
+            Messenger.UnregisterAll(this);
         }
 
         public override async Task<bool> CanCloseAsync(CancellationToken ct)
@@ -74,61 +74,65 @@ namespace Stip.Stipstonks.Windows
             return base.TryCloseAsync(dialogResult);
         }
 
-        public async Task HandleAsync(PricesUpdatedMessage _, CancellationToken ct)
-        {
-            RefreshChart();
-
-            PriceUpdateProgressItem.IsRunning = false;
-
-            PriceUpdateProgressItem.Duration = new Duration(ApplicationContext.HasCrashed
-                ? ApplicationContext.Config.CrashDuration
-                : ApplicationContext.Config.PriceUpdateInterval);
-
-            PriceUpdateProgressItem.IsRunning = true;
-
-            if (ApplicationContext.HasCrashed)
+        public void Receive(PricesUpdatedMessage _)
+            => OnUIThread(() =>
             {
-                CrashProgressItem.IsRunning = false;
-                CrashProgressItem.IsRunning = true;
-                BackgroundColor = ApplicationContext.Config.CrashChartWindowBackgroundColor;
-            }
-            else
+                RefreshChart();
+
+                PriceUpdateProgressItem.IsRunning = false;
+
+                PriceUpdateProgressItem.Duration = new Duration(ApplicationContext.HasCrashed
+                    ? ApplicationContext.Config.CrashDuration
+                    : ApplicationContext.Config.PriceUpdateInterval);
+
+                PriceUpdateProgressItem.IsRunning = true;
+
+                if (ApplicationContext.HasCrashed)
+                {
+                    CrashProgressItem.IsRunning = false;
+                    CrashProgressItem.IsRunning = true;
+                    BackgroundColor = ApplicationContext.Config.CrashChartWindowBackgroundColor;
+                }
+                else
+                {
+                    BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
+                }
+            });
+
+        public void Receive(ToggleChartWindowStateMessage _)
+            => OnUIThread(() =>
+            {
+                if (_windowStyle == WindowStyle.None)
+                {
+                    WindowStyle = _previousWindowStyle;
+                    WindowState = _previousWindowState;
+                    return;
+                }
+
+                _previousWindowStyle = WindowStyle;
+                _previousWindowState = WindowState;
+
+                WindowStyle = WindowStyle.None;
+                WindowState = WindowState.Maximized;
+            });
+
+        public void Receive(StartedMessage _)
+            => OnUIThread(() =>
             {
                 BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
-            }
-        }
 
-        public async Task HandleAsync(ToggleChartWindowStateMessage _, CancellationToken ct)
-        {
-            if (_windowStyle == WindowStyle.None)
+                PriceUpdateProgressItem.Duration = new(ApplicationContext.Config.PriceUpdateInterval);
+                PriceUpdateProgressItem.IsRunning = true;
+
+                CrashProgressItem.IsRunning = true;
+            });
+
+        public void Receive(StoppedMessage _)
+            => OnUIThread(() =>
             {
-                WindowStyle = _previousWindowStyle;
-                WindowState = _previousWindowState;
-                return;
-            }
-
-            _previousWindowStyle = WindowStyle;
-            _previousWindowState = WindowState;
-
-            WindowStyle = WindowStyle.None;
-            WindowState = WindowState.Maximized;
-        }
-
-        public async Task HandleAsync(StartedMessage _, CancellationToken ct)
-        {
-            BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
-
-            PriceUpdateProgressItem.Duration = new(ApplicationContext.Config.PriceUpdateInterval);
-            PriceUpdateProgressItem.IsRunning = true;
-
-            CrashProgressItem.IsRunning = true;
-        }
-
-        public async Task HandleAsync(StoppedMessage _, CancellationToken ct)
-        {
-            PriceUpdateProgressItem.IsRunning = false;
-            CrashProgressItem.IsRunning = false;
-        }
+                PriceUpdateProgressItem.IsRunning = false;
+                CrashProgressItem.IsRunning = false;
+            });
 
         private void RefreshChart()
         {

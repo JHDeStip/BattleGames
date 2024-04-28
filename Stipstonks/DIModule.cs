@@ -7,6 +7,7 @@ using System;
 using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
 using Stip.Stipstonks.Helpers;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Stip.Stipstonks
 {
@@ -33,7 +34,7 @@ namespace Stip.Stipstonks
         {
             container.Register(Component.For<IApp>().Instance(_app));
             container.Register(Component.For<IWindsorContainer>().Instance(container));
-            container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().LifestyleSingleton());
+            container.Register(Component.For<IMessenger>().Instance(StrongReferenceMessenger.Default));
             container.Register(Component.For<IWindowManager>().ImplementedBy<WindowManager>().LifestyleSingleton());
             container.Register(Component.For<DisableUIService>().LifestyleSingleton());
         }

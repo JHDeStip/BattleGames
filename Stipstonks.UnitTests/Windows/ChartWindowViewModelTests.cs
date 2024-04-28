@@ -1,11 +1,12 @@
 ﻿using AutoFixture;
-using Caliburn.Micro;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Messages;
 using Stip.Stipstonks.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
     [TestClass]
     public class ChartWindowViewModelTests
     {
-        private class TestChartWindowViewModel : ChartWindowViewModel
+        internal class TestChartWindowViewModel : ChartWindowViewModel
         {
             public new Task OnInitializeAsync(CancellationToken ct)
                 => base.OnInitializeAsync(ct);
@@ -61,7 +62,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         {
             var fixture = FixtureFactory.Create();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
 
@@ -78,9 +79,12 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 Assert.AreSame(priceFormatHelper, chartItem.PriceFormatHelper);
             }
 
-            mockEventAggregator.VerifySubscribeOnce(target);
+            mockMessenger.VerifyRegister<PricesUpdatedMessage>(target, Times.Once());
+            mockMessenger.VerifyRegister<ToggleChartWindowStateMessage>(target, Times.Once());
+            mockMessenger.VerifyRegister<StartedMessage>(target, Times.Once());
+            mockMessenger.VerifyRegister<StoppedMessage>(target, Times.Once());
 
-            mockEventAggregator.VerifyNoOtherCalls();
+            mockMessenger.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]
@@ -91,7 +95,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         {
             var fixture = FixtureFactory.Create();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var target = fixture.Create<TestChartWindowViewModel>();
 
@@ -99,9 +103,9 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 close,
                 default);
 
-            mockEventAggregator.Verify(x => x.Unsubscribe(target), Times.Once);
+            mockMessenger.Verify(x => x.UnregisterAll(target), Times.Once);
 
-            mockEventAggregator.VerifyNoOtherCalls();
+            mockMessenger.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]
@@ -130,7 +134,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         [DataTestMethod]
         [DataRow(true)]
         [DataRow(false)]
-        public async Task HandleAsync_PricesUpdatedMessage(
+        public void Receive_PricesUpdatedMessage(
             bool hasCrashed)
         {
             var fixture = FixtureFactory.Create();
@@ -166,9 +170,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                     }
                 };
 
-            await target.HandleAsync(
-                new PricesUpdatedMessage(),
-                CancellationToken.None);
+            target.Receive(new PricesUpdatedMessage());
 
             Assert.IsTrue(target.ChartItems.Select(x => x.Name).SequenceEqual(applicationContext.Products.Select(x => x.Name)));
 
@@ -213,7 +215,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         [DataRow(WindowStyle.ThreeDBorderWindow, WindowState.Normal)]
         [DataRow(WindowStyle.ThreeDBorderWindow, WindowState.Minimized)]
         [DataRow(WindowStyle.ThreeDBorderWindow, WindowState.Maximized)]
-        public async Task HandleAsync_ToggleChartWindowStateMessage_CorrectlyHandlesMessage(
+        public void Receive_ToggleChartWindowStateMessage_CorrectlyHandlesMessage(
             WindowStyle initialWindowStyle,
             WindowState initialWindowState)
         {
@@ -225,23 +227,19 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 .With(x => x.WindowState, initialWindowState)
                 .Create();
 
-            await target.HandleAsync(
-                new ToggleChartWindowStateMessage(),
-                CancellationToken.None);
+            target.Receive(new ToggleChartWindowStateMessage());
 
             Assert.AreEqual(WindowStyle.None, target.WindowStyle);
             Assert.AreEqual(WindowState.Maximized, target.WindowState);
 
-            await target.HandleAsync(
-                new ToggleChartWindowStateMessage(),
-                CancellationToken.None);
+            target.Receive(new ToggleChartWindowStateMessage());
 
             Assert.AreEqual(initialWindowStyle, target.WindowStyle);
             Assert.AreEqual(initialWindowState, target.WindowState);
         }
 
         [TestMethod]
-        public async Task HandleAsync_StatedMessage_CorrectlyHandlesMessage()
+        public void Receive_StatedMessage_CorrectlyHandlesMessage()
         {
             var fixture = FixtureFactory.Create();
 
@@ -251,9 +249,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             target.PriceUpdateProgressItem.IsRunning = false;
             target.CrashProgressItem.IsRunning = false;
 
-            await target.HandleAsync(
-                new StartedMessage(),
-                CancellationToken.None);
+            target.Receive(new StartedMessage());
 
             Assert.AreEqual(target.BackgroundColor, applicationContext.Config.WindowBackgroundColor);
             Assert.AreEqual(target.PriceUpdateProgressItem.Duration.TimeSpan, applicationContext.Config.PriceUpdateInterval);
@@ -262,7 +258,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         }
 
         [TestMethod]
-        public async Task HandleAsync_StoppedMessage_CorrectlyHandlesMessage()
+        public void Receive_StoppedMessage_CorrectlyHandlesMessage()
         {
             var fixture = FixtureFactory.Create();
 
@@ -270,9 +266,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             target.PriceUpdateProgressItem.IsRunning = true;
             target.CrashProgressItem.IsRunning = true;
 
-            await target.HandleAsync(
-                new StoppedMessage(),
-                CancellationToken.None);
+            target.Receive(new StoppedMessage());
 
             Assert.IsFalse(target.PriceUpdateProgressItem.IsRunning);
             Assert.IsFalse(target.CrashProgressItem.IsRunning);

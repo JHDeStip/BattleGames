@@ -1,4 +1,4 @@
-﻿using Caliburn.Micro;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using Stip.Stipstonks.Factories;
 using System;
 using System.Threading;
@@ -10,7 +10,7 @@ namespace Stip.Stipstonks.Helpers
     {
         public ApplicationContext ApplicationContext { get; set; }
         public PriceCalculator PriceRecalculator { get; set; }
-        public IEventAggregator EventAggregator { get; set; }
+        public IMessenger Messenger { get; set; }
         public PeriodicTimerFactory PeriodicTimerFactory { get; set; }
 
         private CancellationTokenSource _cancellationTokenSource = new();

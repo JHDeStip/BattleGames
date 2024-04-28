@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Caliburn.Micro;
 using Castle.Windsor;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Common;
@@ -21,7 +22,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
     [TestClass]
     public class InputWindowViewModelTests
     {
-        private class TestInputWindowViewModel : InputWindowViewModel
+        internal class TestInputWindowViewModel : InputWindowViewModel
         {
             public new Task OnInitializeAsync(CancellationToken ct)
                 => base.OnInitializeAsync(ct);
@@ -60,7 +61,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         {
             var fixture = FixtureFactory.Create();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
             var inputItems = fixture.CreateMany<InputItem>(3).ToList();
@@ -90,7 +91,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             void VerifyNoOtherCalls()
             {
-                mockEventAggregator.VerifyNoOtherCalls();
+                mockMessenger.VerifyNoOtherCalls();
                 mockInputItemsFactory.VerifyNoOtherCalls();
                 mockPriceFormatHelper.VerifyNoOtherCalls();
             }
@@ -102,7 +103,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             Assert.IsTrue(target.InputItems.SequenceEqual(inputItems));
             Assert.AreEqual(totalPriceStrings[0], target.TotalPriceString);
 
-            mockEventAggregator.VerifySubscribeOnce(target);
+            mockMessenger.VerifyRegister(target, Times.Once());
 
             mockInputItemsFactory.Verify(
                 x => x.Create(
@@ -130,7 +131,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         {
             var fixture = FixtureFactory.Create();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var mockChartWindowViewModel = fixture.FreezeMock<ChartWindowViewModel>();
 
@@ -145,7 +146,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 close,
                 CancellationToken.None);
 
-            mockEventAggregator.Verify(x => x.Unsubscribe(target), Times.Once);
+            mockMessenger.Verify(x => x.UnregisterAll(target), Times.Once);
 
             if (close)
             {
@@ -157,7 +158,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             mockChartWindowViewModel.VerifySet(x => x.IsNotifying = It.IsAny<bool>(), Times.Once);
             mockChartWindowViewModel.VerifySet(x => x.DisplayName = It.IsAny<string>(), Times.Once);
 
-            mockEventAggregator.VerifyNoOtherCalls();
+            mockMessenger.VerifyNoOtherCalls();
             mockContainer.VerifyNoOtherCalls();
             mockChartWindowViewModel.VerifyNoOtherCalls();
         }
@@ -303,29 +304,29 @@ namespace Stip.Stipstonks.UnitTests.Windows
         }
 
         [TestMethod]
-        public async Task Start_CorrectlyStarts()
+        public void Start_CorrectlyStarts()
         {
             var fixture = FixtureFactory.Create();
 
             var mockStonkMarketManager = fixture.FreezeMock<StonkMarketManager>();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var target = fixture
                 .Build<InputWindowViewModel>()
                 .With(x => x.IsRunning, false)
                 .Create();
 
-            await target.Start();
+            target.Start();
 
             Assert.IsTrue(target.IsRunning);
 
             mockStonkMarketManager.Verify(x => x.Start(), Times.Once);
 
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<StartedMessage>(Times.Once);
+            mockMessenger.VerifySend<StartedMessage>(Times.Once());
 
             mockStonkMarketManager.VerifyNoOtherCalls();
-            mockEventAggregator.VerifyNoOtherCalls();
+            mockMessenger.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]
@@ -346,7 +347,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockStonkMarketManager = fixture.FreezeMock<StonkMarketManager>();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var target = fixture
                 .Build<InputWindowViewModel>()
@@ -369,13 +370,13 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
                 mockStonkMarketManager.Verify(x => x.StopAsync(), Times.Once);
 
-                mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<StoppedMessage>(Times.Once);
+                mockMessenger.VerifySend<StoppedMessage>(Times.Once());
             }
 
             mockDialogService.VerifyNoOtherCalls();
             mockDisableUIService.VerifyNoOtherCalls();
             mockStonkMarketManager.VerifyNoOtherCalls();
-            mockEventAggregator.VerifyNoOtherCalls();
+            mockMessenger.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]
@@ -407,7 +408,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockPriceCalculator = fixture.FreezeMock<PriceCalculator>();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             System.Action totalPriceChangedCallback = null;
             var mockInputItemsFactory = fixture.FreezeMock<InputItemsFactory>();
@@ -438,7 +439,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 mockDialogService.VerifyNoOtherCalls();
                 mockDisableUIService.VerifyNoOtherCalls();
                 mockPriceCalculator.VerifyNoOtherCalls();
-                mockEventAggregator.VerifyNoOtherCalls();
+                mockMessenger.VerifyNoOtherCalls();
                 mockInputItemsFactory.VerifyNoOtherCalls();
                 mockPriceFormatHelper.VerifyNoOtherCalls();
                 mockDataPersistenceHelper.VerifyNoOtherCalls();
@@ -463,7 +464,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
                 mockPriceCalculator.Verify(x => x.ResetEntirely(applicationContext.Products), Times.Once);
 
-                mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Once);
+                mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Once());
 
                 mockInputItemsFactory.Verify(
                 x => x.Create(
@@ -493,19 +494,19 @@ namespace Stip.Stipstonks.UnitTests.Windows
         }
 
         [TestMethod]
-        public async Task ToggleChartWindowState_CorrectlyTogglesWindowState()
+        public void ToggleChartWindowState_CorrectlyTogglesWindowState()
         {
             var fixture = FixtureFactory.Create();
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var target = fixture.Create<InputWindowViewModel>();
 
-            await target.ToggleChartWindowState();
+            target.ToggleChartWindowState();
 
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<ToggleChartWindowStateMessage>(Times.Once);
+            mockMessenger.VerifySend<ToggleChartWindowStateMessage>(Times.Once());
 
-            mockEventAggregator.VerifyNoOtherCalls();
+            mockMessenger.VerifyNoOtherCalls();
         }
 
         [DataTestMethod]
@@ -515,7 +516,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
         [DataRow(false, 3, false)]
         [DataRow(false, 1, false)]
         [DataRow(false, 0, true)]
-        public async Task HandleAsync_PricesUpdatedMessage_CorrectlyHandlesMessage(
+        public void Receive_PricesUpdatedMessage_CorrectlyHandlesMessage(
             bool allowPriceUpdatesDuringOrder,
             int secondProductAmount,
             bool shouldRefresh)
@@ -560,9 +561,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var initialInputItems = target.InputItems;
 
-            await target.HandleAsync(
-                new PricesUpdatedMessage(),
-                CancellationToken.None);
+            target.Receive(new PricesUpdatedMessage());
 
             if (!shouldRefresh)
             {

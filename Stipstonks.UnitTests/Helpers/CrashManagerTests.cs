@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Caliburn.Micro;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Common;
@@ -55,7 +55,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                 .Setup(x => x.Create(It.IsAny<TimeSpan>()))
                 .Returns(mockPeriodicTimer.Object);
 
-            var mockEventAggregator = fixture.FreezeMock<IEventAggregator>();
+            var mockMessenger = fixture.FreezeMock<IMessenger>();
 
             var mockPriceCalculator = fixture.FreezeMock<PriceCalculator>();
 
@@ -90,7 +90,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             {
                 mockPeriodicTimer.VerifyNoOtherCalls();
                 mockPeriodicTimerFactory.VerifyNoOtherCalls();
-                mockEventAggregator.VerifyNoOtherCalls();
+                mockMessenger.VerifyNoOtherCalls();
                 mockPriceCalculator.VerifyNoOtherCalls();
                 mockDataPersistenceHelper.VerifyNoOtherCalls();
                 mockDelayHelper.VerifyNoOtherCalls();
@@ -141,7 +141,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                     applicationContext.Config.PriceResolutionInCents),
                 Times.Once);
 
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Once);
+            mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Once());
             mockDataPersistenceHelper.Verify(x => x.SaveDataAsync(), Times.Once);
             mockDelayHelper.Verify(
                 x => x.Delay(
@@ -173,7 +173,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             Assert.AreEqual(1, nStonkMarketCrashEndedCalls);
 
             mockPriceCalculator.Verify(x => x.ResetPricesAfterCrash(applicationContext.Products), Times.Once);
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Exactly(2));
+            mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Exactly(2));
 
             mockPeriodicTimer.Verify(x => x.WaitForNextTickAsync(It.Is<CancellationToken>(y => y != CancellationToken.None)), Times.Exactly(2));
 
@@ -192,7 +192,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
                     applicationContext.Config.PriceResolutionInCents),
                 Times.Exactly(2));
 
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Exactly(3));
+            mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Exactly(3));
             mockDataPersistenceHelper.Verify(x => x.SaveDataAsync(), Times.Exactly(2));
             mockDelayHelper.Verify(
                 x => x.Delay(
@@ -209,7 +209,7 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             Assert.AreEqual(2, nStonkMarketCrashEndedCalls);
 
             mockPriceCalculator.Verify(x => x.ResetPricesAfterCrash(applicationContext.Products), Times.Exactly(2));
-            mockEventAggregator.VerifyPublishOnCurrentThreadAsyncAny<PricesUpdatedMessage>(Times.Exactly(4));
+            mockMessenger.VerifySend<PricesUpdatedMessage>(Times.Exactly(4));
 
             mockPeriodicTimer.Verify(x => x.WaitForNextTickAsync(It.Is<CancellationToken>(y => y != CancellationToken.None)), Times.Exactly(3));
             mockPeriodicTimer.Verify(x => x.Dispose(), Times.Once);
