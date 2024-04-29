@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Messages;
 using System;
 using System.Threading;
@@ -6,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class CrashManager : StonkMarketEventManagerBase
+    public class CrashManager(
+        ApplicationContext _applicationContext,
+        IMessenger _messenger,
+        PriceCalculator _priceCalculator,
+        DataPersistenceHelper _dataPersistenceHelper,
+        DelayHelper _delayHelper,
+        PeriodicTimerFactory periodicTimerFactory)
+        : StonkMarketEventManagerBase(
+            periodicTimerFactory)
     {
-        public DataPersistenceHelper DataPersistenceHelper { get; set; }
-        public DelayHelper DelayHelper { get; set; }
-
         private Func<Task> _stonkMarketWillCrashAction;
         private Action _stonkMarketCrashEndedAction;
 
@@ -21,41 +27,41 @@ namespace Stip.Stipstonks.Helpers
             _stonkMarketWillCrashAction = stonkMarketWillCrashAction;
             _stonkMarketCrashEndedAction = stonkMarketCrashEndedAction;
 
-            Start(ApplicationContext.Config.CrashInterval);
+            Start(_applicationContext.Config.CrashInterval);
         }
 
         protected override async Task OnTimerExpiredAsync(CancellationToken ct)
         {
             await _stonkMarketWillCrashAction();
 
-            ApplicationContext.HasCrashed = true;
+            _applicationContext.HasCrashed = true;
 
-            PriceRecalculator.Crash(
-                ApplicationContext.Products,
-                ApplicationContext.Config.MaxPriceDeviationFactor,
-                ApplicationContext.Config.PriceResolutionInCents);
+            _priceCalculator.Crash(
+                _applicationContext.Products,
+                _applicationContext.Config.MaxPriceDeviationFactor,
+                _applicationContext.Config.PriceResolutionInCents);
 
             try
             {
-                Messenger.Send<PricesUpdatedMessage>();
+                _messenger.Send<PricesUpdatedMessage>();
 
-                await DataPersistenceHelper.SaveDataAsync();
+                await _dataPersistenceHelper.SaveDataAsync();
 
-                await DelayHelper.Delay(
-                    ApplicationContext.Config.CrashDuration,
+                await _delayHelper.Delay(
+                    _applicationContext.Config.CrashDuration,
                     ct);
 
-                PriceRecalculator.ResetPricesAfterCrash(ApplicationContext.Products);
+                _priceCalculator.ResetPricesAfterCrash(_applicationContext.Products);
 
-                ApplicationContext.HasCrashed = false;
+                _applicationContext.HasCrashed = false;
 
-                Messenger.Send<PricesUpdatedMessage>();
+                _messenger.Send<PricesUpdatedMessage>();
 
                 _stonkMarketCrashEndedAction();
             }
             finally
             {
-                ApplicationContext.HasCrashed = false;
+                _applicationContext.HasCrashed = false;
             }
         }
     }

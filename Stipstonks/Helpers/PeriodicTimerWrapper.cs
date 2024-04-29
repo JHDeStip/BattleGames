@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class PeriodicTimerWrapper : IPeriodicTimer
+    public class PeriodicTimerWrapper(TimeSpan period)
+        : IPeriodicTimer
     {
-        private readonly PeriodicTimer _timer;
-
-        public PeriodicTimerWrapper(TimeSpan period)
-            => _timer = new(period);
+        private readonly PeriodicTimer _timer = new(period);
 
         public ValueTask<bool> WaitForNextTickAsync(CancellationToken ct = default)
             => _timer.WaitForNextTickAsync(ct);

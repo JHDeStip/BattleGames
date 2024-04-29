@@ -4,7 +4,6 @@ using Moq;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Stip.Stipstonks.UnitTests.Items
 {
@@ -17,7 +16,7 @@ namespace Stip.Stipstonks.UnitTests.Items
         public void PriceInCents_NotifiesPriceStringUpdate(
             bool hasValueChanged)
         {
-            var target = new InputItem
+            var target = new InputItem(null)
             {
                 PriceInCents = 123
             };
@@ -41,7 +40,7 @@ namespace Stip.Stipstonks.UnitTests.Items
         {
             var wasCallbackCalled = false;
 
-            var target = new InputItem
+            var target = new InputItem(null)
             {
                 Amount = 123,
                 TotalPriceChangedCallback = () => wasCallbackCalled = true
@@ -67,7 +66,7 @@ namespace Stip.Stipstonks.UnitTests.Items
         {
             var wasCallbackCalled = false;
 
-            var target = new InputItem
+            var target = new InputItem(null)
             {
                 PriceInCents = 123,
                 TotalPriceChangedCallback = () => wasCallbackCalled = true
@@ -147,7 +146,7 @@ namespace Stip.Stipstonks.UnitTests.Items
         {
             var wasCallbackCalled = false;
 
-            var target = new InputItem
+            var target = new InputItem(null)
             {
                 Amount = isAmount0
                     ? 0
@@ -177,7 +176,7 @@ namespace Stip.Stipstonks.UnitTests.Items
         {
             var wasCallbackCalled = false;
 
-            var target = new InputItem
+            var target = new InputItem(null)
             {
                 Amount = initialAmount,
                 TotalPriceChangedCallback = () => wasCallbackCalled = true

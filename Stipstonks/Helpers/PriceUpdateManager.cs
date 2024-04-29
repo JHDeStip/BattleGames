@@ -1,23 +1,31 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Messages;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class PriceUpdateManager : StonkMarketEventManagerBase
+    public class PriceUpdateManager(
+        ApplicationContext _applicationContext,
+        IMessenger _messenger,
+        PriceCalculator _priceCalculator,
+        PeriodicTimerFactory periodicTimerFactory)
+        : StonkMarketEventManagerBase(
+            periodicTimerFactory)
     {
         public virtual void Start()
-            => Start(ApplicationContext.Config.PriceUpdateInterval);
+            => Start(_applicationContext.Config.PriceUpdateInterval);
 
         protected override Task OnTimerExpiredAsync(CancellationToken ct)
         {
-            PriceRecalculator.RecalculatePrices(
-                ApplicationContext.Products,
-                ApplicationContext.Config.MaxPriceDeviationFactor,
-                ApplicationContext.Config.PriceResolutionInCents);
+            _periodicTimerFactory.ToString();
+            _priceCalculator.RecalculatePrices(
+                _applicationContext.Products,
+                _applicationContext.Config.MaxPriceDeviationFactor,
+                _applicationContext.Config.PriceResolutionInCents);
 
-            Messenger.Send<PricesUpdatedMessage>();
+            _messenger.Send<PricesUpdatedMessage>();
 
             return Task.CompletedTask;
         }

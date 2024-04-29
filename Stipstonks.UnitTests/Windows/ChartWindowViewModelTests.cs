@@ -18,7 +18,14 @@ namespace Stip.Stipstonks.UnitTests.Windows
     [TestClass]
     public class ChartWindowViewModelTests
     {
-        internal class TestChartWindowViewModel : ChartWindowViewModel
+        internal class TestChartWindowViewModel(
+            ApplicationContext _applicationContext,
+            IMessenger _messenger,
+            PriceFormatHelper _priceFormatHelper)
+            : ChartWindowViewModel(
+                _applicationContext,
+                _messenger,
+                _priceFormatHelper)
         {
             public new Task OnInitializeAsync(CancellationToken ct)
                 => base.OnInitializeAsync(ct);
@@ -33,7 +40,12 @@ namespace Stip.Stipstonks.UnitTests.Windows
         [TestMethod]
         public void Constructor_CorrectlyConstructs()
         {
-            var target = new ChartWindowViewModel();
+            var fixture = FixtureFactory.Create();
+
+            var target = fixture
+                .Build<ChartWindowViewModel>()
+                .OmitAutoProperties()
+                .Create();
 
             Assert.AreEqual(UIStrings.Global_ApplicationName, target.DisplayName);
         }
@@ -73,11 +85,6 @@ namespace Stip.Stipstonks.UnitTests.Windows
             await target.OnActivateAsync(CancellationToken.None);
 
             Assert.IsTrue(target.ChartItems.Select(x => x.Name).SequenceEqual(applicationContext.Products.Select(x => x.Name)));
-
-            foreach (var chartItem in target.ChartItems)
-            {
-                Assert.AreSame(priceFormatHelper, chartItem.PriceFormatHelper);
-            }
 
             mockMessenger.VerifyRegister<PricesUpdatedMessage>(target, Times.Once());
             mockMessenger.VerifyRegister<ToggleChartWindowStateMessage>(target, Times.Once());
@@ -174,11 +181,6 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             Assert.IsTrue(target.ChartItems.Select(x => x.Name).SequenceEqual(applicationContext.Products.Select(x => x.Name)));
 
-            foreach (var chartItem in target.ChartItems)
-            {
-                Assert.AreSame(priceFormatHelper, chartItem.PriceFormatHelper);
-            }
-
             Assert.AreEqual(2, setPriceUpdateProgressItemRunningStates.Count);
             Assert.IsFalse(setPriceUpdateProgressItemRunningStates[0]);
             Assert.IsTrue(setPriceUpdateProgressItemRunningStates[1]);
@@ -199,7 +201,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             }
             else
             {
-                Assert.IsFalse(setCrashProgressItemRunningStates.Any());
+                Assert.AreEqual(0, setCrashProgressItemRunningStates.Count);
 
                 Assert.AreEqual(applicationContext.Config.WindowBackgroundColor, target.BackgroundColor);
             }

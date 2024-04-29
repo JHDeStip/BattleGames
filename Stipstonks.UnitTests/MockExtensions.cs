@@ -9,7 +9,9 @@ namespace Stip.Stipstonks.UnitTests
     public sealed class AnyToken : ITypeMatcher, IEquatable<AnyToken>
     {
         public bool Matches(Type typeArgument) => true;
-        public bool Equals(AnyToken? other) => throw new NotImplementedException();
+        public bool Equals(AnyToken other) => throw new NotImplementedException();
+        public override bool Equals(object obj) => throw new NotImplementedException();
+        public override int GetHashCode() => throw new NotImplementedException();
     }
 
     public static class MockExtensions

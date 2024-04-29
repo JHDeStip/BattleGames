@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Messages;
 using System.Collections.Generic;
@@ -9,7 +10,10 @@ using System.Windows;
 
 namespace Stip.Stipstonks.Windows
 {
-    public class ChartWindowViewModel
+    public class ChartWindowViewModel(
+        ApplicationContext _applicationContext,
+        IMessenger _messenger,
+        PriceFormatHelper _priceFormatHelper)
         : ViewModelBase,
         IRecipient<PricesUpdatedMessage>,
         IRecipient<ToggleChartWindowStateMessage>,
@@ -19,7 +23,7 @@ namespace Stip.Stipstonks.Windows
         public StonkMarketEventProgressItem PriceUpdateProgressItem { get; set; } = new();
         public StonkMarketEventProgressItem CrashProgressItem { get; set; } = new();
 
-        private IReadOnlyList<ChartItem> _chartItems = new List<ChartItem>();
+        private IReadOnlyList<ChartItem> _chartItems = [];
         public IReadOnlyList<ChartItem> ChartItems { get => _chartItems; set => Set(ref _chartItems, value); }
 
         private string _backgroundColor;
@@ -39,19 +43,19 @@ namespace Stip.Stipstonks.Windows
         {
             await base.OnInitializeAsync(ct);
 
-            BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
+            BackgroundColor = _applicationContext.Config.WindowBackgroundColor;
 
-            PriceUpdateProgressItem.Color = ApplicationContext.Config.PriceUpdateProgressBarColor;
+            PriceUpdateProgressItem.Color = _applicationContext.Config.PriceUpdateProgressBarColor;
 
-            CrashProgressItem.Color = ApplicationContext.Config.CrashProgressBarColor;
-            CrashProgressItem.Duration = new(ApplicationContext.Config.CrashInterval);
+            CrashProgressItem.Color = _applicationContext.Config.CrashProgressBarColor;
+            CrashProgressItem.Duration = new(_applicationContext.Config.CrashInterval);
         }
 
         protected override async Task OnActivateAsync(CancellationToken ct)
         {
             await base.OnActivateAsync(ct);
 
-            Messenger.RegisterAll(this);
+            _messenger.RegisterAll(this);
             RefreshChart();
         }
 
@@ -61,7 +65,7 @@ namespace Stip.Stipstonks.Windows
                 close,
                 ct);
 
-            Messenger.UnregisterAll(this);
+            _messenger.UnregisterAll(this);
         }
 
         public override async Task<bool> CanCloseAsync(CancellationToken ct)
@@ -81,21 +85,21 @@ namespace Stip.Stipstonks.Windows
 
                 PriceUpdateProgressItem.IsRunning = false;
 
-                PriceUpdateProgressItem.Duration = new Duration(ApplicationContext.HasCrashed
-                    ? ApplicationContext.Config.CrashDuration
-                    : ApplicationContext.Config.PriceUpdateInterval);
+                PriceUpdateProgressItem.Duration = new Duration(_applicationContext.HasCrashed
+                    ? _applicationContext.Config.CrashDuration
+                    : _applicationContext.Config.PriceUpdateInterval);
 
                 PriceUpdateProgressItem.IsRunning = true;
 
-                if (ApplicationContext.HasCrashed)
+                if (_applicationContext.HasCrashed)
                 {
                     CrashProgressItem.IsRunning = false;
                     CrashProgressItem.IsRunning = true;
-                    BackgroundColor = ApplicationContext.Config.CrashChartWindowBackgroundColor;
+                    BackgroundColor = _applicationContext.Config.CrashChartWindowBackgroundColor;
                 }
                 else
                 {
-                    BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
+                    BackgroundColor = _applicationContext.Config.WindowBackgroundColor;
                 }
             });
 
@@ -119,9 +123,9 @@ namespace Stip.Stipstonks.Windows
         public void Receive(StartedMessage _)
             => OnUIThread(() =>
             {
-                BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
+                BackgroundColor = _applicationContext.Config.WindowBackgroundColor;
 
-                PriceUpdateProgressItem.Duration = new(ApplicationContext.Config.PriceUpdateInterval);
+                PriceUpdateProgressItem.Duration = new(_applicationContext.Config.PriceUpdateInterval);
                 PriceUpdateProgressItem.IsRunning = true;
 
                 CrashProgressItem.IsRunning = true;
@@ -135,10 +139,9 @@ namespace Stip.Stipstonks.Windows
             });
 
         private void RefreshChart()
-        {
-            var chartItems = ApplicationContext.Products.Select(ChartItem.From).ToList();
-            chartItems.ForEach(x => x.PriceFormatHelper = PriceFormatHelper);
-            ChartItems = chartItems;
-        }
+            => ChartItems = _applicationContext
+            .Products
+            .Select(x => ChartItem.From(x, _priceFormatHelper))
+            .ToList();
     }
 }

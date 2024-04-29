@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class PriceCalculatorHelper : IInjectable
+    public class PriceCalculatorHelper(
+        MathHelper _mathHelper)
+        : IInjectable
     {
-        public MathHelper MathHelper { get; set; }
-
         public virtual void CalculatePriceLevels(IEnumerable<Product> products)
         {
             var maxPrice = products.Max(x => x.CurrentPriceInCents);
@@ -29,7 +29,7 @@ namespace Stip.Stipstonks.Helpers
             double maxPriceDeviationFactor,
             int priceResulutionInCents)
         {
-            product.CurrentPriceInCents = (int)MathHelper.RoundToResolution(
+            product.CurrentPriceInCents = (int)_mathHelper.RoundToResolution(
                     product.BasePriceInCents - product.BasePriceInCents * maxPriceDeviationFactor,
                     priceResulutionInCents);
 
@@ -68,7 +68,7 @@ namespace Stip.Stipstonks.Helpers
                     * priceChangeFactor
                     * maxPriceDeviationFactor;
 
-            product.CurrentPriceInCents = (int)MathHelper.RoundToResolution(
+            product.CurrentPriceInCents = (int)_mathHelper.RoundToResolution(
                 newPriceInCents,
                 priceResulutionInCents);
         }

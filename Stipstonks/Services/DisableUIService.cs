@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Stip.Stipstonks.Services
 {
@@ -14,7 +13,7 @@ namespace Stip.Stipstonks.Services
         {
             lock (_viewModels)
             {
-                if (_viewModels.Any())
+                if (_viewModels.Count > 0)
                 {
                     var vm = _viewModels.Pop();
                     vm.Key.UIEnabled = false;
@@ -30,7 +29,7 @@ namespace Stip.Stipstonks.Services
             GC.SuppressFinalize(this);
             lock (_viewModels)
             {
-                if (_viewModels.Any())
+                if (_viewModels.Count > 0)
                 {
                     var vm = _viewModels.Pop();
 

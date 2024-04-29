@@ -16,7 +16,7 @@ namespace Stip.Stipstonks.UnitTests.Items
         public void PriceInCents_NotifiesPriceStringUpdate(
             bool hasValueChanged)
         {
-            var target = new ChartItem
+            var target = new ChartItem(null)
             {
                 PriceInCents = 123
             };

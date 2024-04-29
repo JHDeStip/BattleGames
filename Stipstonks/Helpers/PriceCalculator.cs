@@ -5,34 +5,34 @@ using System.Linq;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class PriceCalculator : IInjectable
+    public class PriceCalculator(
+        PriceCalculatorHelper _priceCalculatorHelper)
+        : IInjectable
     {
-        public PriceCalculatorHelper PriceCalculatorHelper { get; set; }
-
         public virtual void Crash(
             IEnumerable<Product> products,
             double maxPriceDeviationFactor,
             int priceResulutionInCents)
         {
             products.Apply(
-                x => PriceCalculatorHelper.CrashProduct(
+                x => _priceCalculatorHelper.CrashProduct(
                     x,
                     maxPriceDeviationFactor,
                     priceResulutionInCents));
 
-            PriceCalculatorHelper.CalculatePriceLevels(products);
+            _priceCalculatorHelper.CalculatePriceLevels(products);
         }
 
         public virtual void ResetPricesAfterCrash(IEnumerable<Product> products)
         {
-            products.Apply(PriceCalculatorHelper.SetBasePriceForProduct);
-            PriceCalculatorHelper.CalculatePriceLevels(products);
+            products.Apply(_priceCalculatorHelper.SetBasePriceForProduct);
+            _priceCalculatorHelper.CalculatePriceLevels(products);
         }
 
         public virtual void ResetEntirely(IEnumerable<Product> products)
         {
-            products.Apply(PriceCalculatorHelper.ResetProduct);
-            PriceCalculatorHelper.CalculatePriceLevels(products);
+            products.Apply(_priceCalculatorHelper.ResetProduct);
+            _priceCalculatorHelper.CalculatePriceLevels(products);
         }
 
         public virtual void RecalculatePrices(
@@ -48,15 +48,15 @@ namespace Stip.Stipstonks.Helpers
                 // This happens when all products have an equal amount sold.
                 // It is also the case on startup and after each crash
                 // so we need to explicitly set base price.
-                products.Apply(PriceCalculatorHelper.SetBasePriceForProduct);
-                PriceCalculatorHelper.CalculatePriceLevels(products);
+                products.Apply(_priceCalculatorHelper.SetBasePriceForProduct);
+                _priceCalculatorHelper.CalculatePriceLevels(products);
                 return;
             }
 
             var averageAmountSold = products.Sum(x => x.VirtualAmountSold) / (double)products.Count();
 
             products.Apply(
-                x => PriceCalculatorHelper.SetNewPriceForProduct(
+                x => _priceCalculatorHelper.SetNewPriceForProduct(
                     x,
                     minAmountSold,
                     maxAmountSold,
@@ -64,7 +64,7 @@ namespace Stip.Stipstonks.Helpers
                     maxPriceDeviationFactor,
                     priceResulutionInCents));
 
-            PriceCalculatorHelper.CalculatePriceLevels(products);
+            _priceCalculatorHelper.CalculatePriceLevels(products);
         }
     }
 }

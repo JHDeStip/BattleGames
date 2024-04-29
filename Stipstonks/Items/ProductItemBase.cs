@@ -4,10 +4,10 @@ using Stip.Stipstonks.Models;
 
 namespace Stip.Stipstonks.Items
 {
-    public abstract class ProductItemBase : PropertyChangedBase
+    public abstract class ProductItemBase(
+        PriceFormatHelper priceFormatHelper)
+        : PropertyChangedBase
     {
-        public PriceFormatHelper PriceFormatHelper { get; set; }
-
         public Product Product { get; set; }
 
         private string _name;
@@ -30,15 +30,17 @@ namespace Stip.Stipstonks.Items
         }
 
         public string PriceString
-            => PriceFormatHelper.Format(PriceInCents);
+            => _priceFormatHelper.Format(PriceInCents);
 
-        public static T From<T>(Product product) where T : ProductItemBase, new()
-            => new()
-            {
-                Product = product,
-                Name = product.Name,
-                Color = product.Color,
-                PriceInCents = product.CurrentPriceInCents
-            };
+        protected readonly PriceFormatHelper _priceFormatHelper = priceFormatHelper;
+
+        protected void UpdateWith(
+            Product product)
+        {
+            Product = product;
+            Name = product.Name;
+            Color = product.Color;
+            PriceInCents = product.CurrentPriceInCents;
+        }
     }
 }

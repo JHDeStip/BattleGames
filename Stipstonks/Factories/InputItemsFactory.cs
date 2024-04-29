@@ -7,22 +7,22 @@ using System.Linq;
 
 namespace Stip.Stipstonks.Factories
 {
-    public class InputItemsFactory : IInjectable
+    public class InputItemsFactory(
+        PriceFormatHelper _priceFormatHelper)
+        : IInjectable
     {
-        public PriceFormatHelper PriceFormatHelper { get; set; }
-
         public virtual List<InputItem> Create(
             IEnumerable<Product> products,
             IEnumerable<InputItem> existingInputItems,
             System.Action totalPriceChangedCallback)
         {
-            var items = products.Select(InputItem.From).ToList();
+            var items = products
+                .Select(x => InputItem.From(
+                    x,
+                    _priceFormatHelper))
+                .ToList();
 
-            items.ForEach(x =>
-            {
-                x.PriceFormatHelper = PriceFormatHelper;
-                x.TotalPriceChangedCallback = totalPriceChangedCallback;
-            });
+            items.ForEach(x => { x.TotalPriceChangedCallback = totalPriceChangedCallback; });
 
             items
                 .Zip(existingInputItems)

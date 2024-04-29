@@ -22,7 +22,28 @@ namespace Stip.Stipstonks.UnitTests.Windows
     [TestClass]
     public class InputWindowViewModelTests
     {
-        internal class TestInputWindowViewModel : InputWindowViewModel
+        internal class TestInputWindowViewModel(
+            ApplicationContext _applicationContext,
+            IMessenger _messenger,
+            DataPersistenceHelper _dataPersistenceHelper,
+            StonkMarketManager _stonkMarketManager,
+            PriceCalculator _priceCalculator,
+            PriceFormatHelper _priceFormatHelper,
+            DisableUIService _disableUIService,
+            DialogService _dialogService,
+            IWindsorContainer _container,
+            InputItemsFactory _inputItemsFactory)
+            : InputWindowViewModel(
+                _applicationContext,
+                _messenger,
+                _dataPersistenceHelper,
+                _stonkMarketManager,
+                _priceCalculator,
+                _priceFormatHelper,
+                _disableUIService,
+                _dialogService,
+                _container,
+                _inputItemsFactory)
         {
             public new Task OnInitializeAsync(CancellationToken ct)
                 => base.OnInitializeAsync(ct);
@@ -37,7 +58,12 @@ namespace Stip.Stipstonks.UnitTests.Windows
         [TestMethod]
         public void Constructor_CorrectlyConstructs()
         {
-            var target = new InputWindowViewModel();
+            var fixture = FixtureFactory.Create();
+
+            var target = fixture
+                .Build<InputWindowViewModel>()
+                .OmitAutoProperties()
+                .Create();
 
             Assert.AreEqual(UIStrings.Global_ApplicationName, target.DisplayName);
         }

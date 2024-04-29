@@ -1,11 +1,15 @@
-﻿using Stip.Stipstonks.Models;
+﻿using Stip.Stipstonks.Helpers;
+using Stip.Stipstonks.Models;
 using System;
 
 namespace Stip.Stipstonks.Items
 {
-    public class InputItem : ProductItemBase
+    public class InputItem
+        (PriceFormatHelper priceFormatHelper)
+        : ProductItemBase(
+            priceFormatHelper)
     {
-        public Action TotalPriceChangedCallback;
+        public Action TotalPriceChangedCallback { get; set; }
 
         private int _amount;
         public int Amount
@@ -36,7 +40,7 @@ namespace Stip.Stipstonks.Items
         }
 
         public string TotalPriceString
-            => PriceFormatHelper.Format(PriceInCents * Amount);
+            => _priceFormatHelper.Format(PriceInCents * Amount);
 
         public void Decrement()
         {
@@ -49,7 +53,13 @@ namespace Stip.Stipstonks.Items
         public void Increment()
             => ++Amount;
 
-        public static InputItem From(Product product)
-            => From<InputItem>(product);
+        public static InputItem From(
+            Product product,
+            PriceFormatHelper priceFormatHelper)
+        {
+            var item = new InputItem(priceFormatHelper);
+            item.UpdateWith(product);
+            return item;
+        }
     }
 }

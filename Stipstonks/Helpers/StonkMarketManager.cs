@@ -2,11 +2,11 @@
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class StonkMarketManager : IInjectable
+    public class StonkMarketManager(
+        PriceUpdateManager _priceUpdateManager,
+        CrashManager _crashManager)
+        : IInjectable
     {
-        public PriceUpdateManager PriceUpdateManager { get; set; }
-        public CrashManager CrashManager { get; set; }
-
         private bool _isRunning;
 
         public virtual void Start()
@@ -18,12 +18,12 @@ namespace Stip.Stipstonks.Helpers
 
             _isRunning = true;
 
-            var startPriceUpdateManager = () => PriceUpdateManager.Start();
+            var startPriceUpdateManager = _priceUpdateManager.Start;
 
             startPriceUpdateManager();
 
-            CrashManager.Start(
-                () => PriceUpdateManager.StopAsync(),
+            _crashManager.Start(
+                _priceUpdateManager.StopAsync,
                 startPriceUpdateManager);
         }
 
@@ -36,8 +36,8 @@ namespace Stip.Stipstonks.Helpers
 
             await Task
                 .WhenAll(
-                    PriceUpdateManager.StopAsync(),
-                    CrashManager.StopAsync())
+                    _priceUpdateManager.StopAsync(),
+                    _crashManager.StopAsync())
                 .ConfigureAwait(false);
 
             _isRunning = false;

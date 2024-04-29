@@ -22,7 +22,8 @@ namespace Stip.Stipstonks.UnitTests
             fixture.Customizations.Add(new IReadOnlyListResolver());
             fixture.Customizations.Add(new DependencyObjectOmiter());
             fixture.Customizations.Add(new StyleOmitter());
-            fixture.Customizations.Add(new UnmockedDependencyOmitter(fixture));
+            fixture.Customizations.Add(new UnmockedConstructorDependencyOmitter(fixture));
+            fixture.Customizations.Add(new UnmockedPropertyDependencyOmitter(fixture));
 
             return fixture;
         }
@@ -35,7 +36,8 @@ namespace Stip.Stipstonks.UnitTests
                     && propertyInfo.PropertyType.IsGenericType
                     && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
                 {
-                    return context.Resolve(typeof(List<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()));
+                    var items = context.Resolve(typeof(IEnumerable<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()));
+                    return typeof(List<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()).GetConstructor([items.GetType()]).Invoke([items]);
                 }
 
                 return new NoSpecimen();
@@ -54,30 +56,43 @@ namespace Stip.Stipstonks.UnitTests
                 => OmitPropertyType(request, x => typeof(Style).IsAssignableFrom(x));
         }
 
-        private class UnmockedDependencyOmitter : ISpecimenBuilder
+        private class UnmockedPropertyDependencyOmitter(
+            Fixture _fixture)
+            : ISpecimenBuilder
         {
-            private readonly Fixture _fixture;
-
-            public UnmockedDependencyOmitter(Fixture fixture)
-                => _fixture = fixture;
-
             public object Create(object request, ISpecimenContext _)
-                => OmitPropertyType(request, x
-                    => (x.IsInterface
-                        || typeof(IInjectable).IsAssignableFrom(x))
-                        && !_fixture.Customizations.Any(y =>
-                        {
-                            var customizationType = y.GetType();
-                            return customizationType.IsGenericType
-                                && customizationType.GetGenericTypeDefinition() == typeof(NodeComposer<>)
-                                && customizationType.GetGenericArguments().FirstOrDefault() == x;
-                        }));
+                => OmitPropertyType(request, x => IsDependency(x, _fixture));
         }
 
-        private static object OmitPropertyType(object request, Func<Type, bool> predicate)
+        private class UnmockedConstructorDependencyOmitter(
+            Fixture _fixture)
+            : ISpecimenBuilder
+        {
+            public object Create(object request, ISpecimenContext _)
+                => OmitParameterType(request, x => IsDependency(x, _fixture));
+        }
+
+        private static NoSpecimen OmitPropertyType(object request, Func<Type, bool> predicate)
             => request is PropertyInfo propertyInfo
             && predicate(propertyInfo.PropertyType)
-                ? (object)new OmitSpecimen()
+                ? null
                 : new NoSpecimen();
+
+        private static NoSpecimen OmitParameterType(object request, Func<Type, bool> predicate)
+            => request is ParameterInfo parameterInfo
+            && predicate(parameterInfo.ParameterType)
+                ? null
+                : new NoSpecimen();
+
+        private static bool IsDependency(Type type, Fixture fixture)
+            => (type.IsInterface
+            || typeof(IInjectable).IsAssignableFrom(type))
+            && !fixture.Customizations.Any(y =>
+            {
+                var customizationType = y.GetType();
+                return customizationType.IsGenericType
+                    && customizationType.GetGenericTypeDefinition() == typeof(NodeComposer<>)
+                    && customizationType.GetGenericArguments().FirstOrDefault() == type;
+            });
     }
 }

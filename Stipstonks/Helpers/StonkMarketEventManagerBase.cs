@@ -1,17 +1,15 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using Stip.Stipstonks.Factories;
+﻿using Stip.Stipstonks.Factories;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public abstract class StonkMarketEventManagerBase : IInjectable
+    public abstract class StonkMarketEventManagerBase(
+        PeriodicTimerFactory periodicTimerFactory)
+        : IInjectable
     {
-        public ApplicationContext ApplicationContext { get; set; }
-        public PriceCalculator PriceRecalculator { get; set; }
-        public IMessenger Messenger { get; set; }
-        public PeriodicTimerFactory PeriodicTimerFactory { get; set; }
+        protected readonly PeriodicTimerFactory _periodicTimerFactory = periodicTimerFactory;
 
         private CancellationTokenSource _cancellationTokenSource = new();
         private Task _task = Task.CompletedTask;
@@ -34,7 +32,7 @@ namespace Stip.Stipstonks.Helpers
         {
             var cancellationToken = _cancellationTokenSource.Token;
 
-            using var timer = PeriodicTimerFactory.Create(timerInterval);
+            using var timer = _periodicTimerFactory.Create(timerInterval);
 
             try
             {

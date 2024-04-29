@@ -14,25 +14,27 @@ using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Windows
 {
-    public class InputWindowViewModel
+    public class InputWindowViewModel(
+        ApplicationContext _applicationContext,
+        IMessenger _messenger,
+        DataPersistenceHelper _dataPersistenceHelper,
+        StonkMarketManager _stonkMarketManager,
+        PriceCalculator _priceCalculator,
+        PriceFormatHelper _priceFormatHelper,
+        DisableUIService _disableUIService,
+        DialogService _dialogService,
+        IWindsorContainer _container,
+        InputItemsFactory _inputItemsFactory)
         : ViewModelBase,
         IUIEnabled,
         IRecipient<PricesUpdatedMessage>
     {
-        public DataPersistenceHelper DataPersistenceHelper { get; set; }
-        public StonkMarketManager StonkMarketManager { get; set; }
-        public PriceCalculator PriceCalculator { get; set; }
-        public DisableUIService DisableUIService { get; set; }
-        public DialogService DialogService { get; set; }
-        public IWindsorContainer Container { get; set; }
-        public InputItemsFactory InputItemsFactory { get; set; }
-
         public string BackgroundColor { get; private set; }
 
         private bool _uiEnabled = true;
         public bool UIEnabled { get => _uiEnabled; set => Set(ref _uiEnabled, value); }
 
-        private IReadOnlyList<InputItem> _inputItems = new List<InputItem>();
+        private IReadOnlyList<InputItem> _inputItems = [];
         public IReadOnlyList<InputItem> InputItems { get => _inputItems; set => Set(ref _inputItems, value); }
 
         private string _totalPriceString;
@@ -53,21 +55,18 @@ namespace Stip.Stipstonks.Windows
 
         public bool IsNotRunning => !IsRunning;
 
-        public InputWindowViewModel()
-            => DisplayName = UIStrings.Global_ApplicationName;
-
         protected override async Task OnInitializeAsync(CancellationToken ct)
         {
             await base.OnInitializeAsync(ct);
 
-            BackgroundColor = ApplicationContext.Config.WindowBackgroundColor;
+            BackgroundColor = _applicationContext.Config.WindowBackgroundColor;
         }
 
         protected override async Task OnActivateAsync(CancellationToken ct)
         {
             await base.OnActivateAsync(ct);
 
-            Messenger.RegisterAll(this);
+            _messenger.RegisterAll(this);
             UpdateItems();
         }
 
@@ -75,11 +74,11 @@ namespace Stip.Stipstonks.Windows
             bool close,
             CancellationToken ct)
         {
-            Messenger.UnregisterAll(this);
+            _messenger.UnregisterAll(this);
 
             if (close)
             {
-                using (Container.ResolveComponent<ChartWindowViewModel>(out var chartWindowViewModel))
+                using (_container.ResolveComponent<ChartWindowViewModel>(out var chartWindowViewModel))
                 {
                     await chartWindowViewModel.TryCloseAsync();
                 }
@@ -91,20 +90,20 @@ namespace Stip.Stipstonks.Windows
         }
 
         public override async Task<bool> CanCloseAsync(CancellationToken ct)
-            => DialogService.ShowYesNoDialog(
+            => _dialogService.ShowYesNoDialog(
                 UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToClose)
                 && await base.CanCloseAsync(ct);
 
         public async Task CommitOrder()
         {
-            using (DisableUIService.Disable())
+            using (_disableUIService.Disable())
             {
                 InputItems.Apply(x =>
                 {
                     x.Product.TotalAmountSold += x.Amount;
 
-                    if (!ApplicationContext.HasCrashed)
+                    if (!_applicationContext.HasCrashed)
                     {
                         x.Product.VirtualAmountSold += x.Amount;
                     }
@@ -120,47 +119,47 @@ namespace Stip.Stipstonks.Windows
 
         public void Start()
         {
-            StonkMarketManager.Start();
+            _stonkMarketManager.Start();
 
             IsRunning = true;
 
-            Messenger.Send<StartedMessage>();
+            _messenger.Send<StartedMessage>();
         }
 
         public async Task Stop()
         {
-            if (!DialogService.ShowYesNoDialog(
+            if (!_dialogService.ShowYesNoDialog(
                 UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToStop))
             {
                 return;
             }
 
-            using (DisableUIService.Disable())
+            using (_disableUIService.Disable())
             {
-                await StonkMarketManager.StopAsync();
+                await _stonkMarketManager.StopAsync();
 
                 IsRunning = false;
             }
 
-            Messenger.Send<StoppedMessage>();
+            _messenger.Send<StoppedMessage>();
         }
 
         public async Task Reset()
         {
-            if (!DialogService.ShowYesNoDialog(
+            if (!_dialogService.ShowYesNoDialog(
                 UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToReset))
             {
                 return;
             }
 
-            using (DisableUIService.Disable())
+            using (_disableUIService.Disable())
             {
-                PriceCalculator.ResetEntirely(
-                    ApplicationContext.Products);
+                _priceCalculator.ResetEntirely(
+                    _applicationContext.Products);
 
-                Messenger.Send<PricesUpdatedMessage>();
+                _messenger.Send<PricesUpdatedMessage>();
 
                 UpdateItems();
 
@@ -169,13 +168,13 @@ namespace Stip.Stipstonks.Windows
         }
 
         public void ToggleChartWindowState()
-            => Messenger.Send<ToggleChartWindowStateMessage>();
+            => _messenger.Send<ToggleChartWindowStateMessage>();
 
         public void Receive(PricesUpdatedMessage message)
             => OnUIThread(() =>
             {
-                if (!ApplicationContext.Config.AllowPriceUpdatesDuringOrder
-                                && InputItems.Any(x => x.Amount != 0))
+                if (!_applicationContext.Config.AllowPriceUpdatesDuringOrder
+                    && InputItems.Any(x => x.Amount != 0))
                 {
                     return;
                 }
@@ -185,8 +184,8 @@ namespace Stip.Stipstonks.Windows
 
         private void UpdateItems()
         {
-            InputItems = InputItemsFactory.Create(
-                ApplicationContext.Products,
+            InputItems = _inputItemsFactory.Create(
+                _applicationContext.Products,
                 InputItems,
                 UpdateTotalPrice);
 
@@ -195,15 +194,15 @@ namespace Stip.Stipstonks.Windows
 
         private async Task SaveDataAsync()
         {
-            var saveResult = await DataPersistenceHelper.SaveDataAsync();
+            var saveResult = await _dataPersistenceHelper.SaveDataAsync();
             if (!saveResult.IsSuccess)
             {
-                DialogService.ShowError(UIStrings.Error_CannotSaveData);
+                _dialogService.ShowError(UIStrings.Error_CannotSaveData);
             }
         }
 
         private void UpdateTotalPrice()
-            => TotalPriceString = PriceFormatHelper.Format(
+            => TotalPriceString = _priceFormatHelper.Format(
                 InputItems.Sum(
                     x => x.Amount * x.PriceInCents));
     }

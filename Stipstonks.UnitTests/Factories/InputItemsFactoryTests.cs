@@ -39,7 +39,6 @@ namespace Stip.Stipstonks.UnitTests.Factories
 
             foreach (var item in actual)
             {
-                Assert.AreSame(priceFormatHelper, item.PriceFormatHelper);
                 Assert.AreSame(totalPriceChangedCallback, item.TotalPriceChangedCallback);
             }
 

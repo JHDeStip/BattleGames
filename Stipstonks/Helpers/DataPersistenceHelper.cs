@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
 {
-    public class DataPersistenceHelper : IInjectable
+    public class DataPersistenceHelper(
+        EnvironmentHelper _environmentHelper,
+        FileHelper _fileHelper,
+        JsonHelper _jsonHelper,
+        ApplicationContext _applicationContext)
+        : IInjectable
     {
-        public EnvironmentHelper EnvironmentHelper { get; set; }
-        public FileHelper FileHelper { get; set; }
-        public JsonHelper JsonHelper { get; set; }
-        public ApplicationContext ApplicationContext { get; set; }
-
         private string DataFilePath
-            => Path.Combine(EnvironmentHelper.ExecutableDirectory, "Data.json");
+            => Path.Combine(_environmentHelper.ExecutableDirectory, "Data.json");
 
         public async Task<ActionResult> LoadDataAsync()
         {
-            var fileStreamResult = FileHelper.OpenStream(
+            var fileStreamResult = _fileHelper.OpenStream(
                 DataFilePath,
                 FileMode.Open);
             if (!fileStreamResult.IsSuccess)
@@ -26,22 +26,22 @@ namespace Stip.Stipstonks.Helpers
                 return ActionResult.Failure;
             }
 
-            var deserializeResult = await JsonHelper.DeserializeFromUtf8StreamAsync<Data>(
+            var deserializeResult = await _jsonHelper.DeserializeFromUtf8StreamAsync<Data>(
                 fileStreamResult.Data);
             if (!deserializeResult.IsSuccess)
             {
                 return ActionResult.Failure;
             }
 
-            ApplicationContext.Config = deserializeResult.Data.ToConfig();
-            ApplicationContext.Products = deserializeResult.Data.Products.Select(x => x.ToModel()).ToList();
+            _applicationContext.Config = deserializeResult.Data.ToConfig();
+            _applicationContext.Products = deserializeResult.Data.Products.Select(x => x.ToModel()).ToList();
 
             return ActionResult.Success;
         }
 
         public virtual async Task<ActionResult> SaveDataAsync()
         {
-            var fileStreamResult = FileHelper.OpenStream(
+            var fileStreamResult = _fileHelper.OpenStream(
                 DataFilePath,
                 FileMode.Create);
             if (!fileStreamResult.IsSuccess)
@@ -51,10 +51,10 @@ namespace Stip.Stipstonks.Helpers
 
             using var fileStream = fileStreamResult.Data;
 
-            return await JsonHelper.SerializeToUtf8StreamAsync(
+            return await _jsonHelper.SerializeToUtf8StreamAsync(
                 Data.From(
-                    ApplicationContext.Config,
-                    ApplicationContext.Products),
+                    _applicationContext.Config,
+                    _applicationContext.Products),
                 fileStreamResult.Data);
         }
     }
