@@ -1,8 +1,7 @@
 ﻿using Caliburn.Micro;
-using Castle.MicroKernel.Resolvers.SpecializedResolvers;
-using Castle.Windsor;
+using Microsoft.Extensions.DependencyInjection;
 using Stip.Stipstonks.Common;
-using Stip.Stipstonks.Extensions;
+using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
@@ -20,7 +19,8 @@ namespace Stip.Stipstonks
         private const double InitialWindowWidth = 1200;
         private const double InitialWindowHeight = 600;
 
-        private IWindsorContainer _container;
+        private ServiceProvider _serviceProvider;
+        private ServiceScopeFactory _serviceScopeFactory;
 
         public Bootstrapper()
         {
@@ -29,12 +29,15 @@ namespace Stip.Stipstonks
         }
 
         protected override void Configure()
-            => _container = ConfigureContainer();
+        {
+            _serviceProvider = ConfigurServiceProvider();
+            _serviceScopeFactory = _serviceProvider.GetRequiredService<ServiceScopeFactory>();
+        }
 
         protected override object GetInstance(Type service, string key)
             => key == null
-                ? _container.Resolve(service)
-                : _container.Resolve(key, service);
+                ? _serviceProvider.GetRequiredService(service)
+                : _serviceProvider.GetRequiredKeyedService(service, key);
 
         protected override async void OnStartup(object sender, StartupEventArgs e)
         {
@@ -44,7 +47,7 @@ namespace Stip.Stipstonks
                 return;
             }
 
-            InitializeDisableUIService();
+            await InitializeDisableUIServiceAsync();
 
             var settings = new Dictionary<string, object>
             {
@@ -60,7 +63,7 @@ namespace Stip.Stipstonks
 
         protected override void OnExit(object sender, EventArgs e)
         {
-            _container.Dispose();
+            _serviceProvider.Dispose();
             base.OnExit(sender, e);
         }
 
@@ -79,50 +82,54 @@ namespace Stip.Stipstonks
             CultureInfo.CurrentUICulture = uiCulture;
         }
 
-        private static IWindsorContainer ConfigureContainer()
+        private static ServiceProvider ConfigurServiceProvider()
         {
-            var container = new WindsorContainer();
-            container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+            var serviceCollection = new ServiceCollection();
+            DIModule.RegisterServices(serviceCollection, (IApp)Application.Current);
 
-            container.Install(new DIModule((IApp)Application.Current));
-
-            return container;
+            var serviceProviderOptions = new ServiceProviderOptions();
+#if DEBUG
+            serviceProviderOptions.ValidateScopes = true;
+            serviceProviderOptions.ValidateOnBuild = true;
+#endif
+            return serviceCollection.BuildServiceProvider(serviceProviderOptions);
         }
 
         private async Task<ActionResult> InitializeApplicationContextAsync()
         {
-            using (_container.ResolveComponent<DataPersistenceHelper>(out var dataPersistenceHelper))
+            await using (var scope = _serviceScopeFactory.CreateAsyncScope())
             {
-                var loadResult = await dataPersistenceHelper.LoadDataAsync();
+                var loadResult = await scope
+                    .GetRequiredService<DataPersistenceHelper>()
+                    .LoadDataAsync();
                 if (!loadResult.IsSuccess)
                 {
-                    using (_container.ResolveComponent<DialogService>(out var dialogService))
-                    {
-                        dialogService.ShowError(UIStrings.Error_CannotLoadData);
-                    }
-
+                    scope
+                        .GetRequiredService<DialogService>()
+                        .ShowError(UIStrings.Error_CannotLoadData);
                     return ActionResult.Failure;
                 }
-            }
 
-            using (_container.ResolveComponent<PriceCalculator>(out var priceRecalculationHelper))
-            using (_container.ResolveComponent<ApplicationContext>(out var applicationContext))
-            {
-                priceRecalculationHelper.RecalculatePrices(
-                    applicationContext.Products,
-                    applicationContext.Config.MaxPriceDeviationFactor,
-                    applicationContext.Config.PriceResolutionInCents);
+                var applicationContext = scope.GetRequiredService<ApplicationContext>();
+                scope
+                    .GetRequiredService<PriceCalculator>()
+                    .RecalculatePrices(
+                        applicationContext.Products,
+                        applicationContext.Config.MaxPriceDeviationFactor,
+                        applicationContext.Config.PriceResolutionInCents);
             }
 
             return ActionResult.Success;
         }
 
-        private void InitializeDisableUIService()
+        private async Task InitializeDisableUIServiceAsync()
         {
-            using (_container.ResolveComponent<InputWindowViewModel>(out var inputWindowViewModel))
-            using (_container.ResolveComponent<DisableUIService>(out var disableUIService))
+            await using (var scope = _serviceScopeFactory.CreateAsyncScope())
             {
-                disableUIService.PushViewModel(inputWindowViewModel);
+                scope
+                    .GetRequiredService<DisableUIService>()
+                    .PushViewModel(
+                        scope.GetRequiredService<InputWindowViewModel>());
             }
         }
 
@@ -135,13 +142,14 @@ namespace Stip.Stipstonks
                 { "Height", InitialWindowHeight }
             };
 
-            using (_container.ResolveComponent<ChartWindowViewModel>(out var chartWindowViewModel))
-            using (_container.ResolveComponent<IWindowManager>(out var windowManager))
+            await using (var scope = _serviceScopeFactory.CreateAsyncScope())
             {
-                await windowManager.ShowWindowAsync(
-                    chartWindowViewModel,
-                    null,
-                    settings);
+                await scope
+                    .GetRequiredService<IWindowManager>()
+                    .ShowWindowAsync(
+                        scope.GetRequiredService<ChartWindowViewModel>(),
+                        null,
+                        settings);
             }
         }
 

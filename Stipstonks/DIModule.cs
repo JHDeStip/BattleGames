@@ -1,65 +1,81 @@
 ﻿using Caliburn.Micro;
-using Castle.MicroKernel.Registration;
-using Castle.MicroKernel.SubSystems.Configuration;
-using Castle.Windsor;
 using System.Reflection;
-using System;
 using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
 using Stip.Stipstonks.Helpers;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using System.Windows;
+using System;
 
 namespace Stip.Stipstonks
 {
-    public class DIModule : IWindsorInstaller
+    public static class DIModule
     {
-        private readonly IApp _app;
-
-        public DIModule(IApp app)
-            => _app = app;
-
-        public void Install(IWindsorContainer container, IConfigurationStore store)
+        public static void RegisterServices(
+            IServiceCollection serviceCollection,
+            IApp app)
         {
             var assembly = Assembly.GetExecutingAssembly();
 
-            InstallInfrastructure(container);
-            container.Register(Component.For<ApplicationContext>().LifestyleSingleton());
-            container.Register(Component.For<StonkMarketManager>().LifestyleSingleton());
+            serviceCollection
+                .AddSingleton(app)
+                .AddSingleton<IMessenger>(StrongReferenceMessenger.Default)
+                .AddSingleton<IWindowManager, WindowManager>()
+                .AddSingleton<DisableUIService>()
+                .AddSingleton<ApplicationContext>()
+                .AddSingleton<StonkMarketManager>();
 
-            InstallAllByBaseTypeSingleton<ViewModelBase>(container, assembly);
-            InstallAllByBaseType<IInjectable>(container, assembly);
+            RegisterAllDerivingFrom<ViewModelBase>(
+                serviceCollection,
+                assembly,
+                true,
+                true);
+
+            RegisterAllDerivingFrom<IInjectable>(
+                serviceCollection,
+                assembly,
+                false,
+                false);
+
+            RegisterAllDerivingFrom<Window>(
+                serviceCollection,
+                assembly,
+                false,
+                false);
         }
 
-        private void InstallInfrastructure(IWindsorContainer container)
+        private static void RegisterAllDerivingFrom<T>(
+            IServiceCollection serviceCollection,
+            Assembly assembly,
+            bool registerAsSingleton,
+            bool registerByBaseType)
         {
-            container.Register(Component.For<IApp>().Instance(_app));
-            container.Register(Component.For<IWindsorContainer>().Instance(container));
-            container.Register(Component.For<IMessenger>().Instance(StrongReferenceMessenger.Default));
-            container.Register(Component.For<IWindowManager>().ImplementedBy<WindowManager>().LifestyleSingleton());
-            container.Register(Component.For<DisableUIService>().LifestyleSingleton());
+            var typesToAdd = assembly.GetTypes().Where(x => IsRegisterableByBaseType<T>(x, serviceCollection));
+
+            foreach (var typeToAdd in typesToAdd)
+            {
+                if (registerAsSingleton)
+                {
+                    serviceCollection.AddSingleton(typeToAdd, typeToAdd);
+                }
+                else
+                {
+                    serviceCollection.AddTransient(typeToAdd, typeToAdd);
+                }
+
+                if (registerByBaseType)
+                {
+                    serviceCollection.AddTransient(typeof(T), x => x.GetRequiredService(typeToAdd));
+                }
+            }
         }
 
-        protected static void InstallAllByConvention(IWindsorContainer container, Assembly assembly, string nameEnd)
-            => container.Register(GetAllByConvention(assembly, nameEnd).LifestyleTransient());
-
-        private static void InstallAllByBaseType<T>(IWindsorContainer container, Assembly assembly)
-            => InstallAllByBaseType(container, assembly, typeof(T));
-
-        private static void InstallAllByBaseType(IWindsorContainer container, Assembly assembly, Type baseType)
-            => container.Register(GetAllByBaseType(assembly, baseType).LifestyleTransient());
-
-        private static void InstallAllByBaseTypeSingleton<T>(IWindsorContainer container, Assembly assembly)
-            => InstallAllByBaseTypeSingleton(container, assembly, typeof(T));
-
-        private static void InstallAllByBaseTypeSingleton(IWindsorContainer container, Assembly assembly, Type baseType)
-            => container.Register(GetAllByBaseType(assembly, baseType).LifestyleSingleton());
-
-        private static BasedOnDescriptor GetAllByConvention(Assembly assembly, string nameEnd)
-            => Classes.FromAssembly(assembly)
-                .Where(x => x.Name.EndsWith(nameEnd));
-
-        private static BasedOnDescriptor GetAllByBaseType(Assembly assembly, Type baseType)
-            => Classes.FromAssembly(assembly)
-                .BasedOn(baseType);
+        private static bool IsRegisterableByBaseType<T>(Type type, IServiceCollection serviceCollection)
+            => type.IsAssignableTo(typeof(T))
+            && !type.IsInterface
+            && !type.IsAbstract
+            && !serviceCollection.Any(x => x.ImplementationType == type);
     }
 }

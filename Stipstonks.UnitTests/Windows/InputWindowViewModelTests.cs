@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using Caliburn.Micro;
-using Castle.Windsor;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Common;
@@ -12,6 +12,7 @@ using Stip.Stipstonks.Messages;
 using Stip.Stipstonks.Models;
 using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             PriceFormatHelper _priceFormatHelper,
             DisableUIService _disableUIService,
             DialogService _dialogService,
-            IWindsorContainer _container,
+            ServiceScopeFactory _serviceScopeFactory,
             InputItemsFactory _inputItemsFactory)
             : InputWindowViewModel(
                 _applicationContext,
@@ -42,7 +43,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 _priceFormatHelper,
                 _disableUIService,
                 _dialogService,
-                _container,
+                _serviceScopeFactory,
                 _inputItemsFactory)
         {
             public new Task OnInitializeAsync(CancellationToken ct)
@@ -161,10 +162,15 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockChartWindowViewModel = fixture.FreezeMock<ChartWindowViewModel>();
 
-            var mockContainer = fixture.FreezeMock<IWindsorContainer>();
-            mockContainer
-                .Setup(x => x.Resolve<ChartWindowViewModel>())
+            var mockAsyncServiceScope = fixture.FreezeMock<ServiceScopeFactory.AsyncServiceScopeWrapper>();
+            mockAsyncServiceScope
+                .Setup(x => x.GetRequiredService<ChartWindowViewModel>())
                 .Returns(mockChartWindowViewModel.Object);
+
+            var mockServiceScopeFactory = fixture.FreezeMock<ServiceScopeFactory>();
+            mockServiceScopeFactory
+                .Setup(x => x.CreateAsyncScope())
+                .Returns(mockAsyncServiceScope.Object);
 
             var target = fixture.Create<TestInputWindowViewModel>();
 
@@ -176,16 +182,18 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             if (close)
             {
-                mockContainer.Verify(x => x.Resolve<ChartWindowViewModel>(), Times.Once);
+                mockServiceScopeFactory.Verify(x => x.CreateAsyncScope(), Times.Once);
+                mockAsyncServiceScope.Verify(x => x.GetRequiredService<ChartWindowViewModel>(), Times.Once);
                 mockChartWindowViewModel.Verify(x => x.TryCloseAsync(null), Times.Once);
-                mockContainer.Verify(x => x.Release(mockChartWindowViewModel.Object), Times.Once);
+                mockAsyncServiceScope.Verify(x => x.DisposeAsync(), Times.Once);
             }
 
             mockChartWindowViewModel.VerifySet(x => x.IsNotifying = It.IsAny<bool>(), Times.Once);
             mockChartWindowViewModel.VerifySet(x => x.DisplayName = It.IsAny<string>(), Times.Once);
 
             mockMessenger.VerifyNoOtherCalls();
-            mockContainer.VerifyNoOtherCalls();
+            mockServiceScopeFactory.VerifyNoOtherCalls();
+            mockAsyncServiceScope.VerifyNoOtherCalls();
             mockChartWindowViewModel.VerifyNoOtherCalls();
         }
 

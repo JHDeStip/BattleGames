@@ -1,7 +1,5 @@
 ﻿using Caliburn.Micro;
-using Castle.Windsor;
 using CommunityToolkit.Mvvm.Messaging;
-using Stip.Stipstonks.Extensions;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
@@ -23,7 +21,7 @@ namespace Stip.Stipstonks.Windows
         PriceFormatHelper _priceFormatHelper,
         DisableUIService _disableUIService,
         DialogService _dialogService,
-        IWindsorContainer _container,
+        ServiceScopeFactory _serviceScopeFactory,
         InputItemsFactory _inputItemsFactory)
         : ViewModelBase,
         IUIEnabled,
@@ -78,9 +76,11 @@ namespace Stip.Stipstonks.Windows
 
             if (close)
             {
-                using (_container.ResolveComponent<ChartWindowViewModel>(out var chartWindowViewModel))
+                await using (var scope = _serviceScopeFactory.CreateAsyncScope())
                 {
-                    await chartWindowViewModel.TryCloseAsync();
+                    await scope
+                        .GetRequiredService<ChartWindowViewModel>()
+                        .TryCloseAsync();
                 }
             }
 

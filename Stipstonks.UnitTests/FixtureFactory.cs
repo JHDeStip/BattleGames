@@ -23,7 +23,6 @@ namespace Stip.Stipstonks.UnitTests
             fixture.Customizations.Add(new DependencyObjectOmiter());
             fixture.Customizations.Add(new StyleOmitter());
             fixture.Customizations.Add(new UnmockedConstructorDependencyOmitter(fixture));
-            fixture.Customizations.Add(new UnmockedPropertyDependencyOmitter(fixture));
 
             return fixture;
         }
@@ -54,14 +53,6 @@ namespace Stip.Stipstonks.UnitTests
         {
             public object Create(object request, ISpecimenContext _)
                 => OmitPropertyType(request, x => typeof(Style).IsAssignableFrom(x));
-        }
-
-        private class UnmockedPropertyDependencyOmitter(
-            Fixture _fixture)
-            : ISpecimenBuilder
-        {
-            public object Create(object request, ISpecimenContext _)
-                => OmitPropertyType(request, x => IsDependency(x, _fixture));
         }
 
         private class UnmockedConstructorDependencyOmitter(
