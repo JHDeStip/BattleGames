@@ -1,29 +1,27 @@
-﻿using Caliburn.Micro;
-using System.Windows;
+﻿using Avalonia.Threading;
+using Stip.Stipstonks.Dialogs;
+using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Services
 {
-    public class DialogService : IInjectable
+    public class DialogService(
+        App _app)
+        : IInjectable
     {
-        public virtual void ShowError(string title, string message)
-            => Execute.OnUIThread(() => MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error));
+        public virtual Task ShowErrorAsync(string title, string message)
+            => Dispatcher.UIThread.InvokeAsync(
+                () => new BasicDialog(title, message, BasicDialogButton.Close)
+                    .ShowDialog(_app.GetLastOpenedWindow()));
 
-        public virtual void ShowError(string message)
-            => ShowError(UIStrings.Global_Error, message);
+        public virtual Task ShowErrorAsync(string message)
+            => ShowErrorAsync(UIStrings.Global_Error, message);
 
-        public virtual bool ShowYesNoDialog(string title, string message)
-        {
-            var result = false;
-
-            Execute.OnUIThread(
-                () => result = MessageBox.Show(
-                    message,
-                    title,
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question)
-                == MessageBoxResult.Yes);
-
-            return result;
-        }
+        public virtual Task<bool> ShowYesNoDialogAsync(string title, string message)
+            => Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                var dialog = new BasicDialog(title, message, BasicDialogButton.Yes, BasicDialogButton.No);
+                await dialog.ShowDialog(_app.GetLastOpenedWindow());
+                return dialog.Result == BasicDialogButton.Yes;
+            });
     }
 }

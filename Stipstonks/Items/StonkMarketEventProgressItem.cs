@@ -1,17 +1,17 @@
-﻿using Caliburn.Micro;
-using System.Windows;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Stip.Stipstonks.Items
 {
-    public class StonkMarketEventProgressItem : PropertyChangedBase
+    public class StonkMarketEventProgressItem : ObservableObject
     {
-        private Duration _duration;
-        public Duration Duration { get => _duration; set => Set(ref _duration, value); }
+        private TimeSpan _duration;
+        public TimeSpan Duration { get => _duration; set => SetProperty(ref _duration, value); }
 
         private bool _isRunning;
-        public bool IsRunning { get => _isRunning; set => Set(ref _isRunning, value); }
+        public bool IsRunning { get => _isRunning; set => SetProperty(ref _isRunning, value); }
 
         private string _color;
-        public string Color { get => _color; set => Set(ref _color, value); }
+        public string Color { get => _color; set => SetProperty(ref _color, value); }
     }
 }

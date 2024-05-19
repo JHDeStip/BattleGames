@@ -126,11 +126,20 @@
   <data name="Global_ApplicationName" xml:space="preserve">
     <value>Stipstonks</value>
   </data>
+  <data name="Global_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
   <data name="Global_CurrencySymbol" xml:space="preserve">
     <value>€</value>
   </data>
   <data name="Global_Error" xml:space="preserve">
     <value>Fout</value>
+  </data>
+  <data name="Global_No" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="Global_Yes" xml:space="preserve">
+    <value>Ja</value>
   </data>
   <data name="Input_AreYouSure" xml:space="preserve">
     <value>Ben je zeker?</value>

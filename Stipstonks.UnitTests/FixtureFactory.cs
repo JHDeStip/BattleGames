@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
 using AutoFixture;
 using AutoFixture.Dsl;
 using AutoFixture.Kernel;
+using Avalonia;
 
 namespace Stip.Stipstonks.UnitTests
 {
@@ -20,8 +20,7 @@ namespace Stip.Stipstonks.UnitTests
             fixture.Customize<double>(x => x.FromFactory<int>(y => y * Random.NextDouble()));
 
             fixture.Customizations.Add(new IReadOnlyListResolver());
-            fixture.Customizations.Add(new DependencyObjectOmiter());
-            fixture.Customizations.Add(new StyleOmitter());
+            fixture.Customizations.Add(new AvaloniaObjectOmiter());
             fixture.Customizations.Add(new UnmockedConstructorDependencyOmitter(fixture));
 
             return fixture;
@@ -43,16 +42,10 @@ namespace Stip.Stipstonks.UnitTests
             }
         }
 
-        private class DependencyObjectOmiter : ISpecimenBuilder
+        private class AvaloniaObjectOmiter : ISpecimenBuilder
         {
             public object Create(object request, ISpecimenContext _)
-                => OmitPropertyType(request, x => typeof(DependencyObject).IsAssignableFrom(x));
-        }
-
-        private class StyleOmitter : ISpecimenBuilder
-        {
-            public object Create(object request, ISpecimenContext _)
-                => OmitPropertyType(request, x => typeof(Style).IsAssignableFrom(x));
+                => OmitPropertyType(request, x => typeof(AvaloniaObject).IsAssignableFrom(x));
         }
 
         private class UnmockedConstructorDependencyOmitter(

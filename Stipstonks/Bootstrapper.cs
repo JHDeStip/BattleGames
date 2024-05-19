@@ -1,70 +1,33 @@
-﻿using Caliburn.Micro;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Extensions.DependencyInjection;
 using Stip.Stipstonks.Common;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace Stip.Stipstonks
 {
-    public class Bootstrapper : BootstrapperBase
+    public class Bootstrapper
     {
-        private const double InitialWindowWidth = 1200;
-        private const double InitialWindowHeight = 600;
-
-        private ServiceProvider _serviceProvider;
-        private ServiceScopeFactory _serviceScopeFactory;
+        private readonly ServiceProvider _serviceProvider;
+        private readonly ServiceScopeFactory _serviceScopeFactory;
 
         public Bootstrapper()
         {
             SetCulture();
-            Initialize();
-        }
 
-        protected override void Configure()
-        {
             _serviceProvider = ConfigurServiceProvider();
             _serviceScopeFactory = _serviceProvider.GetRequiredService<ServiceScopeFactory>();
-        }
 
-        protected override object GetInstance(Type service, string key)
-            => key == null
-                ? _serviceProvider.GetRequiredService(service)
-                : _serviceProvider.GetRequiredKeyedService(service, key);
+            ((IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime).Exit +=
+                (_, _) => _serviceProvider.Dispose();
 
-        protected override async void OnStartup(object sender, StartupEventArgs e)
-        {
-            if (!(await InitializeApplicationContextAsync()).IsSuccess)
-            {
-                Application.Current.Shutdown(1);
-                return;
-            }
-
-            await InitializeDisableUIServiceAsync();
-
-            var settings = new Dictionary<string, object>
-            {
-                { "SizeToContent", SizeToContent.Manual },
-                { "Width", InitialWindowWidth },
-                { "Height", InitialWindowHeight }
-            };
-
-            await DisplayRootViewForAsync<InputWindowViewModel>(settings);
-
-            await ShowChartWindowAsync();
-        }
-
-        protected override void OnExit(object sender, EventArgs e)
-        {
-            _serviceProvider.Dispose();
-            base.OnExit(sender, e);
+            Start();
         }
 
         private static void SetCulture()
@@ -85,7 +48,7 @@ namespace Stip.Stipstonks
         private static ServiceProvider ConfigurServiceProvider()
         {
             var serviceCollection = new ServiceCollection();
-            DIModule.RegisterServices(serviceCollection, (IApp)Application.Current);
+            DIModule.RegisterServices(serviceCollection, (App)Application.Current);
 
             var serviceProviderOptions = new ServiceProviderOptions();
 #if DEBUG
@@ -93,6 +56,32 @@ namespace Stip.Stipstonks
             serviceProviderOptions.ValidateOnBuild = true;
 #endif
             return serviceCollection.BuildServiceProvider(serviceProviderOptions);
+        }
+
+        private async Task Start()
+        {
+            if (!(await InitializeApplicationContextAsync()).IsSuccess)
+            {
+                ((IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(-1);
+                return;
+            }
+
+            await InitializeDisableUIServiceAsync();
+
+            await using (var scope = _serviceScopeFactory.CreateAsyncScope())
+            {
+                var windowManager = scope.GetRequiredService<WindowManager>();
+
+                var inputWindowTask = await windowManager.ShowWindowAsync(
+                    scope.GetRequiredService<ChartWindowView>(),
+                    CancellationToken.None);
+
+                var chartWindowTask = await windowManager.ShowWindowAsync(
+                    scope.GetRequiredService<InputWindowView>(),
+                    CancellationToken.None);
+
+                await Task.WhenAll(chartWindowTask, inputWindowTask);
+            }
         }
 
         private async Task<ActionResult> InitializeApplicationContextAsync()
@@ -104,9 +93,9 @@ namespace Stip.Stipstonks
                     .LoadDataAsync();
                 if (!loadResult.IsSuccess)
                 {
-                    scope
+                    await scope
                         .GetRequiredService<DialogService>()
-                        .ShowError(UIStrings.Error_CannotLoadData);
+                        .ShowErrorAsync(UIStrings.Error_CannotLoadData);
                     return ActionResult.Failure;
                 }
 
@@ -131,38 +120,6 @@ namespace Stip.Stipstonks
                     .PushViewModel(
                         scope.GetRequiredService<InputWindowViewModel>());
             }
-        }
-
-        private async Task ShowChartWindowAsync()
-        {
-            var settings = new Dictionary<string, object>
-            {
-                { "SizeToContent", SizeToContent.Manual },
-                { "Width", InitialWindowWidth },
-                { "Height", InitialWindowHeight }
-            };
-
-            await using (var scope = _serviceScopeFactory.CreateAsyncScope())
-            {
-                await scope
-                    .GetRequiredService<IWindowManager>()
-                    .ShowWindowAsync(
-                        scope.GetRequiredService<ChartWindowViewModel>(),
-                        null,
-                        settings);
-            }
-        }
-
-        protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            base.OnUnhandledException(sender, e);
-
-            const int maxStackTraceLength = 2000;
-            var stackTrace = e.Exception.StackTrace;
-
-            MessageBox.Show(stackTrace?.Length <= maxStackTraceLength
-                ? stackTrace
-                : stackTrace?[..maxStackTraceLength]);
         }
     }
 }

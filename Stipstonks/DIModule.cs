@@ -1,13 +1,12 @@
-﻿using Caliburn.Micro;
-using System.Reflection;
+﻿using System.Reflection;
 using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
 using Stip.Stipstonks.Helpers;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using System.Windows;
 using System;
+using Avalonia.Controls;
 
 namespace Stip.Stipstonks
 {
@@ -15,14 +14,14 @@ namespace Stip.Stipstonks
     {
         public static void RegisterServices(
             IServiceCollection serviceCollection,
-            IApp app)
+            App app)
         {
             var assembly = Assembly.GetExecutingAssembly();
 
             serviceCollection
                 .AddSingleton(app)
                 .AddSingleton<IMessenger>(StrongReferenceMessenger.Default)
-                .AddSingleton<IWindowManager, WindowManager>()
+                .AddSingleton<WindowManager>()
                 .AddSingleton<DisableUIService>()
                 .AddSingleton<ApplicationContext>()
                 .AddSingleton<StonkMarketManager>();

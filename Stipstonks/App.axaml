@@ -1,0 +1,26 @@
+<Application x:Class="Stip.Stipstonks.App"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Stip.Stipstonks"
+             RequestedThemeVariant="Light"
+             Name="{x:Static local:UIStrings.Global_ApplicationName}">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Resources.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme/>
+        <StyleInclude Source="/Styles.axaml"/>
+    </Application.Styles>
+
+    <!--To remove the auto-generated "About Avalonia" global menu on macOS we need to set an empty menu.-->
+    <NativeMenu.Menu>
+        <NativeMenu/>
+    </NativeMenu.Menu>
+
+</Application>

@@ -17,9 +17,9 @@ namespace Stip.Stipstonks.Items
             get => _amount;
             set
             {
-                if (Set(ref _amount, value))
+                if (SetProperty(ref _amount, value))
                 {
-                    NotifyOfPropertyChange(nameof(TotalPriceString));
+                    OnPropertyChanged(nameof(TotalPriceString));
                     TotalPriceChangedCallback?.Invoke();
                 }
             }
@@ -30,10 +30,10 @@ namespace Stip.Stipstonks.Items
             get => _priceInCents;
             set
             {
-                if (Set(ref _priceInCents, value))
+                if (SetProperty(ref _priceInCents, value))
                 {
-                    NotifyOfPropertyChange(nameof(PriceString));
-                    NotifyOfPropertyChange(nameof(TotalPriceString));
+                    OnPropertyChanged(nameof(PriceString));
+                    OnPropertyChanged(nameof(TotalPriceString));
                     TotalPriceChangedCallback?.Invoke();
                 }
             }

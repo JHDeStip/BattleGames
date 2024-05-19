@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -11,45 +12,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace Stip.Stipstonks.UnitTests.Windows
 {
     [TestClass]
     public class ChartWindowViewModelTests
     {
-        internal class TestChartWindowViewModel(
-            ApplicationContext _applicationContext,
-            IMessenger _messenger,
-            PriceFormatHelper _priceFormatHelper)
-            : ChartWindowViewModel(
-                _applicationContext,
-                _messenger,
-                _priceFormatHelper)
-        {
-            public new Task OnInitializeAsync(CancellationToken ct)
-                => base.OnInitializeAsync(ct);
-
-            public new Task OnActivateAsync(CancellationToken ct)
-                => base.OnActivateAsync(ct);
-
-            public new Task OnDeactivateAsync(bool close, CancellationToken ct)
-                => base.OnDeactivateAsync(close, ct);
-        }
-
-        [TestMethod]
-        public void Constructor_CorrectlyConstructs()
-        {
-            var fixture = FixtureFactory.Create();
-
-            var target = fixture
-                .Build<ChartWindowViewModel>()
-                .OmitAutoProperties()
-                .Create();
-
-            Assert.AreEqual(UIStrings.Global_ApplicationName, target.DisplayName);
-        }
-
         [TestMethod]
         public async Task OnInitializeAsync_CorrectlyInitializes()
         {
@@ -57,20 +25,20 @@ namespace Stip.Stipstonks.UnitTests.Windows
             
             var applicationContext = fixture.Freeze<ApplicationContext>();
 
-            var target = fixture.Create<TestChartWindowViewModel>();
+            var target = fixture.Create<ChartWindowViewModel>();
 
-            await target.OnInitializeAsync(CancellationToken.None);
+            await target.InitializeAsync(CancellationToken.None);
 
             Assert.AreEqual(applicationContext.Config.WindowBackgroundColor, target.BackgroundColor);
 
             Assert.AreEqual(applicationContext.Config.PriceUpdateProgressBarColor, target.PriceUpdateProgressItem.Color);
 
             Assert.AreEqual(applicationContext.Config.CrashProgressBarColor, target.CrashProgressItem.Color);
-            Assert.AreEqual(applicationContext.Config.CrashInterval, target.CrashProgressItem.Duration.TimeSpan);
+            Assert.AreEqual(applicationContext.Config.CrashInterval, target.CrashProgressItem.Duration);
         }
 
         [TestMethod]
-        public async Task OnActivateAsync_CorrectlyActivates()
+        public async Task ActivateAsync_CorrectlyActivates()
         {
             var fixture = FixtureFactory.Create();
 
@@ -80,9 +48,9 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var priceFormatHelper = fixture.Freeze<PriceFormatHelper>();
 
-            var target = fixture.Create<TestChartWindowViewModel>();
+            var target = fixture.Create<ChartWindowViewModel>();
 
-            await target.OnActivateAsync(CancellationToken.None);
+            await target.ActivateAsync(CancellationToken.None);
 
             Assert.IsTrue(target.ChartItems.Select(x => x.Name).SequenceEqual(applicationContext.Products.Select(x => x.Name)));
 
@@ -94,21 +62,16 @@ namespace Stip.Stipstonks.UnitTests.Windows
             mockMessenger.VerifyNoOtherCalls();
         }
 
-        [DataTestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public async Task OnDeactivateAsync_CorrectlyDeactivates(
-            bool close)
+        [TestMethod]
+        public async Task DeactivateAsync_CorrectlyDeactivates()
         {
             var fixture = FixtureFactory.Create();
 
             var mockMessenger = fixture.FreezeMock<IMessenger>();
 
-            var target = fixture.Create<TestChartWindowViewModel>();
+            var target = fixture.Create<ChartWindowViewModel>();
 
-            await target.OnDeactivateAsync(
-                close,
-                default);
+            await target.DeactivateAsync(default);
 
             mockMessenger.Verify(x => x.UnregisterAll(target), Times.Once);
 
@@ -116,26 +79,23 @@ namespace Stip.Stipstonks.UnitTests.Windows
         }
 
         [DataTestMethod]
-        [DataRow(true, null)]
-        [DataRow(true, true)]
-        [DataRow(true, false)]
-        [DataRow(false, null)]
-        public async Task CanCloseAsync_ReturnsCorrectly(
-            bool tryCloseAsyncCalled,
-            bool? dialogResult)
+        [DataRow(true)]
+        [DataRow(false)]
+        public async Task CanDeactivateAsync_ReturnsCorrectly(
+            bool closeAsyncCalled)
         {
             var fixture = FixtureFactory.Create();
 
             var target = fixture.Create<ChartWindowViewModel>();
 
-            if (tryCloseAsyncCalled)
+            if (closeAsyncCalled)
             {
-                await target.TryCloseAsync(dialogResult);
+                await target.CloseAsync(CancellationToken.None);
             }
 
-            var actual = await target.CanCloseAsync(CancellationToken.None);
+            var actual = await target.CanDeactivateAsync(CancellationToken.None);
 
-            Assert.AreEqual(tryCloseAsyncCalled, actual);
+            Assert.AreEqual(closeAsyncCalled, actual);
         }
 
         [DataTestMethod]
@@ -152,9 +112,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             var priceFormatHelper = fixture.Freeze<PriceFormatHelper>();
 
             var target = fixture.Create<ChartWindowViewModel>();
-            target.PriceUpdateProgressItem.IsNotifying = true;
             target.PriceUpdateProgressItem.IsRunning = true;
-            target.CrashProgressItem.IsNotifying = true;
             target.CrashProgressItem.IsRunning = true;
 
             var setPriceUpdateProgressItemRunningStates = new List<bool>();
@@ -189,7 +147,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 ? applicationContext.Config.CrashDuration
                 : applicationContext.Config.PriceUpdateInterval;
 
-            Assert.AreEqual(expectedDuration, target.PriceUpdateProgressItem.Duration.TimeSpan);
+            Assert.AreEqual(expectedDuration, target.PriceUpdateProgressItem.Duration);
 
             if (hasCrashed)
             {
@@ -208,35 +166,25 @@ namespace Stip.Stipstonks.UnitTests.Windows
         }
 
         [DataTestMethod]
-        [DataRow(WindowStyle.SingleBorderWindow, WindowState.Normal)]
-        [DataRow(WindowStyle.SingleBorderWindow, WindowState.Minimized)]
-        [DataRow(WindowStyle.SingleBorderWindow, WindowState.Maximized)]
-        [DataRow(WindowStyle.ToolWindow, WindowState.Normal)]
-        [DataRow(WindowStyle.ToolWindow, WindowState.Minimized)]
-        [DataRow(WindowStyle.ToolWindow, WindowState.Maximized)]
-        [DataRow(WindowStyle.ThreeDBorderWindow, WindowState.Normal)]
-        [DataRow(WindowStyle.ThreeDBorderWindow, WindowState.Minimized)]
-        [DataRow(WindowStyle.ThreeDBorderWindow, WindowState.Maximized)]
+        [DataRow(WindowState.Normal)]
+        [DataRow(WindowState.Minimized)]
+        [DataRow(WindowState.Maximized)]
         public void Receive_ToggleChartWindowStateMessage_CorrectlyHandlesMessage(
-            WindowStyle initialWindowStyle,
             WindowState initialWindowState)
         {
             var fixture = FixtureFactory.Create();
 
             var target = fixture
                 .Build<ChartWindowViewModel>()
-                .With(x => x.WindowStyle, initialWindowStyle)
                 .With(x => x.WindowState, initialWindowState)
                 .Create();
 
             target.Receive(new ToggleChartWindowStateMessage());
 
-            Assert.AreEqual(WindowStyle.None, target.WindowStyle);
-            Assert.AreEqual(WindowState.Maximized, target.WindowState);
+            Assert.AreEqual(WindowState.FullScreen, target.WindowState);
 
             target.Receive(new ToggleChartWindowStateMessage());
 
-            Assert.AreEqual(initialWindowStyle, target.WindowStyle);
             Assert.AreEqual(initialWindowState, target.WindowState);
         }
 
@@ -254,7 +202,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             target.Receive(new StartedMessage());
 
             Assert.AreEqual(target.BackgroundColor, applicationContext.Config.WindowBackgroundColor);
-            Assert.AreEqual(target.PriceUpdateProgressItem.Duration.TimeSpan, applicationContext.Config.PriceUpdateInterval);
+            Assert.AreEqual(target.PriceUpdateProgressItem.Duration, applicationContext.Config.PriceUpdateInterval);
             Assert.IsTrue(target.PriceUpdateProgressItem.IsRunning);
             Assert.IsTrue(target.CrashProgressItem.IsRunning);
         }

@@ -1,5 +1,4 @@
-﻿using Caliburn.Micro;
-using Stip.Stipstonks.Helpers;
+﻿using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Models;
 using System.Collections.Generic;
@@ -24,9 +23,10 @@ namespace Stip.Stipstonks.Factories
 
             items.ForEach(x => { x.TotalPriceChangedCallback = totalPriceChangedCallback; });
 
-            items
-                .Zip(existingInputItems)
-                .Apply(x => x.First.Amount = x.Second.Amount);
+            foreach (var (first, second) in items.Zip(existingInputItems))
+            {
+                first.Amount = second.Amount;
+            }
 
             return items;
         }

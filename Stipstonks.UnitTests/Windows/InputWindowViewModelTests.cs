@@ -1,7 +1,5 @@
 ﻿using AutoFixture;
-using Caliburn.Micro;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Common;
@@ -23,68 +21,22 @@ namespace Stip.Stipstonks.UnitTests.Windows
     [TestClass]
     public class InputWindowViewModelTests
     {
-        internal class TestInputWindowViewModel(
-            ApplicationContext _applicationContext,
-            IMessenger _messenger,
-            DataPersistenceHelper _dataPersistenceHelper,
-            StonkMarketManager _stonkMarketManager,
-            PriceCalculator _priceCalculator,
-            PriceFormatHelper _priceFormatHelper,
-            DisableUIService _disableUIService,
-            DialogService _dialogService,
-            ServiceScopeFactory _serviceScopeFactory,
-            InputItemsFactory _inputItemsFactory)
-            : InputWindowViewModel(
-                _applicationContext,
-                _messenger,
-                _dataPersistenceHelper,
-                _stonkMarketManager,
-                _priceCalculator,
-                _priceFormatHelper,
-                _disableUIService,
-                _dialogService,
-                _serviceScopeFactory,
-                _inputItemsFactory)
-        {
-            public new Task OnInitializeAsync(CancellationToken ct)
-                => base.OnInitializeAsync(ct);
-
-            public new Task OnActivateAsync(CancellationToken ct)
-                => base.OnActivateAsync(ct);
-
-            public new Task OnDeactivateAsync(bool close, CancellationToken ct)
-                => base.OnDeactivateAsync(close, ct);
-        }
-
         [TestMethod]
-        public void Constructor_CorrectlyConstructs()
-        {
-            var fixture = FixtureFactory.Create();
-
-            var target = fixture
-                .Build<InputWindowViewModel>()
-                .OmitAutoProperties()
-                .Create();
-
-            Assert.AreEqual(UIStrings.Global_ApplicationName, target.DisplayName);
-        }
-
-        [TestMethod]
-        public async Task OnInitializeAsync_CorrectlyInitializes()
+        public async Task InitializeAsync_CorrectlyInitializes()
         {
             var fixture = FixtureFactory.Create();
 
             var applicationContext = fixture.Freeze<ApplicationContext>();
 
-            var target = fixture.Create<TestInputWindowViewModel>();
+            var target = fixture.Create<InputWindowViewModel>();
 
-            await target.OnInitializeAsync(CancellationToken.None);
+            await target.InitializeAsync(CancellationToken.None);
 
             Assert.AreEqual(applicationContext.Config.WindowBackgroundColor, target.BackgroundColor);
         }
 
         [TestMethod]
-        public async Task OnActivateAsync_CorrectlyActivates()
+        public async Task ActivateAsync_CorrectlyActivates()
         {
             var fixture = FixtureFactory.Create();
 
@@ -97,14 +49,14 @@ namespace Stip.Stipstonks.UnitTests.Windows
             var totalPrice = 0;
             inputItems.ForEach(x => totalPrice += x.PriceInCents * x.Amount);
 
-            System.Action totalPriceChangedCallback = null;
+            Action totalPriceChangedCallback = null;
             var mockInputItemsFactory = fixture.FreezeMock<InputItemsFactory>();
             mockInputItemsFactory
                 .Setup(x => x.Create(
                     It.IsAny<IEnumerable<Product>>(),
                     It.IsAny<IEnumerable<InputItem>>(),
-                    It.IsAny<System.Action>()))
-                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, System.Action>(
+                    It.IsAny<Action>()))
+                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, Action>(
                     (_, _, x) => totalPriceChangedCallback = x)
                 .Returns(inputItems);
 
@@ -114,7 +66,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 .Returns(totalPriceStrings[0])
                 .Returns(totalPriceStrings[1]);
 
-            var target = fixture.Create<TestInputWindowViewModel>();
+            var target = fixture.Create<InputWindowViewModel>();
 
             void VerifyNoOtherCalls()
             {
@@ -125,7 +77,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var initialInputItems = target.InputItems;
 
-            await target.OnActivateAsync(CancellationToken.None);
+            await target.ActivateAsync(CancellationToken.None);
 
             Assert.IsTrue(target.InputItems.SequenceEqual(inputItems));
             Assert.AreEqual(totalPriceStrings[0], target.TotalPriceString);
@@ -136,7 +88,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 x => x.Create(
                     applicationContext.Products,
                     initialInputItems,
-                    It.IsAny<System.Action>()),
+                    It.IsAny<Action>()),
                 Times.Once);
 
             mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Once);
@@ -151,10 +103,8 @@ namespace Stip.Stipstonks.UnitTests.Windows
             VerifyNoOtherCalls();
         }
 
-        [DataTestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public async Task OnDeactivateAsync_CorrectlyDeactivates(bool close)
+        [TestMethod]
+        public async Task DeactivateAsync_CorrectlyDeactivates()
         {
             var fixture = FixtureFactory.Create();
 
@@ -172,24 +122,16 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 .Setup(x => x.CreateAsyncScope())
                 .Returns(mockAsyncServiceScope.Object);
 
-            var target = fixture.Create<TestInputWindowViewModel>();
+            var target = fixture.Create<InputWindowViewModel>();
 
-            await target.OnDeactivateAsync(
-                close,
-                CancellationToken.None);
+            await target.DeactivateAsync(CancellationToken.None);
 
             mockMessenger.Verify(x => x.UnregisterAll(target), Times.Once);
 
-            if (close)
-            {
-                mockServiceScopeFactory.Verify(x => x.CreateAsyncScope(), Times.Once);
-                mockAsyncServiceScope.Verify(x => x.GetRequiredService<ChartWindowViewModel>(), Times.Once);
-                mockChartWindowViewModel.Verify(x => x.TryCloseAsync(null), Times.Once);
-                mockAsyncServiceScope.Verify(x => x.DisposeAsync(), Times.Once);
-            }
-
-            mockChartWindowViewModel.VerifySet(x => x.IsNotifying = It.IsAny<bool>(), Times.Once);
-            mockChartWindowViewModel.VerifySet(x => x.DisplayName = It.IsAny<string>(), Times.Once);
+            mockServiceScopeFactory.Verify(x => x.CreateAsyncScope(), Times.Once);
+            mockAsyncServiceScope.Verify(x => x.GetRequiredService<ChartWindowViewModel>(), Times.Once);
+            mockChartWindowViewModel.Verify(x => x.CloseAsync(CancellationToken.None), Times.Once);
+            mockAsyncServiceScope.Verify(x => x.DisposeAsync(), Times.Once);
 
             mockMessenger.VerifyNoOtherCalls();
             mockServiceScopeFactory.VerifyNoOtherCalls();
@@ -207,17 +149,17 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockDialogService = fixture.FreezeMock<DialogService>();
             mockDialogService
-                .Setup(x => x.ShowYesNoDialog(
+                .Setup(x => x.ShowYesNoDialogAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>()))
-                .Returns(canClose);
+                .ReturnsAsync(canClose);
 
             var target = fixture.Create<InputWindowViewModel>();
 
-            var actual = await target.CanCloseAsync(CancellationToken.None);
+            var actual = await target.CanDeactivateAsync(CancellationToken.None);
 
             mockDialogService.Verify(
-                x => x.ShowYesNoDialog(
+                x => x.ShowYesNoDialogAsync(
                     UIStrings.Input_AreYouSure,
                     UIStrings.Input_AreYouSureYouWantToClose),
                 Times.Once);
@@ -249,14 +191,14 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockDisableUIService = fixture.FreezeMockDisableUIService();
 
-            System.Action totalPriceChangedCallback = null;
+            Action totalPriceChangedCallback = null;
             var mockInputItemsFactory = fixture.FreezeMock<InputItemsFactory>();
             mockInputItemsFactory
                 .Setup(x => x.Create(
                     It.IsAny<IEnumerable<Product>>(),
                     It.IsAny<IEnumerable<InputItem>>(),
-                    It.IsAny<System.Action>()))
-                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, System.Action>(
+                    It.IsAny<Action>()))
+                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, Action>(
                     (_, _, x) => totalPriceChangedCallback = x)
                 .Returns(inputItems);
 
@@ -273,7 +215,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockDialogService = fixture.FreezeMock<DialogService>();
 
-            var target = fixture.Create<TestInputWindowViewModel>();
+            var target = fixture.Create<InputWindowViewModel>();
 
             void VerifyNoOtherCalls()
             {
@@ -315,7 +257,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 x => x.Create(
                     applicationContext.Products,
                     initialInputItems,
-                    It.IsAny<System.Action>()),
+                    It.IsAny<Action>()),
                 Times.Once);
 
             mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Once);
@@ -324,7 +266,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             if (!saveAsyncSuccess)
             {
-                mockDialogService.Verify(x => x.ShowError(UIStrings.Error_CannotSaveData), Times.Once);
+                mockDialogService.Verify(x => x.ShowErrorAsync(UIStrings.Error_CannotSaveData), Times.Once);
             }
 
             VerifyNoOtherCalls();
@@ -372,10 +314,10 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockDialogService = fixture.FreezeMock<DialogService>();
             mockDialogService
-                .Setup(x => x.ShowYesNoDialog(
+                .Setup(x => x.ShowYesNoDialogAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>()))
-                .Returns(shouldStop);
+                .ReturnsAsync(shouldStop);
 
             var mockDisableUIService = fixture.FreezeMockDisableUIService();
 
@@ -391,7 +333,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             await target.Stop();
 
             mockDialogService.Verify(
-                x => x.ShowYesNoDialog(
+                x => x.ShowYesNoDialogAsync(
                     UIStrings.Input_AreYouSure,
                     UIStrings.Input_AreYouSureYouWantToStop),
                 Times.Once);
@@ -433,10 +375,10 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockDialogService = fixture.FreezeMock<DialogService>();
             mockDialogService
-                .Setup(x => x.ShowYesNoDialog(
+                .Setup(x => x.ShowYesNoDialogAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>()))
-                .Returns(shouldReset);
+                .ReturnsAsync(shouldReset);
 
             var mockDisableUIService = fixture.FreezeMockDisableUIService();
 
@@ -444,14 +386,14 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
             var mockMessenger = fixture.FreezeMock<IMessenger>();
 
-            System.Action totalPriceChangedCallback = null;
+            Action totalPriceChangedCallback = null;
             var mockInputItemsFactory = fixture.FreezeMock<InputItemsFactory>();
             mockInputItemsFactory
                 .Setup(x => x.Create(
                     It.IsAny<IEnumerable<Product>>(),
                     It.IsAny<IEnumerable<InputItem>>(),
-                    It.IsAny<System.Action>()))
-                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, System.Action>(
+                    It.IsAny<Action>()))
+                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, Action>(
                     (_, _, x) => totalPriceChangedCallback = x)
                 .Returns(inputItems);
             
@@ -484,7 +426,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
             await target.Reset();
 
             mockDialogService.Verify(
-                x => x.ShowYesNoDialog(
+                x => x.ShowYesNoDialogAsync(
                     UIStrings.Input_AreYouSure,
                     UIStrings.Input_AreYouSureYouWantToReset),
                 Times.Once);
@@ -504,7 +446,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 x => x.Create(
                     applicationContext.Products,
                     initialInputItems,
-                    It.IsAny<System.Action>()),
+                    It.IsAny<Action>()),
                 Times.Once);
 
                 mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Once);
@@ -513,7 +455,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
 
                 if (!saveAsyncSuccess)
                 {
-                    mockDialogService.Verify(x => x.ShowError(UIStrings.Error_CannotSaveData), Times.Once);
+                    mockDialogService.Verify(x => x.ShowErrorAsync(UIStrings.Error_CannotSaveData), Times.Once);
                 }
 
                 VerifyNoOtherCalls();
@@ -566,14 +508,14 @@ namespace Stip.Stipstonks.UnitTests.Windows
             var totalPrice = 0;
             inputItems.ForEach(x => totalPrice += x.PriceInCents * x.Amount);
 
-            System.Action totalPriceChangedCallback = null;
+            Action totalPriceChangedCallback = null;
             var mockInputItemsFactory = fixture.FreezeMock<InputItemsFactory>();
             mockInputItemsFactory
                 .Setup(x => x.Create(
                     It.IsAny<IEnumerable<Product>>(),
                     It.IsAny<IEnumerable<InputItem>>(),
-                    It.IsAny<System.Action>()))
-                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, System.Action>(
+                    It.IsAny<Action>()))
+                .Callback<IEnumerable<Product>, IEnumerable<InputItem>, Action>(
                     (_, _, x) => totalPriceChangedCallback = x)
                 .Returns(inputItems);
 
@@ -583,9 +525,14 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 .Returns(totalPriceStrings[0])
                 .Returns(totalPriceStrings[1]);
 
-            var target = fixture.Create<TestInputWindowViewModel>();
-            target.InputItems.Apply(x => x.Amount = 0);
-                target.InputItems[1].Amount = secondProductAmount;
+            var target = fixture.Create<InputWindowViewModel>();
+
+            foreach (var inputItem in target.InputItems)
+            {
+                inputItem.Amount = 0;
+            }
+            
+            target.InputItems[1].Amount = secondProductAmount;
 
             void VerifyNoOtherCalls()
             {
@@ -611,7 +558,7 @@ namespace Stip.Stipstonks.UnitTests.Windows
                 x => x.Create(
                     applicationContext.Products,
                     initialInputItems,
-                    It.IsAny<System.Action>()),
+                    It.IsAny<Action>()),
                 Times.Once);
 
             mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Once);

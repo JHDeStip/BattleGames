@@ -1,4 +1,4 @@
-﻿using Caliburn.Micro;
+﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
@@ -27,89 +27,74 @@ namespace Stip.Stipstonks.Windows
         IUIEnabled,
         IRecipient<PricesUpdatedMessage>
     {
-        public string BackgroundColor { get; private set; }
+
+        private string _backgroundColor;
+        public string BackgroundColor { get => _backgroundColor; set => SetProperty(ref _backgroundColor, value); }
 
         private bool _uiEnabled = true;
-        public bool UIEnabled { get => _uiEnabled; set => Set(ref _uiEnabled, value); }
+        public bool UIEnabled { get => _uiEnabled; set => SetProperty(ref _uiEnabled, value); }
 
         private IReadOnlyList<InputItem> _inputItems = [];
-        public IReadOnlyList<InputItem> InputItems { get => _inputItems; set => Set(ref _inputItems, value); }
+        public IReadOnlyList<InputItem> InputItems { get => _inputItems; set => SetProperty(ref _inputItems, value); }
 
         private string _totalPriceString;
-        public string TotalPriceString { get => _totalPriceString; private set => Set(ref _totalPriceString, value); }
+        public string TotalPriceString { get => _totalPriceString; private set => SetProperty(ref _totalPriceString, value); }
 
         private bool _isRunning;
-        public bool IsRunning
-        {
-            get => _isRunning;
-            set
-            {
-                if (Set(ref _isRunning, value))
-                {
-                    NotifyOfPropertyChange(nameof(IsNotRunning));
-                }
-            }
-        }
+        public bool IsRunning { get => _isRunning; set => SetProperty(ref _isRunning, value); }
 
         public bool IsNotRunning => !IsRunning;
 
-        protected override async Task OnInitializeAsync(CancellationToken ct)
+        public override async ValueTask InitializeAsync(CancellationToken ct)
         {
-            await base.OnInitializeAsync(ct);
+            await base.InitializeAsync(ct);
 
             BackgroundColor = _applicationContext.Config.WindowBackgroundColor;
         }
 
-        protected override async Task OnActivateAsync(CancellationToken ct)
+        public override async ValueTask ActivateAsync(CancellationToken ct)
         {
-            await base.OnActivateAsync(ct);
+            await base.ActivateAsync(ct);
 
             _messenger.RegisterAll(this);
             UpdateItems();
         }
 
-        protected override async Task OnDeactivateAsync(
-            bool close,
-            CancellationToken ct)
+        public override async ValueTask DeactivateAsync(CancellationToken ct)
         {
             _messenger.UnregisterAll(this);
 
-            if (close)
+            await using (var scope = _serviceScopeFactory.CreateAsyncScope())
             {
-                await using (var scope = _serviceScopeFactory.CreateAsyncScope())
-                {
-                    await scope
-                        .GetRequiredService<ChartWindowViewModel>()
-                        .TryCloseAsync();
-                }
+                await scope
+                    .GetRequiredService<ChartWindowViewModel>()
+                    .CloseAsync(ct);
             }
 
-            await base.OnDeactivateAsync(
-                close,
-                ct);
+            await base.DeactivateAsync(ct);
         }
 
-        public override async Task<bool> CanCloseAsync(CancellationToken ct)
-            => _dialogService.ShowYesNoDialog(
+        public override async ValueTask<bool> CanDeactivateAsync(CancellationToken ct)
+            => await _dialogService.ShowYesNoDialogAsync(
                 UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToClose)
-                && await base.CanCloseAsync(ct);
+            && await base.CanDeactivateAsync(ct);
 
         public async Task CommitOrder()
         {
             using (_disableUIService.Disable())
             {
-                InputItems.Apply(x =>
+                foreach (var inputItem in InputItems)
                 {
-                    x.Product.TotalAmountSold += x.Amount;
+                    inputItem.Product.TotalAmountSold += inputItem.Amount;
 
                     if (!_applicationContext.HasCrashed)
                     {
-                        x.Product.VirtualAmountSold += x.Amount;
+                        inputItem.Product.VirtualAmountSold += inputItem.Amount;
                     }
 
-                    x.Amount = 0;
-                });
+                    inputItem.Amount = 0;
+                }
 
                 UpdateItems();
 
@@ -128,7 +113,7 @@ namespace Stip.Stipstonks.Windows
 
         public async Task Stop()
         {
-            if (!_dialogService.ShowYesNoDialog(
+            if (!await _dialogService.ShowYesNoDialogAsync(
                 UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToStop))
             {
@@ -147,7 +132,7 @@ namespace Stip.Stipstonks.Windows
 
         public async Task Reset()
         {
-            if (!_dialogService.ShowYesNoDialog(
+            if (!await _dialogService.ShowYesNoDialogAsync(
                 UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToReset))
             {
@@ -171,7 +156,7 @@ namespace Stip.Stipstonks.Windows
             => _messenger.Send<ToggleChartWindowStateMessage>();
 
         public void Receive(PricesUpdatedMessage message)
-            => OnUIThread(() =>
+            => Dispatcher.UIThread.Invoke(() =>
             {
                 if (!_applicationContext.Config.AllowPriceUpdatesDuringOrder
                     && InputItems.Any(x => x.Amount != 0))
@@ -197,7 +182,7 @@ namespace Stip.Stipstonks.Windows
             var saveResult = await _dataPersistenceHelper.SaveDataAsync();
             if (!saveResult.IsSuccess)
             {
-                _dialogService.ShowError(UIStrings.Error_CannotSaveData);
+                await _dialogService.ShowErrorAsync(UIStrings.Error_CannotSaveData);
             }
         }
 

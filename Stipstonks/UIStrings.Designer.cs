@@ -88,6 +88,15 @@ namespace Stip.Stipstonks {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sluiten.
+        /// </summary>
+        public static string Global_Close {
+            get {
+                return ResourceManager.GetString("Global_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to €.
         /// </summary>
         public static string Global_CurrencySymbol {
@@ -102,6 +111,24 @@ namespace Stip.Stipstonks {
         public static string Global_Error {
             get {
                 return ResourceManager.GetString("Global_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nee.
+        /// </summary>
+        public static string Global_No {
+            get {
+                return ResourceManager.GetString("Global_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ja.
+        /// </summary>
+        public static string Global_Yes {
+            get {
+                return ResourceManager.GetString("Global_Yes", resourceCulture);
             }
         }
         

@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Caliburn.Micro;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.Stipstonks.Helpers;
@@ -140,7 +139,10 @@ namespace Stip.Stipstonks.UnitTests.Helpers
             var products = fixture.CreateMany<Product>(4).ToList();
             if (areMinAndMaxSoldEqual)
             {
-                products.Apply(x => x.VirtualAmountSold = 123);
+                foreach (var product in products)
+                {
+                    product.VirtualAmountSold = 123;
+                }
             }
             else
             {

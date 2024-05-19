@@ -1,5 +1,4 @@
-﻿using Caliburn.Micro;
-using Stip.Stipstonks.Models;
+﻿using Stip.Stipstonks.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +15,17 @@ namespace Stip.Stipstonks.Helpers
 
             if (maxPrice == 0)
             {
-                products.Apply(x => x.Level = 0);
+                foreach (var product in products)
+                {
+                    product.Level = 0;
+                }
             }
             else
             {
-                products.Apply(x => x.Level = x.CurrentPriceInCents / (double)maxPrice);
+                foreach (var product in products)
+                {
+                    product.Level = product.CurrentPriceInCents / (double)maxPrice;
+                }
             }
         }
 
@@ -30,8 +35,8 @@ namespace Stip.Stipstonks.Helpers
             int priceResulutionInCents)
         {
             product.CurrentPriceInCents = (int)_mathHelper.RoundToResolution(
-                    product.BasePriceInCents - product.BasePriceInCents * maxPriceDeviationFactor,
-                    priceResulutionInCents);
+                product.BasePriceInCents - product.BasePriceInCents * maxPriceDeviationFactor,
+                priceResulutionInCents);
 
             product.VirtualAmountSold = 0;
         }

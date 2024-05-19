@@ -9,7 +9,7 @@ namespace Stip.Stipstonks.Items
             _priceFormatHelper)
     {
         private double _level;
-        public double Level { get => _level; set => Set(ref _level, value); }
+        public double Level { get => _level; set => SetProperty(ref _level, value); }
 
         public static ChartItem From(
             Product product,

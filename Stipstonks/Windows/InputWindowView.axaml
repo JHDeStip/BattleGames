@@ -1,0 +1,79 @@
+<local:WindowBase x:TypeArguments="local:InputWindowViewModel"
+                  x:Class="Stip.Stipstonks.Windows.InputWindowView"
+                  xmlns="https://github.com/avaloniaui"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:root="clr-namespace:Stip.Stipstonks"
+                  xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
+                  mc:Ignorable="d"
+                  d:DesignWidth="800" d:DesignHeight="450"
+                  Classes="standardWindow"
+                  x:DataType="local:InputWindowViewModel"
+                  IsEnabled="{Binding UIEnabled}"
+                  Background="{Binding BackgroundColor}">
+    <Grid RowDefinitions="Auto, *, Auto"
+          ColumnDefinitions="Auto, *, Auto">
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Classes="totalPriceLabelTextBlock"
+                   Text="{x:Static root:UIStrings.Input_TotalLabel}"/>
+        <TextBlock Grid.Row="0" Grid.Column="1"
+                   Classes="totalPriceTextBlock"
+                   Text="{Binding TotalPriceString}"/>
+
+        <Button Grid.Row="0" Grid.Column="2"
+                Classes="commitOrderButton"
+                Content="{x:Static root:UIStrings.Input_Checkout}"
+                IsEnabled="{Binding IsRunning}"
+                Command="{Binding CommitOrder}"/>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
+            <ItemsControl ItemsSource="{Binding InputItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="inputItemBorder"
+                                IsEnabled="{Binding  $parent[ItemsControl].((local:InputWindowViewModel)DataContext).IsRunning}">
+                            <Grid RowDefinitions="Auto, Auto, Auto"
+                                  ColumnDefinitions="Auto, *">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Classes="productTextBlock inputNameTextBlock"
+                                           Text="{Binding Name}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Classes="productTextBlock inputAmountTextBlock"
+                                           Text="{Binding Amount}"/>
+                                <Button Grid.Row="2" Grid.Column="0"
+                                        Classes="inputButton decrementButton"
+                                        Content="{x:Static root:UIStrings.Input_Decrement}"
+                                        Command="{Binding Decrement}"/>
+                                <Button Grid.Row="2" Grid.Column="1"
+                                        Classes="inputButton incrementButton"
+                                        Content="{x:Static root:UIStrings.Input_Increment}"
+                                        Command="{Binding Increment}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                    Orientation="Horizontal">
+            <Button Content="{x:Static root:UIStrings.Input_Start}"
+                    IsEnabled="{Binding IsNotRunning}"
+                    Command="{Binding Start}"/>
+            <Button Content="{x:Static root:UIStrings.Input_Stop}"
+                    IsEnabled="{Binding IsRunning}"
+                    Command="{Binding Stop}"/>
+            <Button Content="{x:Static root:UIStrings.Input_Reset}"
+                    IsEnabled="{Binding IsNotRunning}"
+                    Command="{Binding Reset}"/>
+            <Button Content="{x:Static root:UIStrings.Input_ToggleChartWindowState}"
+                    Command="{Binding ToggleChartWindowState}"/>
+        </StackPanel>
+    </Grid>
+</local:WindowBase>

@@ -1,0 +1,99 @@
+<local:WindowBase x:TypeArguments="local:ChartWindowViewModel"
+                  x:Class="Stip.Stipstonks.Windows.ChartWindowView"
+                  xmlns="https://github.com/avaloniaui"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
+                  mc:Ignorable="d"
+                  d:DesignWidth="800" d:DesignHeight="450"
+                  Classes="standardWindow"
+                  x:DataType="local:ChartWindowViewModel"
+                  Background="{Binding BackgroundColor}"
+                  WindowState="{Binding WindowState, Mode=TwoWay}">
+    <DockPanel>
+
+        <ProgressBar Classes="stonkMarketEventProgressBar"
+                     Classes.isRunning="{Binding IsRunning}"
+                     DataContext="{Binding CrashProgressItem}"
+                     Foreground="{Binding Color}">
+            <ProgressBar.Styles>
+                <Style Selector="ProgressBar.isRunning">
+                    <Style.Animations>
+                        <Animation Duration="{Binding Duration}">
+                            <KeyFrame Cue="0%">
+                                <Setter Property="Value"
+                                        Value="1"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%">
+                                <Setter Property="Value"
+                                        Value="0"/>
+                            </KeyFrame>
+                        </Animation>
+                    </Style.Animations>
+                </Style>
+            </ProgressBar.Styles>
+        </ProgressBar>
+
+        <ProgressBar Classes="stonkMarketEventProgressBar"
+                     Classes.isRunning="{Binding IsRunning}"
+                     DataContext="{Binding PriceUpdateProgressItem}"
+                     Foreground="{Binding Color}">
+            <ProgressBar.Styles>
+                <Style Selector="ProgressBar.isRunning">
+                    <Style.Animations>
+                        <Animation Duration="{Binding Duration}">
+                            <KeyFrame Cue="0%">
+                                <Setter Property="Value"
+                                        Value="1"/>
+                            </KeyFrame>
+                            <KeyFrame Cue="100%">
+                                <Setter Property="Value"
+                                        Value="0"/>
+                            </KeyFrame>
+                        </Animation>
+                    </Style.Animations>
+                </Style>
+            </ProgressBar.Styles>
+        </ProgressBar>
+
+        <ItemsControl ItemsSource="{Binding ChartItems}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel Classes="chartItemPanel">
+                        <TextBlock Classes="productTextBlock chartPriceTextBlock"
+                                   Text="{Binding PriceString}"/>
+                        <TextBlock Classes="productTextBlock chartNameTextBlock"
+                                   Text="{Binding Name}"/>
+
+                        <LayoutTransformControl>
+                            <LayoutTransformControl.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </LayoutTransformControl.LayoutTransform>
+                            <ProgressBar VerticalAlignment="Stretch"
+                                         Value="{Binding Level}">
+                                <ProgressBar.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Rectangle Name="PART_Track"/>
+
+                                            <Border x:Name="PART_Indicator"
+                                                    Classes="chartItemTrackBorder"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ProgressBar.Template>
+                            </ProgressBar>
+                        </LayoutTransformControl>
+                    </DockPanel>
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </DockPanel>
+</local:WindowBase>
