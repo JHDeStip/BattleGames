@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGames.Common", "Battl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleGames.Common.UnitTests", "BattleGames.Common.UnitTests\BattleGames.Common.UnitTests.csproj", "{DC708409-1E45-477E-B9F4-5E2E904F42E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleGames.UnitTestsCommon", "BattleGames.UnitTests.Common\BattleGames.UnitTestsCommon.csproj", "{3ECD97AE-EBC1-4289-95E2-21BABF04229D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleGames.UnitTestsCommon", "BattleGames.UnitTestsCommon\BattleGames.UnitTestsCommon.csproj", "{3ECD97AE-EBC1-4289-95E2-21BABF04229D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
