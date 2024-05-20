@@ -79,8 +79,8 @@ public class InputWindowViewModel(
 
     public override async ValueTask<bool> CanDeactivateAsync(CancellationToken ct)
         => await _dialogService.ShowYesNoDialogAsync(
-            UIStrings.Input_AreYouSure,
-            UIStrings.Input_AreYouSureYouWantToClose)
+            BattleGames.Common.UIStrings.Input_AreYouSure,
+            BattleGames.Common.UIStrings.Input_AreYouSureYouWantToClose)
         && await base.CanDeactivateAsync(ct);
 
     public async Task CommitOrder()
@@ -117,7 +117,7 @@ public class InputWindowViewModel(
     public async Task Stop()
     {
         if (!await _dialogService.ShowYesNoDialogAsync(
-            UIStrings.Input_AreYouSure,
+            BattleGames.Common.UIStrings.Input_AreYouSure,
             UIStrings.Input_AreYouSureYouWantToStop))
         {
             return;
@@ -136,8 +136,8 @@ public class InputWindowViewModel(
     public async Task Reset()
     {
         if (!await _dialogService.ShowYesNoDialogAsync(
-            UIStrings.Input_AreYouSure,
-            UIStrings.Input_AreYouSureYouWantToReset))
+            BattleGames.Common.UIStrings.Input_AreYouSure,
+            BattleGames.Common.UIStrings.Input_AreYouSureYouWantToReset))
         {
             return;
         }
@@ -185,7 +185,7 @@ public class InputWindowViewModel(
         var saveResult = await _dataPersistenceHelper.SaveDataAsync();
         if (!saveResult.IsSuccess)
         {
-            await _dialogService.ShowErrorAsync(UIStrings.Error_CannotSaveData);
+            await _dialogService.ShowErrorAsync(BattleGames.Common.UIStrings.Error_CannotSaveData);
         }
     }
 

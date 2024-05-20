@@ -6,6 +6,7 @@
                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                           xmlns:root="clr-namespace:Stip.Stipstonks"
                           xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
+                          xmlns:common="clr-namespace:Stip.BattleGames.Common;assembly=BattleGames.Common"
                           xmlns:commonWindows="clr-namespace:Stip.BattleGames.Common.Windows"
                           mc:Ignorable="d"
                           d:DesignWidth="800" d:DesignHeight="450"
@@ -50,11 +51,11 @@
                                            Text="{Binding Amount}"/>
                                 <Button Grid.Row="2" Grid.Column="0"
                                         Classes="inputButton decrementButton"
-                                        Content="{x:Static root:UIStrings.Input_Decrement}"
+                                        Content="{x:Static common:UIStrings.Input_Decrement}"
                                         Command="{Binding Decrement}"/>
                                 <Button Grid.Row="2" Grid.Column="1"
                                         Classes="inputButton incrementButton"
-                                        Content="{x:Static root:UIStrings.Input_Increment}"
+                                        Content="{x:Static common:UIStrings.Input_Increment}"
                                         Command="{Binding Increment}"/>
                             </Grid>
                         </Border>
@@ -71,10 +72,10 @@
             <Button Content="{x:Static root:UIStrings.Input_Stop}"
                     IsEnabled="{Binding IsRunning}"
                     Command="{Binding Stop}"/>
-            <Button Content="{x:Static root:UIStrings.Input_Reset}"
+            <Button Content="{x:Static common:UIStrings.Input_Reset}"
                     IsEnabled="{Binding IsNotRunning}"
                     Command="{Binding Reset}"/>
-            <Button Content="{x:Static root:UIStrings.Input_ToggleChartWindowState}"
+            <Button Content="{x:Static common:UIStrings.Input_ToggleChartWindowState}"
                     Command="{Binding ToggleChartWindowState}"/>
         </StackPanel>
     </Grid>

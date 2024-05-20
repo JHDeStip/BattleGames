@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stipstonks.UnitTests", "Sti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGames.Common", "BattleGames.Common\BattleGames.Common.csproj", "{AB9A5505-C629-4DE0-AF2B-AC29C8362C32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleGames.Common.UnitTests", "BattleGames.Common.UnitTests\BattleGames.Common.UnitTests.csproj", "{DC708409-1E45-477E-B9F4-5E2E904F42E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGames.Common.UnitTests", "BattleGames.Common.UnitTests\BattleGames.Common.UnitTests.csproj", "{DC708409-1E45-477E-B9F4-5E2E904F42E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleGames.UnitTestsCommon", "BattleGames.UnitTestsCommon\BattleGames.UnitTestsCommon.csproj", "{3ECD97AE-EBC1-4289-95E2-21BABF04229D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGames.UnitTestsCommon", "BattleGames.UnitTestsCommon\BattleGames.UnitTestsCommon.csproj", "{3ECD97AE-EBC1-4289-95E2-21BABF04229D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerBattle", "BeerBattle\BeerBattle.csproj", "{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{3ECD97AE-EBC1-4289-95E2-21BABF04229D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ECD97AE-EBC1-4289-95E2-21BABF04229D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ECD97AE-EBC1-4289-95E2-21BABF04229D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

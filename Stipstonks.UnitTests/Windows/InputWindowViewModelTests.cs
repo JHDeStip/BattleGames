@@ -162,8 +162,8 @@ public class InputWindowViewModelTests
 
         mockDialogService.Verify(
             x => x.ShowYesNoDialogAsync(
-                UIStrings.Input_AreYouSure,
-                UIStrings.Input_AreYouSureYouWantToClose),
+                BattleGames.Common.UIStrings.Input_AreYouSure,
+                BattleGames.Common.UIStrings.Input_AreYouSureYouWantToClose),
             Times.Once);
 
         Assert.AreEqual(canClose, actual);
@@ -268,7 +268,7 @@ public class InputWindowViewModelTests
 
         if (!saveAsyncSuccess)
         {
-            mockDialogService.Verify(x => x.ShowErrorAsync(UIStrings.Error_CannotSaveData), Times.Once);
+            mockDialogService.Verify(x => x.ShowErrorAsync(BattleGames.Common.UIStrings.Error_CannotSaveData), Times.Once);
         }
 
         VerifyNoOtherCalls();
@@ -336,7 +336,7 @@ public class InputWindowViewModelTests
 
         mockDialogService.Verify(
             x => x.ShowYesNoDialogAsync(
-                UIStrings.Input_AreYouSure,
+                BattleGames.Common.UIStrings.Input_AreYouSure,
                 UIStrings.Input_AreYouSureYouWantToStop),
             Times.Once);
 
@@ -429,8 +429,8 @@ public class InputWindowViewModelTests
 
         mockDialogService.Verify(
             x => x.ShowYesNoDialogAsync(
-                UIStrings.Input_AreYouSure,
-                UIStrings.Input_AreYouSureYouWantToReset),
+                BattleGames.Common.UIStrings.Input_AreYouSure,
+                BattleGames.Common.UIStrings.Input_AreYouSureYouWantToReset),
             Times.Once);
 
         if (shouldReset)
@@ -457,7 +457,7 @@ public class InputWindowViewModelTests
 
             if (!saveAsyncSuccess)
             {
-                mockDialogService.Verify(x => x.ShowErrorAsync(UIStrings.Error_CannotSaveData), Times.Once);
+                mockDialogService.Verify(x => x.ShowErrorAsync(BattleGames.Common.UIStrings.Error_CannotSaveData), Times.Once);
             }
 
             VerifyNoOtherCalls();

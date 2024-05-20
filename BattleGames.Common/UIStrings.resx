@@ -144,9 +144,6 @@
   <data name="Input_AreYouSureYouWantToReset" xml:space="preserve">
     <value>Ben je zeker dat je wilt resetten?</value>
   </data>
-  <data name="Input_AreYouSureYouWantToStop" xml:space="preserve">
-    <value>Ben je zeker dat je wilt stoppen?</value>
-  </data>
   <data name="Input_Decrement" xml:space="preserve">
     <value>-1</value>
   </data>
@@ -155,12 +152,6 @@
   </data>
   <data name="Input_Reset" xml:space="preserve">
     <value>Reset</value>
-  </data>
-  <data name="Input_Start" xml:space="preserve">
-    <value>Start</value>
-  </data>
-  <data name="Input_Stop" xml:space="preserve">
-    <value>Stop</value>
   </data>
   <data name="Input_ToggleChartWindowState" xml:space="preserve">
     <value>Grafiekvenster (de)maximaliseren</value>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Stip.Stipstonks {
+namespace Stip.BeerBattle {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Stip.Stipstonks {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Stip.Stipstonks.UIStrings", typeof(UIStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Stip.BeerBattle.UIStrings", typeof(UIStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,65 +61,11 @@ namespace Stip.Stipstonks {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stipstonks.
+        ///   Looks up a localized string similar to Beer Battle.
         /// </summary>
         public static string Global_ApplicationName {
             get {
                 return ResourceManager.GetString("Global_ApplicationName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to €.
-        /// </summary>
-        public static string Global_CurrencySymbol {
-            get {
-                return ResourceManager.GetString("Global_CurrencySymbol", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Ben je zeker dat je wilt stoppen?.
-        /// </summary>
-        public static string Input_AreYouSureYouWantToStop {
-            get {
-                return ResourceManager.GetString("Input_AreYouSureYouWantToStop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Afrekenen.
-        /// </summary>
-        public static string Input_Checkout {
-            get {
-                return ResourceManager.GetString("Input_Checkout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start.
-        /// </summary>
-        public static string Input_Start {
-            get {
-                return ResourceManager.GetString("Input_Start", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stop.
-        /// </summary>
-        public static string Input_Stop {
-            get {
-                return ResourceManager.GetString("Input_Stop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Totaal:.
-        /// </summary>
-        public static string Input_TotalLabel {
-            get {
-                return ResourceManager.GetString("Input_TotalLabel", resourceCulture);
             }
         }
     }

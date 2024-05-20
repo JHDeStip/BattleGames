@@ -118,24 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Global_ApplicationName" xml:space="preserve">
-    <value>Stipstonks</value>
-  </data>
-  <data name="Global_CurrencySymbol" xml:space="preserve">
-    <value>€</value>
-  </data>
-  <data name="Input_AreYouSureYouWantToStop" xml:space="preserve">
-    <value>Ben je zeker dat je wilt stoppen?</value>
-  </data>
-  <data name="Input_Checkout" xml:space="preserve">
-    <value>Afrekenen</value>
-  </data>
-  <data name="Input_Start" xml:space="preserve">
-    <value>Start</value>
-  </data>
-  <data name="Input_Stop" xml:space="preserve">
-    <value>Stop</value>
-  </data>
-  <data name="Input_TotalLabel" xml:space="preserve">
-    <value>Totaal:</value>
+    <value>Beer Battle</value>
   </data>
 </root>

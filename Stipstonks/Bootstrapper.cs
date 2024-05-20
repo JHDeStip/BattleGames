@@ -96,7 +96,7 @@ public class Bootstrapper
             {
                 await scope
                     .GetRequiredService<DialogService>()
-                    .ShowErrorAsync(UIStrings.Error_CannotLoadData);
+                    .ShowErrorAsync(BattleGames.Common.UIStrings.Error_CannotLoadData);
                 return ActionResult.Failure;
             }
 
