@@ -1,4 +1,3 @@
-﻿namespace Stip.Stipstonks.Messages
-{
-    public class ToggleChartWindowStateMessage { }
-}
+﻿namespace Stip.Stipstonks.Messages;
+
+public class ToggleChartWindowStateMessage { }

@@ -1,7 +1,6 @@
-﻿namespace Stip.BattleGames.Common
+﻿namespace Stip.BattleGames.Common;
+
+public interface IUIEnabled
 {
-    public interface IUIEnabled
-    {
-        bool UIEnabled { set; }
-    }
+    bool UIEnabled { set; }
 }

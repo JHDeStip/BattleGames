@@ -1,62 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Stip.BattleGames.Common.Services
+namespace Stip.BattleGames.Common.Services;
+
+public class DisableUIService :
+    IInjectable,
+    IDisposable
 {
-    public class DisableUIService :
-        IInjectable,
-        IDisposable
+    private readonly Stack<KeyValuePair<IUIEnabled, int>> _viewModels = new();
+
+    public virtual IDisposable Disable()
     {
-        private readonly Stack<KeyValuePair<IUIEnabled, int>> _viewModels = new();
-
-        public virtual IDisposable Disable()
+        lock (_viewModels)
         {
-            lock (_viewModels)
+            if (_viewModels.Count > 0)
             {
-                if (_viewModels.Count > 0)
+                var vm = _viewModels.Pop();
+                vm.Key.UIEnabled = false;
+                _viewModels.Push(new(vm.Key, vm.Value + 1));
+            }
+        }
+
+        return this;
+    }
+
+    public virtual void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        lock (_viewModels)
+        {
+            if (_viewModels.Count > 0)
+            {
+                var vm = _viewModels.Pop();
+
+                if (vm.Value <= 1)
                 {
-                    var vm = _viewModels.Pop();
-                    vm.Key.UIEnabled = false;
-                    _viewModels.Push(new(vm.Key, vm.Value + 1));
+                    vm.Key.UIEnabled = true;
                 }
-            }
-
-            return this;
-        }
-
-        public virtual void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            lock (_viewModels)
-            {
-                if (_viewModels.Count > 0)
-                {
-                    var vm = _viewModels.Pop();
-
-                    if (vm.Value <= 1)
-                    {
-                        vm.Key.UIEnabled = true;
-                    }
-                    
-                    _viewModels.Push(new(vm.Key, Math.Max(0, vm.Value - 1)));
-                }
+                
+                _viewModels.Push(new(vm.Key, Math.Max(0, vm.Value - 1)));
             }
         }
+    }
 
-        public virtual void PushViewModel(IUIEnabled vm)
+    public virtual void PushViewModel(IUIEnabled vm)
+    {
+        lock (_viewModels)
         {
-            lock (_viewModels)
-            {
-                _viewModels.Push(new(vm, 0));
-            }
+            _viewModels.Push(new(vm, 0));
         }
+    }
 
-        public virtual void PopViewModel()
+    public virtual void PopViewModel()
+    {
+        lock (_viewModels)
         {
-            lock (_viewModels)
-            {
-                _viewModels.Pop();
-            }
+            _viewModels.Pop();
         }
     }
 }

@@ -1,4 +1,3 @@
-﻿namespace Stip.BattleGames.Common
-{
-    public interface IInjectable { }
-}
+﻿namespace Stip.BattleGames.Common;
+
+public interface IInjectable { }

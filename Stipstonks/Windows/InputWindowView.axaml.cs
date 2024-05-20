@@ -1,11 +1,10 @@
 using Stip.BattleGames.Common.Windows;
 
-namespace Stip.Stipstonks.Windows
+namespace Stip.Stipstonks.Windows;
+
+public partial class InputWindowView : WindowBase<InputWindowViewModel>
 {
-    public partial class InputWindowView : WindowBase<InputWindowViewModel>
-    {
-        public InputWindowView(InputWindowViewModel viewModel)
-            : base(viewModel)
-            => InitializeComponent();
-    }
+    public InputWindowView(InputWindowViewModel viewModel)
+        : base(viewModel)
+        => InitializeComponent();
 }

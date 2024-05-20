@@ -1,20 +1,19 @@
 ﻿using Stip.BattleGames.Common;
 using System.IO;
 
-namespace Stip.Stipstonks.Helpers
+namespace Stip.Stipstonks.Helpers;
+
+public class FileHelper : IInjectable
 {
-    public class FileHelper : IInjectable
+    public virtual ActionResult<Stream> OpenStream(string path, FileMode mode)
     {
-        public virtual ActionResult<Stream> OpenStream(string path, FileMode mode)
+        try
         {
-            try
-            {
-                return new ActionResult<Stream>(File.Open(path, mode));
-            }
-            catch
-            {
-                return ActionResult<Stream>.Failure;
-            }
+            return new ActionResult<Stream>(File.Open(path, mode));
+        }
+        catch
+        {
+            return ActionResult<Stream>.Failure;
         }
     }
 }

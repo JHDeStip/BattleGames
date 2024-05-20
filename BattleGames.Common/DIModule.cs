@@ -4,24 +4,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Stip.BattleGames.Common.Services;
 using Stip.BattleGames.Common.Helpers;
 
-namespace Stip.BattleGames.Common
+namespace Stip.BattleGames.Common;
+
+public static class DIModule
 {
-    public static class DIModule
+    public static void RegisterServices(IServiceCollection serviceCollection)
     {
-        public static void RegisterServices(IServiceCollection serviceCollection)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
+        var assembly = Assembly.GetExecutingAssembly();
 
-            serviceCollection
-                .AddSingleton<IMessenger>(StrongReferenceMessenger.Default)
-                .AddSingleton<WindowManager>()
-                .AddSingleton<DisableUIService>();
+        serviceCollection
+            .AddSingleton<IMessenger>(StrongReferenceMessenger.Default)
+            .AddSingleton<WindowManager>()
+            .AddSingleton<DisableUIService>();
 
-            DIModuleHelper.RegisterAllDerivingFrom<IInjectable>(
-                serviceCollection,
-                assembly,
-                false,
-                false);
-        }
+        DIModuleHelper.RegisterAllDerivingFrom<IInjectable>(
+            serviceCollection,
+            assembly,
+            false,
+            false);
     }
 }

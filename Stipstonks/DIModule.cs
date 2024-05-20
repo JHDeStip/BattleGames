@@ -6,38 +6,37 @@ using Stip.BattleGames.Common.Windows;
 using Stip.BattleGames.Common;
 using Stip.BattleGames.Common.Helpers;
 
-namespace Stip.Stipstonks
+namespace Stip.Stipstonks;
+
+public static class DIModule
 {
-    public static class DIModule
+    public static void RegisterServices(
+        IServiceCollection serviceCollection,
+        AppBase app)
     {
-        public static void RegisterServices(
-            IServiceCollection serviceCollection,
-            AppBase app)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
+        var assembly = Assembly.GetExecutingAssembly();
 
-            serviceCollection
-                .AddSingleton(app)
-                .AddSingleton<ApplicationContext>()
-                .AddSingleton<StonkMarketManager>();
+        serviceCollection
+            .AddSingleton(app)
+            .AddSingleton<ApplicationContext>()
+            .AddSingleton<StonkMarketManager>();
 
-            DIModuleHelper.RegisterAllDerivingFrom<ViewModelBase>(
-                serviceCollection,
-                assembly,
-                true,
-                true);
+        DIModuleHelper.RegisterAllDerivingFrom<ViewModelBase>(
+            serviceCollection,
+            assembly,
+            true,
+            true);
 
-            DIModuleHelper.RegisterAllDerivingFrom<IInjectable>(
-                serviceCollection,
-                assembly,
-                false,
-                false);
+        DIModuleHelper.RegisterAllDerivingFrom<IInjectable>(
+            serviceCollection,
+            assembly,
+            false,
+            false);
 
-            DIModuleHelper.RegisterAllDerivingFrom<Window>(
-                serviceCollection,
-                assembly,
-                false,
-                false);
-        }
+        DIModuleHelper.RegisterAllDerivingFrom<Window>(
+            serviceCollection,
+            assembly,
+            false,
+            false);
     }
 }

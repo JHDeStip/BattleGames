@@ -4,97 +4,96 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stip.BattleGames.Common.UnitTests.Helpers
+namespace Stip.BattleGames.Common.UnitTests.Helpers;
+
+[TestClass]
+public class JsonHelperTests
 {
-    [TestClass]
-    public class JsonHelperTests
+    private const string ExampleJsonString = "{\r\n  \"value1\": \"ExampleValue1\",\r\n  \"value2\": 123\r\n}";
+
+    private class ExampleModel
     {
-        private const string ExampleJsonString = "{\r\n  \"value1\": \"ExampleValue1\",\r\n  \"value2\": 123\r\n}";
+        public string Value1 { get; set; }
+        public int Value2 { get; set; }
+    }
 
-        private class ExampleModel
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task SerializeToUtf8StreamAsync_CorrectlySerializes(
+        bool canWriteStream)
+    {
+        var model = new ExampleModel
         {
-            public string Value1 { get; set; }
-            public int Value2 { get; set; }
+            Value1 = "ExampleValue1",
+            Value2 = 123
+        };
+
+        using var stream = new MemoryStream();
+        if (!canWriteStream)
+        {
+            stream.Dispose();
         }
 
-        [DataTestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public async Task SerializeToUtf8StreamAsync_CorrectlySerializes(
-            bool canWriteStream)
+        var target = new JsonHelper();
+
+        var actual = await target.SerializeToUtf8StreamAsync(model, stream);
+
+        Assert.AreEqual(canWriteStream, actual.IsSuccess);
+
+        if (canWriteStream)
         {
-            var model = new ExampleModel
-            {
-                Value1 = "ExampleValue1",
-                Value2 = 123
-            };
+            var serialized = Encoding.ASCII.GetString(stream.GetBuffer(), 0, (int)stream.Length);
+            Assert.AreEqual(ExampleJsonString, serialized);
+        }
+    }
 
-            using var stream = new MemoryStream();
-            if (!canWriteStream)
-            {
-                stream.Dispose();
-            }
-
-            var target = new JsonHelper();
-
-            var actual = await target.SerializeToUtf8StreamAsync(model, stream);
-
-            Assert.AreEqual(canWriteStream, actual.IsSuccess);
-
-            if (canWriteStream)
-            {
-                var serialized = Encoding.ASCII.GetString(stream.GetBuffer(), 0, (int)stream.Length);
-                Assert.AreEqual(ExampleJsonString, serialized);
-            }
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task DeserializeFromUtf8StreamAsync_CorrectlyDeserializes(
+        bool canReadStream)
+    {
+        using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
+        if (!canReadStream)
+        {
+            stream.Dispose();
         }
 
-        [DataTestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public async Task DeserializeFromUtf8StreamAsync_CorrectlyDeserializes(
-            bool canReadStream)
+        var target = new JsonHelper();
+
+        var actual = await target.DeserializeFromUtf8StreamAsync<ExampleModel>(stream);
+
+        Assert.AreEqual(canReadStream, actual.IsSuccess);
+
+        if (canReadStream)
         {
-            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
-            if (!canReadStream)
-            {
-                stream.Dispose();
-            }
-
-            var target = new JsonHelper();
-
-            var actual = await target.DeserializeFromUtf8StreamAsync<ExampleModel>(stream);
-
-            Assert.AreEqual(canReadStream, actual.IsSuccess);
-
-            if (canReadStream)
-            {
-                Assert.AreEqual("ExampleValue1", actual.Data.Value1);
-                Assert.AreEqual(123, actual.Data.Value2);
-            }
+            Assert.AreEqual("ExampleValue1", actual.Data.Value1);
+            Assert.AreEqual(123, actual.Data.Value2);
         }
+    }
 
-        [TestMethod]
-        public async Task DeserializeFromUtf8StreamAsync_DoesNotDeserializeWrongType()
-        {
-            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
+    [TestMethod]
+    public async Task DeserializeFromUtf8StreamAsync_DoesNotDeserializeWrongType()
+    {
+        using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString));
 
-            var target = new JsonHelper();
+        var target = new JsonHelper();
 
-            var actual = await target.DeserializeFromUtf8StreamAsync<string>(stream);
+        var actual = await target.DeserializeFromUtf8StreamAsync<string>(stream);
 
-            Assert.IsFalse(actual.IsSuccess);
-        }
+        Assert.IsFalse(actual.IsSuccess);
+    }
 
-        [TestMethod]
-        public async Task DeserializeFromUtf8StreamAsync_DoesNotDeserializeMalformedJson()
-        {
-            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString[1..]));
+    [TestMethod]
+    public async Task DeserializeFromUtf8StreamAsync_DoesNotDeserializeMalformedJson()
+    {
+        using var stream = new MemoryStream(Encoding.ASCII.GetBytes(ExampleJsonString[1..]));
 
-            var target = new JsonHelper();
+        var target = new JsonHelper();
 
-            var actual = await target.DeserializeFromUtf8StreamAsync<ExampleModel>(stream);
+        var actual = await target.DeserializeFromUtf8StreamAsync<ExampleModel>(stream);
 
-            Assert.IsFalse(actual.IsSuccess);
-        }
+        Assert.IsFalse(actual.IsSuccess);
     }
 }

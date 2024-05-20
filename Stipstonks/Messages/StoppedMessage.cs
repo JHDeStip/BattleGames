@@ -1,4 +1,3 @@
-﻿namespace Stip.Stipstonks.Messages
-{
-    public class StoppedMessage { }
-}
+﻿namespace Stip.Stipstonks.Messages;
+
+public class StoppedMessage { }

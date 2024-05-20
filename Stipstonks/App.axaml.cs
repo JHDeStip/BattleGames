@@ -1,13 +1,12 @@
 using Stip.BattleGames.Common;
 
-namespace Stip.Stipstonks
+namespace Stip.Stipstonks;
+
+public partial class App : AppBase
 {
-    public partial class App : AppBase
+    public override void Initialize()
     {
-        public override void Initialize()
-        {
-            base.Initialize();
-            _ = new Bootstrapper();
-        }
+        base.Initialize();
+        _ = new Bootstrapper();
     }
 }

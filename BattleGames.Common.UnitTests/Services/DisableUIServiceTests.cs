@@ -1,151 +1,150 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Stip.BattleGames.Common.Services;
 
-namespace Stip.BattleGames.Common.UnitTests.Services
+namespace Stip.BattleGames.Common.UnitTests.Services;
+
+[TestClass]
+public class DisableUIServiceTests
 {
-    [TestClass]
-    public class DisableUIServiceTests
+    [TestMethod]
+    public void Disable_DisablesUI()
     {
-        [TestMethod]
-        public void Disable_DisablesUI()
+        var vm = new TestIUIEnabled();
+
+        var target = new DisableUIService();
+        target.PushViewModel(vm);
+
+        target.Disable();
+
+        Assert.IsFalse(vm.UIEnabled);
+    }
+
+    [TestMethod]
+    public void Dispose_EnablesUI()
+    {
+        var vm = new TestIUIEnabled();
+
+        var target = new DisableUIService();
+        target.PushViewModel(vm);
+        vm.UIEnabled = false;
+
+        target.Dispose();
+
+        Assert.IsTrue(vm.UIEnabled);
+    }
+
+    [TestMethod]
+    public void Disable_KeepsUIDisabledWhenCalledMultipleTimes()
+    {
+        var vm = new TestIUIEnabled();
+
+        var target = new DisableUIService();
+        target.PushViewModel(vm);
+
+        target.Disable();
+        target.Disable();
+
+        Assert.IsFalse(vm.UIEnabled);
+    }
+
+    [TestMethod]
+    public void Dispose_NeedsToBeCalledEqualAmountOfTimesAsDisableToEnableUI()
+    {
+        var vm = new TestIUIEnabled();
+
+        var target = new DisableUIService();
+        target.PushViewModel(vm);
+
+        target.Disable();
+        target.Disable();
+        target.Disable();
+
+        target.Dispose();
+        Assert.IsFalse(vm.UIEnabled);
+
+        target.Dispose();
+        Assert.IsFalse(vm.UIEnabled);
+
+        target.Dispose();
+        Assert.IsTrue(vm.UIEnabled);
+    }
+
+    [TestMethod]
+    public void Dispose_CanBeCalledTooManyTimes()
+    {
+        var vm = new TestIUIEnabled();
+
+        var target = new DisableUIService();
+        target.PushViewModel(vm);
+
+        target.Disable();
+
+        target.Dispose();
+        target.Dispose();
+        Assert.IsTrue(vm.UIEnabled);
+
+        target.Disable();
+        Assert.IsFalse(vm.UIEnabled);
+    }
+
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void DisableAndDispose_OnlyAffectLastPushedViewModel(bool vm1UIEnabled)
+    {
+        var vm1 = new TestIUIEnabled
         {
-            var vm = new TestIUIEnabled();
+            UIEnabled = vm1UIEnabled
+        };
 
-            var target = new DisableUIService();
-            target.PushViewModel(vm);
+        var vm2 = new TestIUIEnabled();
 
-            target.Disable();
+        var target = new DisableUIService();
+        target.PushViewModel(vm1);
+        target.PushViewModel(vm2);
 
-            Assert.IsFalse(vm.UIEnabled);
-        }
+        target.Disable();
+        Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
+        Assert.IsFalse(vm2.UIEnabled);
 
-        [TestMethod]
-        public void Dispose_EnablesUI()
-        {
-            var vm = new TestIUIEnabled();
+        target.Disable();
+        Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
+        Assert.IsFalse(vm2.UIEnabled);
 
-            var target = new DisableUIService();
-            target.PushViewModel(vm);
-            vm.UIEnabled = false;
+        target.Dispose();
+        Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
+        Assert.IsFalse(vm2.UIEnabled);
 
-            target.Dispose();
+        target.Dispose();
+        Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
+        Assert.IsTrue(vm2.UIEnabled);
+    }
 
-            Assert.IsTrue(vm.UIEnabled);
-        }
+    [TestMethod]
+    public void Dispose_EnablesParentViewModelWhenChildViewModelIsPopped()
+    {
+        var vm1 = new TestIUIEnabled();
+        var vm2 = new TestIUIEnabled();
 
-        [TestMethod]
-        public void Disable_KeepsUIDisabledWhenCalledMultipleTimes()
-        {
-            var vm = new TestIUIEnabled();
+        var target = new DisableUIService();
 
-            var target = new DisableUIService();
-            target.PushViewModel(vm);
+        target.PushViewModel(vm1);
+        target.Disable();
 
-            target.Disable();
-            target.Disable();
+        target.PushViewModel(vm2);
+        target.Disable();
 
-            Assert.IsFalse(vm.UIEnabled);
-        }
+        target.Dispose();
 
-        [TestMethod]
-        public void Dispose_NeedsToBeCalledEqualAmountOfTimesAsDisableToEnableUI()
-        {
-            var vm = new TestIUIEnabled();
+        target.PopViewModel();
 
-            var target = new DisableUIService();
-            target.PushViewModel(vm);
+        target.Dispose();
 
-            target.Disable();
-            target.Disable();
-            target.Disable();
+        Assert.IsTrue(vm1.UIEnabled);
+    }
 
-            target.Dispose();
-            Assert.IsFalse(vm.UIEnabled);
-
-            target.Dispose();
-            Assert.IsFalse(vm.UIEnabled);
-
-            target.Dispose();
-            Assert.IsTrue(vm.UIEnabled);
-        }
-
-        [TestMethod]
-        public void Dispose_CanBeCalledTooManyTimes()
-        {
-            var vm = new TestIUIEnabled();
-
-            var target = new DisableUIService();
-            target.PushViewModel(vm);
-
-            target.Disable();
-
-            target.Dispose();
-            target.Dispose();
-            Assert.IsTrue(vm.UIEnabled);
-
-            target.Disable();
-            Assert.IsFalse(vm.UIEnabled);
-        }
-
-        [DataTestMethod]
-        [DataRow(true)]
-        [DataRow(false)]
-        public void DisableAndDispose_OnlyAffectLastPushedViewModel(bool vm1UIEnabled)
-        {
-            var vm1 = new TestIUIEnabled
-            {
-                UIEnabled = vm1UIEnabled
-            };
-
-            var vm2 = new TestIUIEnabled();
-
-            var target = new DisableUIService();
-            target.PushViewModel(vm1);
-            target.PushViewModel(vm2);
-
-            target.Disable();
-            Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
-            Assert.IsFalse(vm2.UIEnabled);
-
-            target.Disable();
-            Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
-            Assert.IsFalse(vm2.UIEnabled);
-
-            target.Dispose();
-            Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
-            Assert.IsFalse(vm2.UIEnabled);
-
-            target.Dispose();
-            Assert.AreEqual(vm1UIEnabled, vm1.UIEnabled);
-            Assert.IsTrue(vm2.UIEnabled);
-        }
-
-        [TestMethod]
-        public void Dispose_EnablesParentViewModelWhenChildViewModelIsPopped()
-        {
-            var vm1 = new TestIUIEnabled();
-            var vm2 = new TestIUIEnabled();
-
-            var target = new DisableUIService();
-
-            target.PushViewModel(vm1);
-            target.Disable();
-
-            target.PushViewModel(vm2);
-            target.Disable();
-
-            target.Dispose();
-
-            target.PopViewModel();
-
-            target.Dispose();
-
-            Assert.IsTrue(vm1.UIEnabled);
-        }
-
-        private class TestIUIEnabled : IUIEnabled
-        {
-            public bool UIEnabled { get; set; } = true;
-        }
+    private class TestIUIEnabled : IUIEnabled
+    {
+        public bool UIEnabled { get; set; } = true;
     }
 }

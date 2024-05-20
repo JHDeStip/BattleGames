@@ -6,192 +6,191 @@ using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Models;
 using System.Linq;
 
-namespace Stip.Stipstonks.UnitTests.Helpers
+namespace Stip.Stipstonks.UnitTests.Helpers;
+
+[TestClass]
+public class PriceCalculatorHelperTests
 {
-    [TestClass]
-    public class PriceCalculatorHelperTests
+    
+    [TestMethod]
+    public void CalculatePriceLevels_CorrectlyCalculatesPriceLevels()
     {
-        
-        [TestMethod]
-        public void CalculatePriceLevels_CorrectlyCalculatesPriceLevels()
+        var fixture = FixtureFactory.Create();
+
+        var products = fixture.CreateMany<Product>(3).ToList();
+        products[0].CurrentPriceInCents = 3;
+        products[1].CurrentPriceInCents = 8;
+        products[2].CurrentPriceInCents = 5;
+
+        var referenceProducts = products.Select(x => x with { }).ToList();
+
+        var target = fixture.Create<PriceCalculatorHelper>();
+
+        target.CalculatePriceLevels(products);
+
+        Assert.AreEqual(3 / (double)8, products[0].Level);
+        Assert.AreEqual(1, products[1].Level);
+        Assert.AreEqual(5 / (double)8, products[2].Level);
+
+        for (int i = 0; i < referenceProducts.Count; ++i)
         {
-            var fixture = FixtureFactory.Create();
-
-            var products = fixture.CreateMany<Product>(3).ToList();
-            products[0].CurrentPriceInCents = 3;
-            products[1].CurrentPriceInCents = 8;
-            products[2].CurrentPriceInCents = 5;
-
-            var referenceProducts = products.Select(x => x with { }).ToList();
-
-            var target = fixture.Create<PriceCalculatorHelper>();
-
-            target.CalculatePriceLevels(products);
-
-            Assert.AreEqual(3 / (double)8, products[0].Level);
-            Assert.AreEqual(1, products[1].Level);
-            Assert.AreEqual(5 / (double)8, products[2].Level);
-
-            for (int i = 0; i < referenceProducts.Count; ++i)
-            {
-                products[i].Level = referenceProducts[i].Level;
-            }
-
-            Assert.IsTrue(products.DeeplyEquals(referenceProducts));
+            products[i].Level = referenceProducts[i].Level;
         }
 
-        [TestMethod]
-        public void CalculatePriceLevels_CorrectlyCalculatesPriceLevelsWith0Cents()
+        Assert.IsTrue(products.DeeplyEquals(referenceProducts));
+    }
+
+    [TestMethod]
+    public void CalculatePriceLevels_CorrectlyCalculatesPriceLevelsWith0Cents()
+    {
+        var fixture = FixtureFactory.Create();
+
+        var products = fixture
+            .Build<Product>()
+            .With(x => x.CurrentPriceInCents, 0)
+            .CreateMany()
+            .ToList();
+
+        var referenceProducts = products.Select(x => x with { }).ToList();
+
+        var target = fixture.Create<PriceCalculatorHelper>();
+
+        target.CalculatePriceLevels(products);
+
+        for (int i = 0; i < referenceProducts.Count; ++i)
         {
-            var fixture = FixtureFactory.Create();
-
-            var products = fixture
-                .Build<Product>()
-                .With(x => x.CurrentPriceInCents, 0)
-                .CreateMany()
-                .ToList();
-
-            var referenceProducts = products.Select(x => x with { }).ToList();
-
-            var target = fixture.Create<PriceCalculatorHelper>();
-
-            target.CalculatePriceLevels(products);
-
-            for (int i = 0; i < referenceProducts.Count; ++i)
-            {
-                Assert.AreEqual(0, products[i].Level);
-                products[i].Level = referenceProducts[i].Level;
-            }
-
-            Assert.IsTrue(products.DeeplyEquals(referenceProducts));
+            Assert.AreEqual(0, products[i].Level);
+            products[i].Level = referenceProducts[i].Level;
         }
 
-        [TestMethod]
-        public void CrashProduct_CorrectlyCrashesProduct()
-        {
-            var fixture = FixtureFactory.Create();
+        Assert.IsTrue(products.DeeplyEquals(referenceProducts));
+    }
 
-            var product = fixture
-               .Build<Product>()
-               .With(x => x.BasePriceInCents, 123)
-               .Create();
+    [TestMethod]
+    public void CrashProduct_CorrectlyCrashesProduct()
+    {
+        var fixture = FixtureFactory.Create();
 
-            var referenceProduct = product with { };
+        var product = fixture
+           .Build<Product>()
+           .With(x => x.BasePriceInCents, 123)
+           .Create();
 
-            var roundedPrice = fixture.Create<int>();
+        var referenceProduct = product with { };
 
-            var mockMathHelper = fixture.FreezeMock<MathHelper>();
-            mockMathHelper
-                .Setup(x => x.RoundToResolution(
-                    It.IsAny<double>(),
-                    It.IsAny<double>()))
-                .Returns(roundedPrice);
+        var roundedPrice = fixture.Create<int>();
 
-            var target = fixture.Create<PriceCalculatorHelper>();
+        var mockMathHelper = fixture.FreezeMock<MathHelper>();
+        mockMathHelper
+            .Setup(x => x.RoundToResolution(
+                It.IsAny<double>(),
+                It.IsAny<double>()))
+            .Returns(roundedPrice);
 
-            target.CrashProduct(
-                product,
-                0.66,
-                7);
+        var target = fixture.Create<PriceCalculatorHelper>();
 
-            Assert.AreEqual(roundedPrice, product.CurrentPriceInCents);
-            Assert.AreEqual(0, product.VirtualAmountSold);
+        target.CrashProduct(
+            product,
+            0.66,
+            7);
 
-            mockMathHelper.Verify(
-                x => x.RoundToResolution(
-                    It.Is<double>(y => NumberComparison.AreRelativelyClose(41.82, y, NumberComparison.DefaultEpsilon)),
-                    7),
-                Times.Once);
+        Assert.AreEqual(roundedPrice, product.CurrentPriceInCents);
+        Assert.AreEqual(0, product.VirtualAmountSold);
 
-            product.CurrentPriceInCents = referenceProduct.CurrentPriceInCents;
-            product.VirtualAmountSold = referenceProduct.VirtualAmountSold;
-            Assert.IsTrue(product.DeeplyEquals(referenceProduct));
-        }
+        mockMathHelper.Verify(
+            x => x.RoundToResolution(
+                It.Is<double>(y => NumberComparison.AreRelativelyClose(41.82, y, NumberComparison.DefaultEpsilon)),
+                7),
+            Times.Once);
 
-        [TestMethod]
-        public void SetBasePriceForProduct_CorrectlySetsBasePrice()
-        {
-            var fixture = FixtureFactory.Create();
+        product.CurrentPriceInCents = referenceProduct.CurrentPriceInCents;
+        product.VirtualAmountSold = referenceProduct.VirtualAmountSold;
+        Assert.IsTrue(product.DeeplyEquals(referenceProduct));
+    }
 
-            var product = fixture.Create<Product>();
-            var referenceProduct = product with { };
+    [TestMethod]
+    public void SetBasePriceForProduct_CorrectlySetsBasePrice()
+    {
+        var fixture = FixtureFactory.Create();
 
-            var target = fixture.Create<PriceCalculatorHelper>();
+        var product = fixture.Create<Product>();
+        var referenceProduct = product with { };
 
-            target.SetBasePriceForProduct(product);
+        var target = fixture.Create<PriceCalculatorHelper>();
 
-            Assert.AreEqual(referenceProduct.BasePriceInCents, product.CurrentPriceInCents);
+        target.SetBasePriceForProduct(product);
 
-            product.CurrentPriceInCents = referenceProduct.CurrentPriceInCents;
-            Assert.IsTrue(product.DeeplyEquals(referenceProduct));
-        }
+        Assert.AreEqual(referenceProduct.BasePriceInCents, product.CurrentPriceInCents);
 
-        [TestMethod]
-        public void ResetProduct_CorrectlyResetsProduct()
-        {
-            var fixture = FixtureFactory.Create();
+        product.CurrentPriceInCents = referenceProduct.CurrentPriceInCents;
+        Assert.IsTrue(product.DeeplyEquals(referenceProduct));
+    }
 
-            var product = fixture.Create<Product>();
-            var referenceProduct = product with { };
+    [TestMethod]
+    public void ResetProduct_CorrectlyResetsProduct()
+    {
+        var fixture = FixtureFactory.Create();
 
-            var target = fixture.Create<PriceCalculatorHelper>();
+        var product = fixture.Create<Product>();
+        var referenceProduct = product with { };
 
-            target.ResetProduct(product);
+        var target = fixture.Create<PriceCalculatorHelper>();
 
-            Assert.AreEqual(referenceProduct.BasePriceInCents, product.CurrentPriceInCents);
-            Assert.AreEqual(0, product.VirtualAmountSold);
-            Assert.AreEqual(0, product.TotalAmountSold);
+        target.ResetProduct(product);
 
-            product.CurrentPriceInCents = referenceProduct.CurrentPriceInCents;
-            product.VirtualAmountSold = referenceProduct.VirtualAmountSold;
-            product.TotalAmountSold = referenceProduct.TotalAmountSold;
-            Assert.IsTrue(product.DeeplyEquals(referenceProduct));
-        }
+        Assert.AreEqual(referenceProduct.BasePriceInCents, product.CurrentPriceInCents);
+        Assert.AreEqual(0, product.VirtualAmountSold);
+        Assert.AreEqual(0, product.TotalAmountSold);
 
-        [DataTestMethod]
-        [DataRow(4, 346.892405063291139)]
-        [DataRow(7, 349.88562091503268)]
-        public void SetNewPriceForProduct_CorrectlySetsPrice(
-            int virtualAmountSold,
-            double expectedNewPrice)
-        {
-            var fixture = FixtureFactory.Create();
+        product.CurrentPriceInCents = referenceProduct.CurrentPriceInCents;
+        product.VirtualAmountSold = referenceProduct.VirtualAmountSold;
+        product.TotalAmountSold = referenceProduct.TotalAmountSold;
+        Assert.IsTrue(product.DeeplyEquals(referenceProduct));
+    }
 
-            var product = fixture
-                .Build<Product>()
-                .With(x => x.VirtualAmountSold, virtualAmountSold)
-                .With(x => x.BasePriceInCents, 345)
-                .Create();
-            var referenceProduct = product with { };
+    [DataTestMethod]
+    [DataRow(4, 346.892405063291139)]
+    [DataRow(7, 349.88562091503268)]
+    public void SetNewPriceForProduct_CorrectlySetsPrice(
+        int virtualAmountSold,
+        double expectedNewPrice)
+    {
+        var fixture = FixtureFactory.Create();
 
-            var mockMathHelper = fixture.FreezeMock<MathHelper>();
-            mockMathHelper
-                .Setup(x => x.RoundToResolution(It.IsAny<double>(), It.IsAny<double>()))
-                .Returns(789.9);
+        var product = fixture
+            .Build<Product>()
+            .With(x => x.VirtualAmountSold, virtualAmountSold)
+            .With(x => x.BasePriceInCents, 345)
+            .Create();
+        var referenceProduct = product with { };
 
-            var target = fixture.Create<PriceCalculatorHelper>();
+        var mockMathHelper = fixture.FreezeMock<MathHelper>();
+        mockMathHelper
+            .Setup(x => x.RoundToResolution(It.IsAny<double>(), It.IsAny<double>()))
+            .Returns(789.9);
 
-            target.SetNewPriceForProduct(
-                product,
-                123,
-                234,
-                4.5,
-                1.3,
-                7);
+        var target = fixture.Create<PriceCalculatorHelper>();
 
-            Assert.AreEqual(789, product.CurrentPriceInCents);
+        target.SetNewPriceForProduct(
+            product,
+            123,
+            234,
+            4.5,
+            1.3,
+            7);
 
-            mockMathHelper.Verify(
-                x => x.RoundToResolution(
-                    It.Is<double>(
-                        y => NumberComparison.AreRelativelyClose(
-                            expectedNewPrice,
-                            y,
-                            NumberComparison.DefaultEpsilon)),
-                    7),
-                Times.Once);
+        Assert.AreEqual(789, product.CurrentPriceInCents);
 
-            mockMathHelper.VerifyNoOtherCalls();
-        }
+        mockMathHelper.Verify(
+            x => x.RoundToResolution(
+                It.Is<double>(
+                    y => NumberComparison.AreRelativelyClose(
+                        expectedNewPrice,
+                        y,
+                        NumberComparison.DefaultEpsilon)),
+                7),
+            Times.Once);
+
+        mockMathHelper.VerifyNoOtherCalls();
     }
 }

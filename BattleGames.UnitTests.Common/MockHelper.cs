@@ -1,18 +1,17 @@
 ﻿using Moq;
 using Stip.BattleGames.Common.Services;
 
-namespace Stip.BattleGames.UnitTestsCommon
+namespace Stip.BattleGames.UnitTestsCommon;
+
+public static class MockHelper
 {
-    public static class MockHelper
+    public static Mock<DisableUIService> GetMockDisableUIService()
     {
-        public static Mock<DisableUIService> GetMockDisableUIService()
-        {
-            var mock = new Mock<DisableUIService>();
+        var mock = new Mock<DisableUIService>();
 
-            mock.Setup(x => x.Disable())
-                .Returns(mock.Object);
+        mock.Setup(x => x.Disable())
+            .Returns(mock.Object);
 
-            return mock;
-        }
+        return mock;
     }
 }
