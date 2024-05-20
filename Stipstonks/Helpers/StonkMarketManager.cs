@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Stip.BattleGames.Common;
+using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Helpers
 {

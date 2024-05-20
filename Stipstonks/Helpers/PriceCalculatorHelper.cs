@@ -1,4 +1,5 @@
-﻿using Stip.Stipstonks.Models;
+﻿using Stip.BattleGames.Common;
+using Stip.Stipstonks.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

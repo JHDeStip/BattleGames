@@ -1,4 +1,5 @@
-﻿using Stip.Stipstonks.Common;
+﻿using Stip.BattleGames.Common;
+using Stip.BattleGames.Common.Helpers;
 using Stip.Stipstonks.JsonModels;
 using System.IO;
 using System.Linq;

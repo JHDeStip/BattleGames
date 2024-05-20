@@ -1,4 +1,5 @@
-﻿using Stip.Stipstonks.Helpers;
+﻿using Stip.BattleGames.Common;
+using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Models;
 using System.Collections.Generic;

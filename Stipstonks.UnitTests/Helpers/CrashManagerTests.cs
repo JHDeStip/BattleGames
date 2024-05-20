@@ -2,7 +2,8 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Stip.Stipstonks.Common;
+using Stip.BattleGames.Common;
+using Stip.BattleGames.UnitTestsCommon;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Messages;

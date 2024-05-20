@@ -1,19 +1,13 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using System.Linq;
+using Stip.BattleGames.Common;
 
 namespace Stip.Stipstonks
 {
-    public partial class App : Application
+    public partial class App : AppBase
     {
         public override void Initialize()
         {
             base.Initialize();
-            new Bootstrapper();
+            _ = new Bootstrapper();
         }
-
-        public Window GetLastOpenedWindow()
-            => ((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime).Windows.Last();
     }
 }

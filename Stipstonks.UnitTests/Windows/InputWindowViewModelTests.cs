@@ -2,13 +2,15 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Stip.Stipstonks.Common;
+using Stip.BattleGames.Common;
+using Stip.BattleGames.Common.Factories;
+using Stip.BattleGames.Common.Services;
+using Stip.BattleGames.UnitTestsCommon;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Messages;
 using Stip.Stipstonks.Models;
-using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
 using System;
 using System.Collections.Generic;

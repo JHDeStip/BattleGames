@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Stip.BattleGames.UnitTestsCommon;
 using Stip.Stipstonks.Helpers;
 
 namespace Stip.Stipstonks.UnitTests.Helpers

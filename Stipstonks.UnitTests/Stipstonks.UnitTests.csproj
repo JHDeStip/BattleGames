@@ -27,6 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BattleGames.Common\BattleGames.Common.csproj" />
+    <ProjectReference Include="..\BattleGames.UnitTests.Common\BattleGames.UnitTestsCommon.csproj" />
     <ProjectReference Include="..\Stipstonks\Stipstonks.csproj" />
   </ItemGroup>
 

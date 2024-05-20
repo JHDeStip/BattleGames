@@ -1,4 +1,4 @@
-﻿using Stip.Stipstonks.Common;
+﻿using Stip.BattleGames.Common;
 using System.IO;
 
 namespace Stip.Stipstonks.Helpers

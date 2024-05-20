@@ -1,4 +1,5 @@
-﻿using Stip.Stipstonks.Helpers;
+﻿using Stip.BattleGames.Common;
+using Stip.Stipstonks.Helpers;
 using System;
 
 namespace Stip.Stipstonks.Factories

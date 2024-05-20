@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stip.BattleGames.Common;
+using System;
 using System.Globalization;
 
 namespace Stip.Stipstonks.Helpers

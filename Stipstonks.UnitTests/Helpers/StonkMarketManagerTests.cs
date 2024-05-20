@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Stip.BattleGames.UnitTestsCommon;
 using Stip.Stipstonks.Helpers;
 using System;
 using System.Threading.Tasks;

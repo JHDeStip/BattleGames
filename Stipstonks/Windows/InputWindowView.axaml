@@ -1,17 +1,19 @@
-<local:WindowBase x:TypeArguments="local:InputWindowViewModel"
-                  x:Class="Stip.Stipstonks.Windows.InputWindowView"
-                  xmlns="https://github.com/avaloniaui"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:root="clr-namespace:Stip.Stipstonks"
-                  xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
-                  mc:Ignorable="d"
-                  d:DesignWidth="800" d:DesignHeight="450"
-                  Classes="standardWindow"
-                  x:DataType="local:InputWindowViewModel"
-                  IsEnabled="{Binding UIEnabled}"
-                  Background="{Binding BackgroundColor}">
+<commonWindows:WindowBase x:TypeArguments="local:InputWindowViewModel"
+                          x:Class="Stip.Stipstonks.Windows.InputWindowView"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:root="clr-namespace:Stip.Stipstonks"
+                          xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
+                          xmlns:commonWindows="clr-namespace:Stip.BattleGames.Common.Windows"
+                          mc:Ignorable="d"
+                          d:DesignWidth="800" d:DesignHeight="450"
+                          Classes="standardWindow"
+                          x:DataType="local:InputWindowViewModel"
+                          Title="{x:Static root:UIStrings.Global_ApplicationName}"
+                          IsEnabled="{Binding UIEnabled}"
+                          Background="{Binding BackgroundColor}">
     <Grid RowDefinitions="Auto, *, Auto"
           ColumnDefinitions="Auto, *, Auto">
         <TextBlock Grid.Row="0" Grid.Column="0"
@@ -76,4 +78,4 @@
                     Command="{Binding ToggleChartWindowState}"/>
         </StackPanel>
     </Grid>
-</local:WindowBase>
+</commonWindows:WindowBase>

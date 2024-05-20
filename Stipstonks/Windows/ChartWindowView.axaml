@@ -1,16 +1,19 @@
-<local:WindowBase x:TypeArguments="local:ChartWindowViewModel"
-                  x:Class="Stip.Stipstonks.Windows.ChartWindowView"
-                  xmlns="https://github.com/avaloniaui"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
-                  mc:Ignorable="d"
-                  d:DesignWidth="800" d:DesignHeight="450"
-                  Classes="standardWindow"
-                  x:DataType="local:ChartWindowViewModel"
-                  Background="{Binding BackgroundColor}"
-                  WindowState="{Binding WindowState, Mode=TwoWay}">
+<commonWindows:WindowBase x:TypeArguments="local:ChartWindowViewModel"
+                          x:Class="Stip.Stipstonks.Windows.ChartWindowView"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:root="clr-namespace:Stip.Stipstonks"
+                          xmlns:local="clr-namespace:Stip.Stipstonks.Windows"
+                          xmlns:commonWindows="clr-namespace:Stip.BattleGames.Common.Windows"
+                          mc:Ignorable="d"
+                          d:DesignWidth="800" d:DesignHeight="450"
+                          Classes="standardWindow"
+                          x:DataType="local:ChartWindowViewModel"
+                          Title="{x:Static root:UIStrings.Global_ApplicationName}"
+                          Background="{Binding BackgroundColor}"
+                          WindowState="{Binding WindowState, Mode=TwoWay}">
     <DockPanel>
 
         <ProgressBar Classes="stonkMarketEventProgressBar"
@@ -96,4 +99,4 @@
         </ItemsControl>
 
     </DockPanel>
-</local:WindowBase>
+</commonWindows:WindowBase>

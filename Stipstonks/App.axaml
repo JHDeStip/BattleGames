@@ -1,20 +1,22 @@
-<Application x:Class="Stip.Stipstonks.App"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Stip.Stipstonks"
-             RequestedThemeVariant="Light"
-             Name="{x:Static local:UIStrings.Global_ApplicationName}">
+<battleGamesCommon:AppBase x:Class="Stip.Stipstonks.App"
+                           xmlns="https://github.com/avaloniaui"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:local="clr-namespace:Stip.Stipstonks"
+                           xmlns:battleGamesCommon="clr-namespace:Stip.BattleGames.Common"
+                           RequestedThemeVariant="Light"
+                           Name="{x:Static local:UIStrings.Global_ApplicationName}">
 
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Resources.axaml"/>
+                <ResourceInclude Source="avares://BattleGames.Common/Resources.axaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 
     <Application.Styles>
         <FluentTheme/>
+        <StyleInclude Source="avares://BattleGames.Common/Styles.axaml"/>
         <StyleInclude Source="/Styles.axaml"/>
     </Application.Styles>
 
@@ -23,4 +25,4 @@
         <NativeMenu/>
     </NativeMenu.Menu>
 
-</Application>
+</battleGamesCommon:AppBase>

@@ -1,10 +1,13 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
+using Stip.BattleGames.Common;
+using Stip.BattleGames.Common.Factories;
+using Stip.BattleGames.Common.Services;
+using Stip.BattleGames.Common.Windows;
 using Stip.Stipstonks.Factories;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Messages;
-using Stip.Stipstonks.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

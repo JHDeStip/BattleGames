@@ -1,4 +1,5 @@
-﻿using Stip.Stipstonks.Factories;
+﻿using Stip.BattleGames.Common;
+using Stip.Stipstonks.Factories;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

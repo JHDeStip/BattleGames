@@ -8,7 +8,7 @@
 		<Nullable>warnings</Nullable>
 		<NoWarn>CA1416,CS1998</NoWarn>
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<ApplicationIcon>Stipstonks.ico</ApplicationIcon>
+		<ApplicationIcon>../BattleGames.Common/Icon.ico</ApplicationIcon>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	</PropertyGroup>
 
@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AvaloniaResource Include="Stipstonks.ico" />
+	  <ProjectReference Include="..\BattleGames.Common\BattleGames.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

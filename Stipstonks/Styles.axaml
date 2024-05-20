@@ -3,14 +3,6 @@
         xmlns:root="clr-namespace:Stip.Stipstonks"
         xmlns:items="clr-namespace:Stip.Stipstonks.Items">
 
-    <Style Selector="TextBlock">
-        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-    </Style>
-
-    <Style Selector="TextBlock.basicDialogMessageTextBlock">
-        <Setter Property="Margin" Value="{StaticResource BasicDialogMessageTextBlockMargin}"/>
-    </Style>
-
     <Style Selector="TextBlock.totalPriceTextBlock">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="FontSize" Value="60"/>
@@ -44,31 +36,6 @@
         <Setter Property="DockPanel.Dock" Value="Bottom"/>
     </Style>
 
-    <Style Selector="Button">
-        <Setter Property="Margin" Value="{StaticResource DefaultMargin}"/>
-        <Setter Property="Padding" Value="{StaticResource DefaultMargin}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="MinWidth" Value="75"/>
-    </Style>
-
-    <Style Selector="Button.commitOrderButton">
-        <Setter Property="Width" Value="300"/>
-        <Setter Property="Height" Value="100"/>
-        <Setter Property="FontSize" Value="40"/>
-    </Style>
-
-    <Style Selector="Button.inputButton">
-        <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="FontSize" Value="60"/>
-    </Style>
-
-    <Style Selector="Button.decrementButton"/>
-
-    <Style Selector="Button.incrementButton">
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-    </Style>
-
     <Style Selector="ProgressBar">
         <Setter Property="Maximum" Value="1"/>
     </Style>
@@ -79,7 +46,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="CornerRadius" Value="0"/>
     </Style>
-
+    
     <Style Selector="Border.inputItemBorder">
         <Setter Property="Background" Value="{Binding Color}" x:DataType="items:ProductItemBase"/>
         <Setter Property="Margin" Value="{StaticResource DefaultMargin}"/>
@@ -95,33 +62,5 @@
         <Setter Property="CornerRadius" Value="{StaticResource ChartItemTrackBorderCornerRadius}"/>
         <!--TODO: Get shadows working properly.-->
         <!--<Setter Property="BoxShadow" Value="4 -4 10 0 #4D000000"/>-->
-    </Style>
-
-    <Style Selector="DockPanel.chartItemPanel">
-        <Setter Property="Margin" Value="{StaticResource ChartItemPanelMargin}"/>
-    </Style>
-
-    <Style Selector="Window">
-        <Setter Property="Icon" Value="/Stipstonks.ico"/>
-    </Style>
-
-     <Style Selector="Window.standardWindow">
-        <Setter Property="Title" Value="{x:Static root:UIStrings.Global_ApplicationName}"/>
-        <Setter Property="Width" Value="{StaticResource InitialWindowWidth}"/>
-        <Setter Property="Height" Value="{StaticResource InitialWindowHeight}"/>
-        <Setter Property="SizeToContent" Value="Manual"/>
-    </Style>
-
-    <Style Selector="Window.dialogWindow">
-        <Setter Property="CanResize" Value="False"/>
-        <Setter Property="SizeToContent" Value="WidthAndHeight"/>
-        <Setter Property="ShowInTaskbar" Value="False"/>
-        <Setter Property="Padding" Value="{StaticResource ContainerPadding}"/>
-        <Setter Property="WindowStartupLocation" Value="CenterScreen"/>
-    </Style>
-
-    <Style Selector="Window.basicDialogWindow">
-        <Setter Property="MinWidth" Value="{StaticResource BasicDialogWindowMinWidth}"/>
-        <Setter Property="MaxWidth" Value="{StaticResource BasicDialogWindowMaxWidth}"/>
     </Style>
 </Styles>

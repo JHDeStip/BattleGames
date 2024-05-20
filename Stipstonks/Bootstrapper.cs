@@ -1,10 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Extensions.DependencyInjection;
-using Stip.Stipstonks.Common;
-using Stip.Stipstonks.Factories;
+using Stip.BattleGames.Common;
+using Stip.BattleGames.Common.Factories;
+using Stip.BattleGames.Common.Services;
 using Stip.Stipstonks.Helpers;
-using Stip.Stipstonks.Services;
 using Stip.Stipstonks.Windows;
 using System.Globalization;
 using System.Threading;
@@ -48,7 +48,8 @@ namespace Stip.Stipstonks
         private static ServiceProvider ConfigurServiceProvider()
         {
             var serviceCollection = new ServiceCollection();
-            DIModule.RegisterServices(serviceCollection, (App)Application.Current);
+            BattleGames.Common.DIModule.RegisterServices(serviceCollection);
+            DIModule.RegisterServices(serviceCollection, (AppBase)Application.Current);
 
             var serviceProviderOptions = new ServiceProviderOptions();
 #if DEBUG
