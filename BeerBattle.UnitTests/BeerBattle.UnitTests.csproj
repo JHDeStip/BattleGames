@@ -1,21 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+	<Import Project="../GlobalProjectProperties.props"/>
+	
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<IsPackable>false</IsPackable>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<RootNamespace>Stip.BeerBattle.UnitTests</RootNamespace>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<DefineConstants />
-		<DebugType>none</DebugType>
-		<DebugSymbols>false</DebugSymbols>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoFixture" Version="4.18.1" />

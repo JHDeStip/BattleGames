@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGames.Common.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleGames.UnitTestsCommon", "BattleGames.UnitTestsCommon\BattleGames.UnitTestsCommon.csproj", "{3ECD97AE-EBC1-4289-95E2-21BABF04229D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerBattle", "BeerBattle\BeerBattle.csproj", "{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerBattle", "BeerBattle\BeerBattle.csproj", "{6BB66808-C3A5-4B18-9081-E47BBF0E46DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeerBattle.UnitTests", "BeerBattle.UnitTests\BeerBattle.UnitTests.csproj", "{B19DA97F-01EA-4B51-A202-30B8AD7BD1D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerBattle.UnitTests", "BeerBattle.UnitTests\BeerBattle.UnitTests.csproj", "{B19DA97F-01EA-4B51-A202-30B8AD7BD1D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

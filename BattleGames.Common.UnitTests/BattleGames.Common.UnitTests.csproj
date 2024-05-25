@@ -1,21 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<Import Project="../GlobalProjectProperties.props"/>
+	
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<IsPackable>false</IsPackable>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<RootNamespace>Stip.BattleGames.Common.UnitTests</RootNamespace>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<DefineConstants />
-		<DebugType>none</DebugType>
-		<DebugSymbols>false</DebugSymbols>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />

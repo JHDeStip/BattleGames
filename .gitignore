@@ -2,5 +2,6 @@
 bin
 obj
 TestResults
+Temp
 Output
 *.user
