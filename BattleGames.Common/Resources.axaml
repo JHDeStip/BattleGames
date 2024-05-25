@@ -5,7 +5,7 @@
     <x:Double x:Key="InitialWindowHeight">600</x:Double>
 
     <Thickness x:Key="DefaultMargin">7.5</Thickness>
-    <Thickness x:Key="ChartItemPanelMargin">7.5 7.5 7.5 0</Thickness>
+    <Thickness x:Key="ChartItemProgressBarGridMargin">0, 7.5 7.5 7.5</Thickness>
 
     <CornerRadius x:Key="DefaultCornerRadius">7.5</CornerRadius>
     <CornerRadius x:Key="ChartItemTrackBorderCornerRadius">0 7.5 7.5 0</CornerRadius>

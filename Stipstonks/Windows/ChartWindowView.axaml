@@ -68,7 +68,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel Classes="chartItemPanel">
+                    <DockPanel>
                         <TextBlock Classes="productTextBlock chartValueTextBlock"
                                    Text="{Binding PriceString}"/>
                         <TextBlock Classes="productTextBlock chartNameTextBlock"
@@ -82,7 +82,7 @@
                                          Value="{Binding Level}">
                                 <ProgressBar.Template>
                                     <ControlTemplate>
-                                        <Grid>
+                                        <Grid Classes="chartItemProgressBarGrid">
                                             <Rectangle Name="PART_Track"/>
 
                                             <Border x:Name="PART_Indicator"
