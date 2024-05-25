@@ -68,5 +68,23 @@ namespace Stip.BeerBattle {
                 return ResourceManager.GetString("Global_ApplicationName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Afrekenen.
+        /// </summary>
+        public static string Input_Checkout {
+            get {
+                return ResourceManager.GetString("Input_Checkout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Totaal aantal punten:.
+        /// </summary>
+        public static string Input_TotalPointsLabel {
+            get {
+                return ResourceManager.GetString("Input_TotalPointsLabel", resourceCulture);
+            }
+        }
     }
 }

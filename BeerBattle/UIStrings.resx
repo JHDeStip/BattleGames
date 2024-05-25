@@ -120,4 +120,10 @@
   <data name="Global_ApplicationName" xml:space="preserve">
     <value>Beer Battle</value>
   </data>
+  <data name="Input_Checkout" xml:space="preserve">
+    <value>Afrekenen</value>
+  </data>
+  <data name="Input_TotalPointsLabel" xml:space="preserve">
+    <value>Totaal aantal punten:</value>
+  </data>
 </root>

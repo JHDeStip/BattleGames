@@ -1,0 +1,58 @@
+<commonWindows:WindowBase x:TypeArguments="local:ChartWindowViewModel"
+                          x:Class="Stip.BeerBattle.Windows.ChartWindowView"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:root="clr-namespace:Stip.BeerBattle"
+                          xmlns:local="clr-namespace:Stip.BeerBattle.Windows"
+                          xmlns:commonWindows="clr-namespace:Stip.BattleGames.Common.Windows"
+                          mc:Ignorable="d"
+                          d:DesignWidth="800" d:DesignHeight="450"
+                          Classes="standardWindow"
+                          x:DataType="local:ChartWindowViewModel"
+                          Title="{x:Static root:UIStrings.Global_ApplicationName}"
+                          Background="{Binding BackgroundColor}"
+                          WindowState="{Binding WindowState, Mode=TwoWay}">
+    <DockPanel>
+
+        <ItemsControl ItemsSource="{Binding ChartItems}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel Classes="chartItemPanel">
+                        <TextBlock Classes="productTextBlock chartValueTextBlock"
+                                   Text="{Binding TotalPointsString}"/>
+                        <TextBlock Classes="productTextBlock chartNameTextBlock"
+                                   Text="{Binding Name}"/>
+
+                        <LayoutTransformControl>
+                            <LayoutTransformControl.LayoutTransform>
+                                <RotateTransform Angle="-90"/>
+                            </LayoutTransformControl.LayoutTransform>
+                            <ProgressBar VerticalAlignment="Stretch"
+                                         Value="{Binding Level}">
+                                <ProgressBar.Template>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Rectangle Name="PART_Track"/>
+
+                                            <Border x:Name="PART_Indicator"
+                                                    Classes="chartItemTrackBorder"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ProgressBar.Template>
+                            </ProgressBar>
+                        </LayoutTransformControl>
+                    </DockPanel>
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </DockPanel>
+</commonWindows:WindowBase>

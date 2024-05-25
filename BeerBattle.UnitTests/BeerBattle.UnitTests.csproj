@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<RootNamespace>Stip.BeerBattle.UnitTests</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants />
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoFixture" Version="4.18.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+		<PackageReference Include="Moq" Version="4.20.70" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.3.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BattleGames.Common\BattleGames.Common.csproj" />
+		<ProjectReference Include="..\BattleGames.UnitTestsCommon\BattleGames.UnitTestsCommon.csproj" />
+		<ProjectReference Include="..\BeerBattle\BeerBattle.csproj" />
+	</ItemGroup>
+
+</Project>

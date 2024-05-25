@@ -7,6 +7,6 @@ public partial class App : AppBase
     public override void Initialize()
     {
         base.Initialize();
-        //_ = new Bootstrapper();
+        _ = new Bootstrapper();
     }
 }

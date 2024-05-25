@@ -1,0 +1,43 @@
+{
+  "totalPointsNumberOfDecimals": 2,
+  "windowBackgroundColor": "#AFC0E3",
+  "groups": [
+    {
+      "name": "De venten",
+      "color": "#ED6572",
+      "totalPoints": 12.3456
+    },
+    {
+      "name": "De wijven",
+      "color": "#A8E3B3",
+      "totalPoints": 98.7654
+    }
+  ],
+  "products": [
+    {
+      "name": "Pintekens",
+      "color": "#70C6DC",
+      "pointsPerItem": 1.0
+    },
+    {
+      "name": "Wijn",
+      "color": "#FDEBC8",
+      "pointsPerItem": 1.5
+    },
+    {
+      "name": "Frisdrank",
+      "color": "#FDB6D5",
+      "pointsPerItem": 1.0
+    },
+    {
+      "name": "Zware bieren",
+      "color": "#B18ABD",
+      "pointsPerItem": 2.0
+    },
+    {
+      "name": "Chips",
+      "color": "#C6DFC8",
+      "pointsPerItem": 0.5
+    }
+  ]
+}

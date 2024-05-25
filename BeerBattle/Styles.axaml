@@ -1,4 +1,23 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:items="clr-namespace:Stip.BattleGames.Common.Items;assembly=BattleGames.Common">
 
+    <Style Selector="TextBlock.commitOrderTextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="TextBlock.commitOrderButtonTitle">
+        <Setter Property="FontSize" Value="30"/>
+    </Style>
+
+    <Style Selector="TextBlock.commitOrderButtonGroupName">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="40"/>
+    </Style>
+    
+    <Style Selector="Button.commitOrderButton">
+		<Setter Property="Background" Value="{Binding Color}" x:DataType="items:ItemBase"/>
+        <Setter Property="Width" Value="300"/>
+        <Setter Property="Height" Value="100"/>
+    </Style>
 </Styles>

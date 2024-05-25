@@ -1,0 +1,93 @@
+<commonWindows:WindowBase x:TypeArguments="local:InputWindowViewModel"
+                          x:Class="Stip.BeerBattle.Windows.InputWindowView"
+                          xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:root="clr-namespace:Stip.BeerBattle"
+                          xmlns:local="clr-namespace:Stip.BeerBattle.Windows"
+                          xmlns:common="clr-namespace:Stip.BattleGames.Common;assembly=BattleGames.Common"
+                          xmlns:commonWindows="clr-namespace:Stip.BattleGames.Common.Windows"
+                          mc:Ignorable="d"
+                          d:DesignWidth="800" d:DesignHeight="450"
+                          Classes="standardWindow"
+                          x:DataType="local:InputWindowViewModel"
+                          Title="{x:Static root:UIStrings.Global_ApplicationName}"
+                          IsEnabled="{Binding UIEnabled}"
+                          Background="{Binding BackgroundColor}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal">
+            <TextBlock Classes="totalLabelTextBlock">
+                <Run Text="{x:Static root:UIStrings.Input_TotalPointsLabel}"/>
+                <Run Text=" "/>
+            </TextBlock>
+            <TextBlock Classes="totalValueTextBlock"
+                       Text="{Binding TotalPointsString}"/>
+        </StackPanel>
+
+        <ItemsControl DockPanel.Dock="Top"
+                      ItemsSource="{Binding GroupItems}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Classes="commitOrderButton"
+                            Command="{Binding $parent[ItemsControl].((local:InputWindowViewModel)DataContext).CommitOrder}"
+                            CommandParameter="{Binding $self.DataContext}">
+                        <StackPanel>
+                            <TextBlock Classes="commitOrderTextBlock commitOrderButtonTitle"
+                                       Text="{x:Static root:UIStrings.Input_Checkout}"/>
+                            <TextBlock Classes="commitOrderTextBlock commitOrderButtonGroupName"
+                                       Text="{Binding Name}"/>
+                        </StackPanel>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal">
+            <Button Content="{x:Static common:UIStrings.Input_Reset}"
+                    Command="{Binding Reset}"/>
+            <Button Content="{x:Static common:UIStrings.Input_ToggleChartWindowState}"
+                    Command="{Binding ToggleChartWindowState}"/>
+        </StackPanel>
+
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding InputItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="inputItemBorder">
+                            <Grid RowDefinitions="Auto, Auto, Auto"
+                                  ColumnDefinitions="Auto, *">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Classes="productTextBlock inputNameTextBlock"
+                                           Text="{Binding Name}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                           Classes="productTextBlock inputAmountTextBlock"
+                                           Text="{Binding Amount}"/>
+                                <Button Grid.Row="2" Grid.Column="0"
+                                        Classes="inputButton decrementButton"
+                                        Content="{x:Static common:UIStrings.Input_Decrement}"
+                                        Command="{Binding Decrement}"/>
+                                <Button Grid.Row="2" Grid.Column="1"
+                                        Classes="inputButton incrementButton"
+                                        Content="{x:Static common:UIStrings.Input_Increment}"
+                                        Command="{Binding Increment}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</commonWindows:WindowBase>
