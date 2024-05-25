@@ -20,9 +20,9 @@
         <Company>JH De Stip</Company>
         <Copyright>Copyright © 2024 JH De Stip</Copyright>
         <NeutralLanguage>nl</NeutralLanguage>
-        <ProductVersion>1.0.0</ProductVersion>
-        <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <FileVersion>1.0.0.0</FileVersion>
+        <ProductVersion>2.0.0</ProductVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <FileVersion>2.0.0.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
