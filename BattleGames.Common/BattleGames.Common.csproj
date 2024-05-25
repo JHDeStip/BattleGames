@@ -1,8 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../GlobalProjectProperties.props"/>
+	<Import Project="../GlobalProjectProperties.props" />
 
 	<PropertyGroup>
+		<AssemblyTitle>Battle Games Common</AssemblyTitle>
+		<ProductName>Battle Games</ProductName>
+		<Description>Shared code</Description>
 		<RootNamespace>Stip.BattleGames.Common</RootNamespace>
 	</PropertyGroup>
 

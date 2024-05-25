@@ -4,6 +4,9 @@
 	<Import Project="../GlobalExecutableProjectProperties.props"/>
 	
 	<PropertyGroup>
+		<AssemblyTitle>Beer Battle</AssemblyTitle>
+		<ProductName>Beer Battle</ProductName>
+		<Description>Main executable</Description>
 		<RootNamespace>Stip.BeerBattle</RootNamespace>
 	</PropertyGroup>
 

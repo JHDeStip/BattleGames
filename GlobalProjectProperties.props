@@ -1,22 +1,40 @@
 <Project>
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<IsPackable>false</IsPackable>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<Nullable>warnings</Nullable>
-		<NoWarn>CA1416,CS1998</NoWarn>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-		<ApplicationIcon>../BattleGames.Common/Icon.ico</ApplicationIcon>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <Nullable>warnings</Nullable>
+        <NoWarn>CA1416,CS1998</NoWarn>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>../BattleGames.Common/Icon.ico</ApplicationIcon>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<DefineConstants />
-		<DebugType>none</DebugType>
-		<DebugSymbols>false</DebugSymbols>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DefineConstants />
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-	</ItemGroup>
+    <PropertyGroup>
+        <Company>JH De Stip</Company>
+        <Copyright>Copyright © 2024 JH De Stip</Copyright>
+        <NeutralLanguage>nl</NeutralLanguage>
+        <ProductVersion>1.0.0</ProductVersion>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <FileVersion>1.0.0.0</FileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Security.AllowPartiallyTrustedCallersAttribute" />
+        <AssemblyAttribute Include="System.Security.SecurityRulesAttribute">
+            <_Parameter1>System.Security.SecurityRuleSet.Level1</_Parameter1>
+            <_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
+            <_Parameter2>SkipVerificationInFullTrust = true</_Parameter2>
+            <_Parameter2_IsLiteral>true</_Parameter2_IsLiteral>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.InteropServices.ComVisibleAttribute">
+            <_Parameter1>false</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>
