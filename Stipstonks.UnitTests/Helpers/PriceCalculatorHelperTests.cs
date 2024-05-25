@@ -32,7 +32,7 @@ public class PriceCalculatorHelperTests
         Assert.AreEqual(1, products[1].Level);
         Assert.AreEqual(5 / (double)8, products[2].Level);
 
-        for (int i = 0; i < referenceProducts.Count; ++i)
+        for (var i = 0; i < referenceProducts.Count; ++i)
         {
             products[i].Level = referenceProducts[i].Level;
         }
@@ -57,7 +57,7 @@ public class PriceCalculatorHelperTests
 
         target.CalculatePriceLevels(products);
 
-        for (int i = 0; i < referenceProducts.Count; ++i)
+        for (var i = 0; i < referenceProducts.Count; ++i)
         {
             Assert.AreEqual(0, products[i].Level);
             products[i].Level = referenceProducts[i].Level;

@@ -1,7 +1,6 @@
-﻿using Stip.BattleGames.Common;
-using System.IO;
+﻿using System.IO;
 
-namespace Stip.Stipstonks.Helpers;
+namespace Stip.BattleGames.Common.Helpers;
 
 public class FileHelper : IInjectable
 {

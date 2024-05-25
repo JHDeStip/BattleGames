@@ -18,10 +18,12 @@
     <Grid RowDefinitions="Auto, *, Auto"
           ColumnDefinitions="Auto, *, Auto">
         <TextBlock Grid.Row="0" Grid.Column="0"
-                   Classes="totalPriceLabelTextBlock"
-                   Text="{x:Static root:UIStrings.Input_TotalLabel}"/>
+                   Classes="totalLabelTextBlock">
+            <Run Text="{x:Static root:UIStrings.Input_TotalLabel}"/>
+            <Run Text=" "/>
+        </TextBlock>
         <TextBlock Grid.Row="0" Grid.Column="1"
-                   Classes="totalPriceTextBlock"
+                   Classes="totalValueTextBlock"
                    Text="{Binding TotalPriceString}"/>
 
         <Button Grid.Row="0" Grid.Column="2"
@@ -30,7 +32,7 @@
                 IsEnabled="{Binding IsRunning}"
                 Command="{Binding CommitOrder}"/>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
             <ItemsControl ItemsSource="{Binding InputItems}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -40,7 +42,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Classes="inputItemBorder"
-                                IsEnabled="{Binding  $parent[ItemsControl].((local:InputWindowViewModel)DataContext).IsRunning}">
+                                IsEnabled="{Binding $parent[ItemsControl].((local:InputWindowViewModel)DataContext).IsRunning}">
                             <Grid RowDefinitions="Auto, Auto, Auto"
                                   ColumnDefinitions="Auto, *">
                                 <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"

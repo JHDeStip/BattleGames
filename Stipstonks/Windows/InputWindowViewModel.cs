@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Stip.BattleGames.Common;
 using Stip.BattleGames.Common.Factories;
+using Stip.BattleGames.Common.Messages;
 using Stip.BattleGames.Common.Services;
 using Stip.BattleGames.Common.Windows;
 using Stip.Stipstonks.Factories;
@@ -60,7 +61,7 @@ public class InputWindowViewModel(
         await base.ActivateAsync(ct);
 
         _messenger.RegisterAll(this);
-        UpdateItems();
+        UpdateInputItems();
     }
 
     public override async ValueTask DeactivateAsync(CancellationToken ct)
@@ -99,7 +100,7 @@ public class InputWindowViewModel(
                 inputItem.Amount = 0;
             }
 
-            UpdateItems();
+            UpdateInputItems();
 
             await SaveDataAsync();
         } 
@@ -149,7 +150,7 @@ public class InputWindowViewModel(
 
             _messenger.Send<PricesUpdatedMessage>();
 
-            UpdateItems();
+            UpdateInputItems();
 
             await SaveDataAsync();
         }
@@ -167,10 +168,10 @@ public class InputWindowViewModel(
                 return;
             }
 
-            UpdateItems();
+            UpdateInputItems();
         });
 
-    private void UpdateItems()
+    private void UpdateInputItems()
     {
         InputItems = _inputItemsFactory.Create(
             _applicationContext.Products,

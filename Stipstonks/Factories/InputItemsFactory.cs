@@ -2,6 +2,7 @@
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
 using Stip.Stipstonks.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +15,7 @@ public class InputItemsFactory(
     public virtual List<InputItem> Create(
         IEnumerable<Product> products,
         IEnumerable<InputItem> existingInputItems,
-        System.Action totalPriceChangedCallback)
+        Action totalPriceChangedCallback)
     {
         var items = products
             .Select(x => InputItem.From(

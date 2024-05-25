@@ -69,7 +69,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <DockPanel Classes="chartItemPanel">
-                        <TextBlock Classes="productTextBlock chartPriceTextBlock"
+                        <TextBlock Classes="productTextBlock chartValueTextBlock"
                                    Text="{Binding PriceString}"/>
                         <TextBlock Classes="productTextBlock chartNameTextBlock"
                                    Text="{Binding Name}"/>

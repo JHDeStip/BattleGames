@@ -38,7 +38,7 @@ public class Bootstrapper
         CultureInfo.DefaultThreadCurrentCulture = culture;
         CultureInfo.CurrentCulture = culture;
 
-        var uiCulture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+        var uiCulture = (CultureInfo)CultureInfo.CurrentUICulture.Clone();
         uiCulture.NumberFormat.CurrencySymbol = UIStrings.Global_CurrencySymbol;
 
         CultureInfo.DefaultThreadCurrentUICulture = uiCulture;
@@ -74,14 +74,14 @@ public class Bootstrapper
             var windowManager = scope.GetRequiredService<WindowManager>();
 
             var inputWindowTask = await windowManager.ShowWindowAsync(
-                scope.GetRequiredService<ChartWindowView>(),
-                CancellationToken.None);
-
-            var chartWindowTask = await windowManager.ShowWindowAsync(
                 scope.GetRequiredService<InputWindowView>(),
                 CancellationToken.None);
 
-            await Task.WhenAll(chartWindowTask, inputWindowTask);
+            var chartWindowTask = await windowManager.ShowWindowAsync(
+                scope.GetRequiredService<ChartWindowView>(),
+                CancellationToken.None);
+
+            await Task.WhenAll(inputWindowTask, chartWindowTask);
         }
     }
 

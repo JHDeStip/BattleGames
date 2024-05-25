@@ -1,5 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using Stip.BattleGames.Common.Windows;
 using Stip.Stipstonks.Helpers;
@@ -16,26 +15,16 @@ public class ChartWindowViewModel(
     ApplicationContext _applicationContext,
     IMessenger _messenger,
     PriceFormatHelper _priceFormatHelper)
-    : ViewModelBase,
+    : ChartWindowViewModelBase(_messenger),
     IRecipient<PricesUpdatedMessage>,
-    IRecipient<ToggleChartWindowStateMessage>,
     IRecipient<StartedMessage>,
     IRecipient<StoppedMessage>
 {
-    private string _backgroundColor;
-    public string BackgroundColor { get => _backgroundColor; set => SetProperty(ref _backgroundColor, value); }
-
     public StonkMarketEventProgressItem PriceUpdateProgressItem { get; set; } = new();
     public StonkMarketEventProgressItem CrashProgressItem { get; set; } = new();
 
     private IReadOnlyList<ChartItem> _chartItems = [];
     public IReadOnlyList<ChartItem> ChartItems { get => _chartItems; set => SetProperty(ref _chartItems, value); }
-
-    private WindowState _windowState;
-    public WindowState WindowState { get => _windowState; set => SetProperty(ref _windowState, value); }
-
-    private WindowState _previousWindowState;
-    private bool canClose;
 
     public override async ValueTask InitializeAsync(CancellationToken ct)
     {
@@ -52,26 +41,7 @@ public class ChartWindowViewModel(
     public override async ValueTask ActivateAsync(CancellationToken ct)
     {
         await base.ActivateAsync(ct);
-
-        _messenger.RegisterAll(this);
         RefreshChart();
-    }
-
-    public override async ValueTask DeactivateAsync(CancellationToken ct)
-    {
-        await base.DeactivateAsync(ct);
-
-        _messenger.UnregisterAll(this);
-    }
-
-    public override async ValueTask<bool> CanDeactivateAsync(CancellationToken ct)
-        => canClose
-        && await base.CanDeactivateAsync(ct);
-
-    public override ValueTask CloseAsync(CancellationToken ct)
-    {
-        canClose = true;
-        return base.CloseAsync(ct);
     }
 
     public void Receive(PricesUpdatedMessage _)
@@ -96,20 +66,6 @@ public class ChartWindowViewModel(
             {
                 BackgroundColor = _applicationContext.Config.WindowBackgroundColor;
             }
-        });
-
-    public void Receive(ToggleChartWindowStateMessage _)
-        => Dispatcher.UIThread.Invoke(() =>
-        {
-            if (_windowState == WindowState.FullScreen)
-            {
-                WindowState = _previousWindowState;
-                return;
-            }
-
-            _previousWindowState = WindowState;
-
-            WindowState = WindowState.FullScreen;
         });
 
     public void Receive(StartedMessage _)

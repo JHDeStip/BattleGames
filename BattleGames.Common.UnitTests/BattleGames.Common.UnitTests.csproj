@@ -26,6 +26,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BattleGames.Common\BattleGames.Common.csproj" />
+		<ProjectReference Include="..\BattleGames.UnitTestsCommon\BattleGames.UnitTestsCommon.csproj" />
 	</ItemGroup>
 
 </Project>

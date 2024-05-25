@@ -5,9 +5,9 @@ using System;
 namespace Stip.Stipstonks.Items;
 
 public class InputItem
-    (PriceFormatHelper priceFormatHelper)
+    (PriceFormatHelper _priceFormatHelper)
     : ProductItemBase(
-        priceFormatHelper)
+        _priceFormatHelper)
 {
     public Action TotalPriceChangedCallback { get; set; }
 
@@ -19,7 +19,6 @@ public class InputItem
         {
             if (SetProperty(ref _amount, value))
             {
-                OnPropertyChanged(nameof(TotalPriceString));
                 TotalPriceChangedCallback?.Invoke();
             }
         }
@@ -33,14 +32,10 @@ public class InputItem
             if (SetProperty(ref _priceInCents, value))
             {
                 OnPropertyChanged(nameof(PriceString));
-                OnPropertyChanged(nameof(TotalPriceString));
                 TotalPriceChangedCallback?.Invoke();
             }
         }
     }
-
-    public string TotalPriceString
-        => _priceFormatHelper.Format(PriceInCents * Amount);
 
     public void Decrement()
     {

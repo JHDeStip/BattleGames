@@ -1,43 +1,10 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:root="clr-namespace:Stip.Stipstonks"
-        xmlns:items="clr-namespace:Stip.Stipstonks.Items">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style Selector="TextBlock.totalPriceTextBlock">
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="FontSize" Value="60"/>
-    </Style>
-
-    <Style Selector="TextBlock.totalPriceLabelTextBlock">
-        <Setter Property="VerticalAlignment" Value="Center"/>
+    <Style Selector="Button.commitOrderButton">
+        <Setter Property="Width" Value="300"/>
+        <Setter Property="Height" Value="100"/>
         <Setter Property="FontSize" Value="40"/>
-    </Style>
-
-    <Style Selector="TextBlock.productTextBlock">
-        <Setter Property="TextAlignment" Value="Center"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-    </Style>
-
-    <Style Selector="TextBlock.inputNameTextBlock">
-        <Setter Property="FontSize" Value="30"/>
-    </Style>
-
-    <Style Selector="TextBlock.inputAmountTextBlock">
-        <Setter Property="FontSize" Value="60"/>
-    </Style>
-
-    <Style Selector="TextBlock.chartNameTextBlock">
-        <Setter Property="FontSize" Value="30"/>
-        <Setter Property="DockPanel.Dock" Value="Bottom"/>
-    </Style>
-
-    <Style Selector="TextBlock.chartPriceTextBlock">
-        <Setter Property="FontSize" Value="50"/>
-        <Setter Property="DockPanel.Dock" Value="Bottom"/>
-    </Style>
-
-    <Style Selector="ProgressBar">
-        <Setter Property="Maximum" Value="1"/>
     </Style>
 
     <Style Selector="ProgressBar.stonkMarketEventProgressBar">
@@ -45,22 +12,5 @@
         <Setter Property="DockPanel.Dock" Value="Bottom"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="CornerRadius" Value="0"/>
-    </Style>
-    
-    <Style Selector="Border.inputItemBorder">
-        <Setter Property="Background" Value="{Binding Color}" x:DataType="items:ProductItemBase"/>
-        <Setter Property="Margin" Value="{StaticResource DefaultMargin}"/>
-        <Setter Property="Padding" Value="{StaticResource DefaultMargin}"/>
-        <Setter Property="Width" Value="{Binding $self.Bounds.Height}"/>
-        <Setter Property="CornerRadius" Value="{StaticResource DefaultCornerRadius}"/>
-        <Setter Property="BoxShadow" Value="4 4 10 0 #4D000000"/>
-    </Style>
-
-    <Style Selector="Border.chartItemTrackBorder">
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="Background" Value="{Binding Color}" x:DataType="items:ProductItemBase"/>
-        <Setter Property="CornerRadius" Value="{StaticResource ChartItemTrackBorderCornerRadius}"/>
-        <!--TODO: Get shadows working properly.-->
-        <!--<Setter Property="BoxShadow" Value="4 -4 10 0 #4D000000"/>-->
     </Style>
 </Styles>

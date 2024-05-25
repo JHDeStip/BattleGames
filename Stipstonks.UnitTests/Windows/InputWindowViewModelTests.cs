@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stip.BattleGames.Common;
 using Stip.BattleGames.Common.Factories;
+using Stip.BattleGames.Common.Messages;
 using Stip.BattleGames.Common.Services;
 using Stip.BattleGames.UnitTestsCommon;
 using Stip.Stipstonks.Factories;
@@ -466,9 +467,9 @@ public class InputWindowViewModelTests
 
             mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Exactly(2));
             Assert.AreEqual(totalPriceStrings[1], target.TotalPriceString);
-
-            VerifyNoOtherCalls();
         }
+
+        VerifyNoOtherCalls();
     }
 
     [TestMethod]

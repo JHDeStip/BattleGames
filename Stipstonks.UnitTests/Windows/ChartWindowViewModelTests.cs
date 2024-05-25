@@ -1,8 +1,8 @@
 ﻿using AutoFixture;
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Stip.BattleGames.Common.Messages;
 using Stip.BattleGames.UnitTestsCommon;
 using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Items;
@@ -61,42 +61,6 @@ public class ChartWindowViewModelTests
         mockMessenger.VerifyRegister<StoppedMessage>(target, Times.Once());
 
         mockMessenger.VerifyNoOtherCalls();
-    }
-
-    [TestMethod]
-    public async Task DeactivateAsync_CorrectlyDeactivates()
-    {
-        var fixture = FixtureFactory.Create();
-
-        var mockMessenger = fixture.FreezeMock<IMessenger>();
-
-        var target = fixture.Create<ChartWindowViewModel>();
-
-        await target.DeactivateAsync(default);
-
-        mockMessenger.Verify(x => x.UnregisterAll(target), Times.Once);
-
-        mockMessenger.VerifyNoOtherCalls();
-    }
-
-    [DataTestMethod]
-    [DataRow(true)]
-    [DataRow(false)]
-    public async Task CanDeactivateAsync_ReturnsCorrectly(
-        bool closeAsyncCalled)
-    {
-        var fixture = FixtureFactory.Create();
-
-        var target = fixture.Create<ChartWindowViewModel>();
-
-        if (closeAsyncCalled)
-        {
-            await target.CloseAsync(CancellationToken.None);
-        }
-
-        var actual = await target.CanDeactivateAsync(CancellationToken.None);
-
-        Assert.AreEqual(closeAsyncCalled, actual);
     }
 
     [DataTestMethod]
@@ -166,31 +130,8 @@ public class ChartWindowViewModelTests
         }
     }
 
-    [DataTestMethod]
-    [DataRow(WindowState.Normal)]
-    [DataRow(WindowState.Minimized)]
-    [DataRow(WindowState.Maximized)]
-    public void Receive_ToggleChartWindowStateMessage_CorrectlyHandlesMessage(
-        WindowState initialWindowState)
-    {
-        var fixture = FixtureFactory.Create();
-
-        var target = fixture
-            .Build<ChartWindowViewModel>()
-            .With(x => x.WindowState, initialWindowState)
-            .Create();
-
-        target.Receive(new ToggleChartWindowStateMessage());
-
-        Assert.AreEqual(WindowState.FullScreen, target.WindowState);
-
-        target.Receive(new ToggleChartWindowStateMessage());
-
-        Assert.AreEqual(initialWindowState, target.WindowState);
-    }
-
     [TestMethod]
-    public void Receive_StatedMessage_CorrectlyHandlesMessage()
+    public void Receive_StartedMessage_CorrectlyHandlesMessage()
     {
         var fixture = FixtureFactory.Create();
 
