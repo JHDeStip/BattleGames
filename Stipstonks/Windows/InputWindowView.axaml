@@ -32,8 +32,10 @@
                 IsEnabled="{Binding IsRunning}"
                 Command="{Binding CommitOrder}"/>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
-            <ItemsControl ItemsSource="{Binding InputItems}">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                      x:Name="InputItemsScrollViewer">
+            <ItemsControl x:Name="InputItemsItemsControl"
+                          ItemsSource="{Binding InputItems}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
