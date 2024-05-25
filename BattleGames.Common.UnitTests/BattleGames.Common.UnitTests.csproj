@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<Import Project="../GlobalProjectProperties.props"/>
+	<Import Project="../GlobalProjectProperties.props" />
 	
 	<PropertyGroup>
 		<RootNamespace>Stip.BattleGames.Common.UnitTests</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
 		<PackageReference Include="Moq" Version="4.20.70" />
-		<PackageReference Include="MSTest.TestAdapter" Version="3.3.1" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.4.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
