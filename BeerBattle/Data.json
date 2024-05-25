@@ -1,16 +1,16 @@
 {
-  "totalPointsNumberOfDecimals": 2,
+  "totalPointsNumberOfDecimals": 1,
   "windowBackgroundColor": "#AFC0E3",
   "groups": [
     {
       "name": "De venten",
       "color": "#ED6572",
-      "totalPoints": 12.3456
+      "totalPoints": 17.0
     },
     {
       "name": "De wijven",
       "color": "#A8E3B3",
-      "totalPoints": 98.7654
+      "totalPoints": 25.5
     }
   ],
   "products": [
