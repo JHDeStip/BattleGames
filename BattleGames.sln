@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerBattle", "BeerBattle\Be
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeerBattle.UnitTests", "BeerBattle.UnitTests\BeerBattle.UnitTests.csproj", "{B19DA97F-01EA-4B51-A202-30B8AD7BD1D8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7E8F099A-E296-4175-BBED-E9B94B451AE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F0548011-1E5E-459E-977F-6403A46CCCB1} = {7E8F099A-E296-4175-BBED-E9B94B451AE0}
+		{DC708409-1E45-477E-B9F4-5E2E904F42E3} = {7E8F099A-E296-4175-BBED-E9B94B451AE0}
+		{3ECD97AE-EBC1-4289-95E2-21BABF04229D} = {7E8F099A-E296-4175-BBED-E9B94B451AE0}
+		{B19DA97F-01EA-4B51-A202-30B8AD7BD1D8} = {7E8F099A-E296-4175-BBED-E9B94B451AE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {654EF841-FAA4-442D-847F-CD54402FED69}
