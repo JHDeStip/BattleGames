@@ -61,7 +61,7 @@ public partial class InputWindowViewModel(
     {
         await base.ActivateAsync(ct);
 
-        _messenger.RegisterAll(this);
+        _messenger.Register(this);
         UpdateInputItems();
     }
 

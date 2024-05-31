@@ -54,16 +54,12 @@ public partial class InputWindowViewModel(
     public override async ValueTask ActivateAsync(CancellationToken ct)
     {
         await base.ActivateAsync(ct);
-
-        _messenger.RegisterAll(this);
         InitializeGroupItems();
         InitializeInputItems();
     }
 
     public override async ValueTask DeactivateAsync(CancellationToken ct)
     {
-        _messenger.UnregisterAll(this);
-
         await using (var scope = _serviceScopeFactory.CreateAsyncScope())
         {
             await scope

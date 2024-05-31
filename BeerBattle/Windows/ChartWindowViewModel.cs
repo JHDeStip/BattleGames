@@ -31,6 +31,7 @@ public partial class ChartWindowViewModel(
     public override async ValueTask ActivateAsync(CancellationToken ct)
     {
         await base.ActivateAsync(ct);
+        _messenger.Register<PointsUpdatedMessage>(this);
         RefreshChart();
     }
 

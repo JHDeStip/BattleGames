@@ -124,8 +124,6 @@ public class InputWindowViewModelTests
 
         await target.DeactivateAsync(CancellationToken.None);
 
-        mockMessenger.Verify(x => x.UnregisterAll(target), Times.Once);
-
         mockServiceScopeFactory.Verify(x => x.CreateAsyncScope(), Times.Once);
         mockAsyncServiceScope.Verify(x => x.GetRequiredService<ChartWindowViewModel>(), Times.Once);
         mockChartWindowViewModel.Verify(x => x.CloseAsync(CancellationToken.None), Times.Once);

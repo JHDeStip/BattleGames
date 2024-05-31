@@ -42,6 +42,9 @@ public partial class ChartWindowViewModel(
     public override async ValueTask ActivateAsync(CancellationToken ct)
     {
         await base.ActivateAsync(ct);
+        _messenger.Register<PricesUpdatedMessage>(this);
+        _messenger.Register<StartedMessage>(this);
+        _messenger.Register<StoppedMessage>(this);
         RefreshChart();
     }
 
