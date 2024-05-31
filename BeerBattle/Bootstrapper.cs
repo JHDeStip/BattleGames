@@ -76,9 +76,6 @@ public class Bootstrapper
                 .LoadDataAsync();
             if (!loadResult.IsSuccess)
             {
-                await scope
-                    .GetRequiredService<DialogService>()
-                    .ShowErrorAsync(BattleGames.Common.UIStrings.Error_CannotLoadData);
                 return ActionResult.Failure;
             }
 

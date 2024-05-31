@@ -61,15 +61,6 @@ namespace Stip.BattleGames.Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Kan gegevens niet laden..
-        /// </summary>
-        public static string Error_CannotLoadData {
-            get {
-                return ResourceManager.GetString("Error_CannotLoadData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Kan gegevens niet opslaan..
         /// </summary>
         public static string Error_CannotSaveData {
