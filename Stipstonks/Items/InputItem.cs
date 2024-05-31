@@ -1,28 +1,22 @@
-﻿using Stip.Stipstonks.Helpers;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Stip.Stipstonks.Helpers;
 using Stip.Stipstonks.Models;
 using System;
 
 namespace Stip.Stipstonks.Items;
 
-public class InputItem
+public partial class InputItem
     (PriceFormatHelper _priceFormatHelper)
     : ProductItemBase(
         _priceFormatHelper)
 {
     public Action TotalPriceChangedCallback { get; set; }
 
+    [ObservableProperty]
     private int _amount;
-    public int Amount
-    {
-        get => _amount;
-        set
-        {
-            if (SetProperty(ref _amount, value))
-            {
-                TotalPriceChangedCallback?.Invoke();
-            }
-        }
-    }
+
+    partial void OnAmountChanged(int value)
+        => TotalPriceChangedCallback?.Invoke();
 
     public override int PriceInCents
     {

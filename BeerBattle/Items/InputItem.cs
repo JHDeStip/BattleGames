@@ -1,26 +1,20 @@
-﻿using Stip.BattleGames.Common.Items;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Stip.BattleGames.Common.Items;
 using Stip.BeerBattle.Models;
 using System;
 
 namespace Stip.BeerBattle.Items;
 
-public class InputItem : ItemBase
+public partial class InputItem : ItemBase
 {
     public required Product Product { get; init; }
     public Action TotalPointsChangedCallback { get; set; }
 
+    [ObservableProperty]
     private int _amount;
-    public int Amount
-    {
-        get => _amount;
-        set
-        {
-            if (SetProperty(ref _amount, value))
-            {
-                TotalPointsChangedCallback?.Invoke();
-            }
-        }
-    }
+
+    partial void OnAmountChanged(int value)
+        => TotalPointsChangedCallback?.Invoke();
 
     public void Decrement()
     {

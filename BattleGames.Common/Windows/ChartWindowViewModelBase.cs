@@ -4,19 +4,20 @@ using CommunityToolkit.Mvvm.Messaging;
 using Stip.BattleGames.Common.Messages;
 using System.Threading.Tasks;
 using System.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Stip.BattleGames.Common.Windows;
 
-public abstract class ChartWindowViewModelBase(
+public abstract partial class ChartWindowViewModelBase(
     IMessenger _messenger)
     : ViewModelBase,
     IRecipient<ToggleChartWindowStateMessage>
 {
+    [ObservableProperty]
     private string _backgroundColor;
-    public string BackgroundColor { get => _backgroundColor; set => SetProperty(ref _backgroundColor, value); }
 
+    [ObservableProperty]
     private WindowState _windowState;
-    public WindowState WindowState { get => _windowState; set => SetProperty(ref _windowState, value); }
 
     private WindowState _previousWindowState;
     private bool canClose;

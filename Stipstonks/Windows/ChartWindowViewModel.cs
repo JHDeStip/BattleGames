@@ -1,4 +1,5 @@
 ﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Stip.BattleGames.Common.Windows;
 using Stip.Stipstonks.Helpers;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Windows;
 
-public class ChartWindowViewModel(
+public partial class ChartWindowViewModel(
     ApplicationContext _applicationContext,
     IMessenger _messenger,
     PriceFormatHelper _priceFormatHelper)
@@ -23,8 +24,8 @@ public class ChartWindowViewModel(
     public StonkMarketEventProgressItem PriceUpdateProgressItem { get; set; } = new();
     public StonkMarketEventProgressItem CrashProgressItem { get; set; } = new();
 
+    [ObservableProperty]
     private IReadOnlyList<ChartItem> _chartItems = [];
-    public IReadOnlyList<ChartItem> ChartItems { get => _chartItems; set => SetProperty(ref _chartItems, value); }
 
     public override async ValueTask InitializeAsync(CancellationToken ct)
     {

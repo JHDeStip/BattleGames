@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Stip.BattleGames.Common;
 using Stip.BattleGames.Common.Factories;
 using Stip.BattleGames.Common.Messages;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Stip.BeerBattle.Windows;
 
-public class InputWindowViewModel(
+public partial class InputWindowViewModel(
     ApplicationContext _applicationContext,
     IMessenger _messenger,
     DataPersistenceHelper _dataPersistenceHelper,
@@ -28,21 +29,20 @@ public class InputWindowViewModel(
     : ViewModelBase,
     IUIEnabled
 {
-
+    [ObservableProperty]
     private string _backgroundColor;
-    public string BackgroundColor { get => _backgroundColor; set => SetProperty(ref _backgroundColor, value); }
 
-    private bool _uiEnabled = true;
-    public bool UIEnabled { get => _uiEnabled; set => SetProperty(ref _uiEnabled, value); }
+    [ObservableProperty]
+    private bool _UIEnabled = true;
 
+    [ObservableProperty]
     private IReadOnlyList<GroupItem> _groupItems = [];
-    public IReadOnlyList<GroupItem> GroupItems { get => _groupItems; set => SetProperty(ref _groupItems, value); }
 
+    [ObservableProperty]
     private IReadOnlyList<InputItem> _inputItems = [];
-    public IReadOnlyList<InputItem> InputItems { get => _inputItems; set => SetProperty(ref _inputItems, value); }
 
+    [ObservableProperty]
     private string _totalPointsString;
-    public string TotalPointsString { get => _totalPointsString; private set => SetProperty(ref _totalPointsString, value); }
 
     public override async ValueTask InitializeAsync(CancellationToken ct)
     {

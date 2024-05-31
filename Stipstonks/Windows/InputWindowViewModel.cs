@@ -1,4 +1,5 @@
 ﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Stip.BattleGames.Common;
 using Stip.BattleGames.Common.Factories;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Stip.Stipstonks.Windows;
 
-public class InputWindowViewModel(
+public partial class InputWindowViewModel(
     ApplicationContext _applicationContext,
     IMessenger _messenger,
     DataPersistenceHelper _dataPersistenceHelper,
@@ -31,21 +32,21 @@ public class InputWindowViewModel(
     IUIEnabled,
     IRecipient<PricesUpdatedMessage>
 {
-
+    [ObservableProperty]
     private string _backgroundColor;
-    public string BackgroundColor { get => _backgroundColor; set => SetProperty(ref _backgroundColor, value); }
 
-    private bool _uiEnabled = true;
-    public bool UIEnabled { get => _uiEnabled; set => SetProperty(ref _uiEnabled, value); }
+    [ObservableProperty]
+    private bool _UIEnabled = true;
 
+    [ObservableProperty]
     private IReadOnlyList<InputItem> _inputItems = [];
-    public IReadOnlyList<InputItem> InputItems { get => _inputItems; set => SetProperty(ref _inputItems, value); }
 
+    [ObservableProperty]
     private string _totalPriceString;
-    public string TotalPriceString { get => _totalPriceString; private set => SetProperty(ref _totalPriceString, value); }
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotRunning))]
     private bool _isRunning;
-    public bool IsRunning { get => _isRunning; set => SetProperty(ref _isRunning, value); }
 
     public bool IsNotRunning => !IsRunning;
 
