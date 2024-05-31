@@ -1,31 +1,23 @@
 ﻿using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 
 namespace Stip.BattleGames.Common.Helpers;
 
 public class JsonHelper : IInjectable
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions;
-
-    static JsonHelper()
-    {
-        _jsonSerializerOptions = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true
-        };
-
-        _jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-    }
-
-    public virtual async Task<ActionResult> SerializeToUtf8StreamAsync(object model, Stream stream)
+    public virtual async Task<ActionResult> SerializeToUtf8StreamAsync<T>(
+        T model,
+        Stream stream,
+        JsonTypeInfo<T> typeInfo)
     {
         try
         {
-            await JsonSerializer.SerializeAsync(stream, model, _jsonSerializerOptions);
+            await JsonSerializer.SerializeAsync(
+                stream,
+                model,
+                typeInfo);
             await stream.FlushAsync();
             return ActionResult.Success;
         }
@@ -35,11 +27,13 @@ public class JsonHelper : IInjectable
         }
     }
 
-    public virtual async Task<ActionResult<T>> DeserializeFromUtf8StreamAsync<T>(Stream stream)
+    public virtual async Task<ActionResult<T>> DeserializeFromUtf8StreamAsync<T>(
+        Stream stream,
+        JsonTypeInfo<T> typeInfo)
     {
         try
         {
-            return new ActionResult<T>(await JsonSerializer.DeserializeAsync<T>(stream, _jsonSerializerOptions));
+            return new ActionResult<T>(await JsonSerializer.DeserializeAsync(stream, typeInfo));
         }
         catch
         {

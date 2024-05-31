@@ -2,20 +2,30 @@
 using Stip.BattleGames.Common.Helpers;
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Stip.BattleGames.Common.UnitTests.Helpers;
+
+[JsonSourceGenerationOptions(
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+    WriteIndented = true,
+    UseStringEnumConverter = true)]
+[JsonSerializable(typeof(ExampleModel))]
+[JsonSerializable(typeof(string))]
+internal partial class ExampleJsonContext : JsonSerializerContext { }
+
+internal class ExampleModel
+{
+    public string Value1 { get; set; }
+    public int Value2 { get; set; }
+}
 
 [TestClass]
 public class JsonHelperTests
 {
     private const string ExampleJsonString = "{\r\n  \"value1\": \"ExampleValue1\",\r\n  \"value2\": 123\r\n}";
-
-    private class ExampleModel
-    {
-        public string Value1 { get; set; }
-        public int Value2 { get; set; }
-    }
 
     [DataTestMethod]
     [DataRow(true)]
@@ -37,7 +47,10 @@ public class JsonHelperTests
 
         var target = new JsonHelper();
 
-        var actual = await target.SerializeToUtf8StreamAsync(model, stream);
+        var actual = await target.SerializeToUtf8StreamAsync(
+            model,
+            stream,
+            ExampleJsonContext.Default.ExampleModel);
 
         Assert.AreEqual(canWriteStream, actual.IsSuccess);
 
@@ -62,7 +75,9 @@ public class JsonHelperTests
 
         var target = new JsonHelper();
 
-        var actual = await target.DeserializeFromUtf8StreamAsync<ExampleModel>(stream);
+        var actual = await target.DeserializeFromUtf8StreamAsync(
+            stream,
+            ExampleJsonContext.Default.ExampleModel);
 
         Assert.AreEqual(canReadStream, actual.IsSuccess);
 
@@ -80,7 +95,9 @@ public class JsonHelperTests
 
         var target = new JsonHelper();
 
-        var actual = await target.DeserializeFromUtf8StreamAsync<string>(stream);
+        var actual = await target.DeserializeFromUtf8StreamAsync(
+            stream,
+            ExampleJsonContext.Default.String);
 
         Assert.IsFalse(actual.IsSuccess);
     }
@@ -92,7 +109,9 @@ public class JsonHelperTests
 
         var target = new JsonHelper();
 
-        var actual = await target.DeserializeFromUtf8StreamAsync<ExampleModel>(stream);
+        var actual = await target.DeserializeFromUtf8StreamAsync(
+            stream,
+            ExampleJsonContext.Default.ExampleModel);
 
         Assert.IsFalse(actual.IsSuccess);
     }

@@ -9,6 +9,7 @@ using Stip.Stipstonks.JsonModels;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Stip.Stipstonks.UnitTests.Helpers;
 
@@ -43,7 +44,9 @@ public class DataPersistenceHelperTests
 
         var mockJsonHelper = fixture.FreezeMock<JsonHelper>();
         mockJsonHelper
-            .Setup(x => x.DeserializeFromUtf8StreamAsync<Data>(It.IsAny<Stream>()))
+            .Setup(x => x.DeserializeFromUtf8StreamAsync(
+                It.IsAny<Stream>(),
+                It.IsAny<JsonTypeInfo<Data>>()))
             .ReturnsAsync(new ActionResult<Data>(deserializeFromUtf8StreamAsyncSuccess, jsonData));
 
         var target = fixture.Create<DataPersistenceHelper>();
@@ -76,7 +79,11 @@ public class DataPersistenceHelperTests
             return;
         }
 
-        mockJsonHelper.Verify(x => x.DeserializeFromUtf8StreamAsync<Data>(fileStream), Times.Once);
+        mockJsonHelper.Verify(
+            x => x.DeserializeFromUtf8StreamAsync(
+                fileStream,
+                JsonContext.Default.Data),
+            Times.Once);
 
         if (!deserializeFromUtf8StreamAsyncSuccess)
         {
@@ -112,7 +119,10 @@ public class DataPersistenceHelperTests
 
         var mockJsonHelper = fixture.FreezeMock<JsonHelper>();
         mockJsonHelper
-            .Setup(x => x.SerializeToUtf8StreamAsync(It.IsAny<object>(), It.IsAny<Stream>()))
+            .Setup(x => x.SerializeToUtf8StreamAsync(
+                It.IsAny<Data>(),
+                It.IsAny<Stream>(),
+                It.IsAny<JsonTypeInfo<Data>>()))
             .ReturnsAsync(ActionResult.FromSuccessState(serializeToUtf8StreamAsyncSuccess));
 
         var target = fixture.Create<DataPersistenceHelper>();
@@ -143,7 +153,8 @@ public class DataPersistenceHelperTests
                 It.Is<Data>(x
                     => x.PriceResolutionInCents == applicationContext.Config.PriceResolutionInCents
                     && x.Products.Count == applicationContext.Products.Count),
-                fileStream),
+                fileStream,
+                JsonContext.Default.Data),
             Times.Once);
     }
 }

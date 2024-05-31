@@ -27,8 +27,9 @@ public class DataPersistenceHelper(
             return ActionResult.Failure;
         }
 
-        var deserializeResult = await _jsonHelper.DeserializeFromUtf8StreamAsync<Data>(
-            fileStreamResult.Data);
+        var deserializeResult = await _jsonHelper.DeserializeFromUtf8StreamAsync(
+            fileStreamResult.Data,
+            JsonContext.Default.Data);
         if (!deserializeResult.IsSuccess)
         {
             return ActionResult.Failure;
@@ -58,6 +59,7 @@ public class DataPersistenceHelper(
                 _applicationContext.Config,
                 _applicationContext.Groups,
                 _applicationContext.Products),
-            fileStreamResult.Data);
+            fileStreamResult.Data,
+            JsonContext.Default.Data);
     }
 }
