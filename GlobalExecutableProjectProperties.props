@@ -8,5 +8,7 @@
 		<SelfContained>true</SelfContained>
 		<PublishSingleFile>true</PublishSingleFile>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>partial</TrimMode>
 	</PropertyGroup>
 </Project>
