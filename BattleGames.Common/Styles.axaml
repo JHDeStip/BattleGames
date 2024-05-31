@@ -77,7 +77,7 @@
         <Setter Property="SizeToContent" Value="WidthAndHeight"/>
         <Setter Property="ShowInTaskbar" Value="False"/>
         <Setter Property="Padding" Value="{StaticResource ContainerPadding}"/>
-        <Setter Property="WindowStartupLocation" Value="CenterScreen"/>
+        <Setter Property="WindowStartupLocation" Value="CenterOwner"/>
     </Style>
 
     <Style Selector="Window.basicDialogWindow">

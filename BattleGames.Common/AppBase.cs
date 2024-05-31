@@ -7,6 +7,9 @@ namespace Stip.BattleGames.Common;
 
 public abstract class AppBase : Application
 {
-    public Window GetLastOpenedWindow()
-        => ((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime).Windows.Last();
+    public Window GetActiveWindow()
+    {
+        var allWindows = ((IClassicDesktopStyleApplicationLifetime)ApplicationLifetime).Windows;
+        return allWindows.FirstOrDefault(x => x.IsActive) ?? allWindows.First();
+    }
 }

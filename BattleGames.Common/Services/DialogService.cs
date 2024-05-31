@@ -11,7 +11,7 @@ public class DialogService(
     public virtual Task ShowErrorAsync(string title, string message)
         => Dispatcher.UIThread.InvokeAsync(
             () => new BasicDialog(title, message, BasicDialogButton.Close)
-                .ShowDialog(_app.GetLastOpenedWindow()));
+                .ShowDialog(_app.GetActiveWindow()));
 
     public virtual Task ShowErrorAsync(string message)
         => ShowErrorAsync(UIStrings.Global_Error, message);
@@ -20,7 +20,7 @@ public class DialogService(
         => Dispatcher.UIThread.InvokeAsync(async () =>
         {
             var dialog = new BasicDialog(title, message, BasicDialogButton.Yes, BasicDialogButton.No);
-            await dialog.ShowDialog(_app.GetLastOpenedWindow());
+            await dialog.ShowDialog(_app.GetActiveWindow());
             return dialog.Result == BasicDialogButton.Yes;
         });
 }

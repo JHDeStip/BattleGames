@@ -47,7 +47,7 @@ public abstract partial class ChartWindowViewModelBase(
     public void Receive(ToggleChartWindowStateMessage _)
         => Dispatcher.UIThread.Invoke(() =>
         {
-            if (_windowState == WindowState.FullScreen)
+            if (WindowState == WindowState.FullScreen)
             {
                 WindowState = _previousWindowState;
                 return;
