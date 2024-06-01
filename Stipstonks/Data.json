@@ -9,6 +9,7 @@
     "crashChartWindowBackgroundColor": "#FF756D",
     "priceUpdateProgressBarColor": "#85DE77",
     "crashProgressBarColor": "#FF756D",
+    "showCrashProgressBar": true,
     "products":
     [
         {

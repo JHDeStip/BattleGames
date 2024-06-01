@@ -66,6 +66,11 @@ The color of the progress bar that counts down to the next price update.
 Type: string in hexadecimal RGB color format, e.g. "#0F0F0F" for grey  
 The color of the progress bar that counts down to the next stonk market crash.
 
+* `showCrashProgressBar`  
+Type: boolean  
+When set to `true`, the crash progress bar on the chart window will be visible.  
+When set to `false`, the crash progress bar on the chart window will not be visible.
+
 * `products`  
 A list of products/categories. Every product has the following configuration options:
 	* `name`  

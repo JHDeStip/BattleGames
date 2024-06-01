@@ -26,14 +26,20 @@ public class ChartWindowViewModelTests
         
         var applicationContext = fixture.Freeze<ApplicationContext>();
 
-        var target = fixture.Create<ChartWindowViewModel>();
+        var target = fixture
+            .Build<ChartWindowViewModel>()
+            .Without(x => x.PriceUpdateProgressItem)
+            .Without(x => x.CrashProgressItem)
+            .Create();
 
         await target.InitializeAsync(CancellationToken.None);
 
         Assert.AreEqual(applicationContext.Config.WindowBackgroundColor, target.BackgroundColor);
 
+        Assert.IsTrue(target.PriceUpdateProgressItem.IsVisible);
         Assert.AreEqual(applicationContext.Config.PriceUpdateProgressBarColor, target.PriceUpdateProgressItem.Color);
 
+        Assert.AreEqual(applicationContext.Config.ShowCrashProgressBar, target.CrashProgressItem.IsVisible);
         Assert.AreEqual(applicationContext.Config.CrashProgressBarColor, target.CrashProgressItem.Color);
         Assert.AreEqual(applicationContext.Config.CrashInterval, target.CrashProgressItem.Duration);
     }

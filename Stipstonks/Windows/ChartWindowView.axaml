@@ -19,6 +19,7 @@
         <ProgressBar Classes="stonkMarketEventProgressBar"
                      Classes.isRunning="{Binding IsRunning}"
                      DataContext="{Binding CrashProgressItem}"
+                     IsVisible="{Binding IsVisible}"
                      Foreground="{Binding Color}">
             <ProgressBar.Styles>
                 <Style Selector="ProgressBar.isRunning">

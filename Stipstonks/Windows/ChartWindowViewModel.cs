@@ -37,6 +37,7 @@ public partial class ChartWindowViewModel(
 
         CrashProgressItem.Color = _applicationContext.Config.CrashProgressBarColor;
         CrashProgressItem.Duration = _applicationContext.Config.CrashInterval;
+        CrashProgressItem.IsVisible = _applicationContext.Config.ShowCrashProgressBar;
     }
 
     public override async ValueTask ActivateAsync(CancellationToken ct)

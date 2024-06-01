@@ -15,6 +15,7 @@ public record Data
     public required string CrashChartWindowBackgroundColor { get; init; }
     public required string PriceUpdateProgressBarColor { get; init; }
     public required string CrashProgressBarColor { get; init; }
+    public required bool ShowCrashProgressBar { get; init; }
     public required IReadOnlyList<Product> Products { get; init; }
 
     public Models.Config ToConfig()
@@ -29,7 +30,8 @@ public record Data
             WindowBackgroundColor = WindowBackgroundColor,
             CrashChartWindowBackgroundColor = CrashChartWindowBackgroundColor,
             PriceUpdateProgressBarColor = PriceUpdateProgressBarColor,
-            CrashProgressBarColor = CrashProgressBarColor
+            CrashProgressBarColor = CrashProgressBarColor,
+            ShowCrashProgressBar = ShowCrashProgressBar
         };
 
     public static Data From(Models.Config config, IEnumerable<Models.Product> products)
@@ -45,6 +47,7 @@ public record Data
             CrashChartWindowBackgroundColor = config.CrashChartWindowBackgroundColor,
             PriceUpdateProgressBarColor = config.PriceUpdateProgressBarColor,
             CrashProgressBarColor = config.CrashProgressBarColor,
+            ShowCrashProgressBar = config.ShowCrashProgressBar,
             Products = products.Select(Product.From).ToList()
         };
 }

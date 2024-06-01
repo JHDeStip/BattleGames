@@ -14,4 +14,5 @@ public record Config
     public required string CrashChartWindowBackgroundColor { get; init; }
     public required string PriceUpdateProgressBarColor { get; init; }
     public required string CrashProgressBarColor { get; init; }
+    public required bool ShowCrashProgressBar { get; init; }
 }
