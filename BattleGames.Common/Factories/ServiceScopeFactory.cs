@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Stip.BattleGames.Common.Factories;
@@ -14,6 +15,9 @@ public class ServiceScopeFactory
     {
         public virtual T GetRequiredService<T>()
             => _asyncServiceScope.ServiceProvider.GetRequiredService<T>();
+
+        public virtual IEnumerable<T> GetServices<T>()
+            => _asyncServiceScope.ServiceProvider.GetServices<T>();
 
         public virtual ValueTask DisposeAsync()
             => _asyncServiceScope.DisposeAsync();

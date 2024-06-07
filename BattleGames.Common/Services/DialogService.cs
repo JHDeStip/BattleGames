@@ -9,18 +9,28 @@ public class DialogService(
     : IInjectable
 {
     public virtual Task ShowErrorAsync(string title, string message)
-        => Dispatcher.UIThread.InvokeAsync(
-            () => new BasicDialog(title, message, BasicDialogButton.Close)
-                .ShowDialog(_app.GetActiveWindow()));
+    {
+        var activeWindow = _app.GetActiveWindow();
+        return activeWindow is null
+            ? Task.CompletedTask
+            : Dispatcher.UIThread.InvokeAsync(
+                () => new BasicDialog(title, message, BasicDialogButton.Close)
+                .ShowDialog(activeWindow));
+    }
 
     public virtual Task ShowErrorAsync(string message)
         => ShowErrorAsync(UIStrings.Global_Error, message);
 
     public virtual Task<bool> ShowYesNoDialogAsync(string title, string message)
-        => Dispatcher.UIThread.InvokeAsync(async () =>
-        {
-            var dialog = new BasicDialog(title, message, BasicDialogButton.Yes, BasicDialogButton.No);
-            await dialog.ShowDialog(_app.GetActiveWindow());
-            return dialog.Result == BasicDialogButton.Yes;
-        });
+    {
+        var activeWindow = _app.GetActiveWindow();
+        return activeWindow is null
+            ? Task.FromResult(false)
+            : Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                var dialog = new BasicDialog(title, message, BasicDialogButton.Yes, BasicDialogButton.No);
+                await dialog.ShowDialog(activeWindow);
+                return dialog.Result == BasicDialogButton.Yes;
+            });
+    }
 }

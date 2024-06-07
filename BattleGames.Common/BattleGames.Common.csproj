@@ -11,6 +11,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="11.0.10" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="Microsoft.Build.CopyOnWrite" Version="1.0.315">
 		  <PrivateAssets>all</PrivateAssets>

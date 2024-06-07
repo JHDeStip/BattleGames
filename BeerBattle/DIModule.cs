@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Stip.BattleGames.Common.Windows;
 using Stip.BattleGames.Common;
 using Stip.BeerBattle.Helpers;
 using Stip.BeerBattle.Factories;
 using Stip.BeerBattle.Windows;
-using Stip.BattleGames.Common.Extensions;
 
 namespace Stip.BeerBattle;
 
@@ -22,6 +20,6 @@ public static class DIModule
         .AddTransient<PointsCalculator>()
         .AddTransient<ChartWindowView>()
         .AddTransient<InputWindowView>()
-        .AddSingletonWithBaseType<ViewModelBase, ChartWindowViewModel>()
-        .AddSingletonWithBaseType<ViewModelBase, InputWindowViewModel>();
+        .AddSingleton<ChartWindowViewModel>()
+        .AddSingleton<InputWindowViewModel>();
 }

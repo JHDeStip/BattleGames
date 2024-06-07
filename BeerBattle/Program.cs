@@ -1,35 +1,13 @@
 ﻿using Avalonia;
-using Stip.BattleGames.Common.Helpers;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
+using Stip.BattleGames.Common;
 
 namespace Stip.BeerBattle;
 
-public class Program
+public class Program : ProgramBase
 {
     public static void Main()
-    {
-        try
-        {
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime([]);
-        }
-        catch (Exception e)
-        {
-#if DEBUG
-            Debugger.Break();
-#endif
-            File.WriteAllText(
-                Path.Combine(new EnvironmentHelper().ExecutableDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.Crash.log"),
-                $"{e.Message}{Environment.NewLine}{e.StackTrace}");
-        }
-    }
+        => StartApp<App>();
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder
-        .Configure<App>()
-        .UsePlatformDetect()
-        .WithInterFont();
+        => BuildAvaloniaApp<App>();
 }

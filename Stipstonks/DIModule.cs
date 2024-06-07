@@ -1,10 +1,8 @@
 ﻿using Stip.Stipstonks.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Stip.BattleGames.Common.Windows;
 using Stip.BattleGames.Common;
 using Stip.Stipstonks.Windows;
 using Stip.Stipstonks.Factories;
-using Stip.BattleGames.Common.Extensions;
 
 namespace Stip.Stipstonks;
 
@@ -29,6 +27,6 @@ public static class DIModule
         .AddTransient<PriceUpdateManager>()
         .AddTransient<ChartWindowView>()
         .AddTransient<InputWindowView>()
-        .AddSingletonWithBaseType<ViewModelBase, ChartWindowViewModel>()
-        .AddSingletonWithBaseType<ViewModelBase, InputWindowViewModel>();
+        .AddSingleton<ChartWindowViewModel>()
+        .AddSingleton<InputWindowViewModel>();
 }

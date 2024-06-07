@@ -16,7 +16,7 @@
     </Style>
     
     <Style Selector="Button.commitOrderButton">
-		<Setter Property="Background" Value="{Binding Color}" x:DataType="items:ItemBase"/>
+        <Setter Property="Background" Value="{Binding Color}" x:DataType="items:ItemBase"/>
         <Setter Property="Width" Value="300"/>
         <Setter Property="Height" Value="100"/>
     </Style>
