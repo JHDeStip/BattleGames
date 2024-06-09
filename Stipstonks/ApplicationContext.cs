@@ -7,6 +7,6 @@ namespace Stip.Stipstonks;
 public class ApplicationContext : IInjectable
 {
     public Config Config { get; set; }
-    public IReadOnlyList<Product> Products { get; set; } = new List<Product>();
+    public IReadOnlyList<Product> Products { get; set; } = [];
     public bool HasCrashed { get; set; }
 }

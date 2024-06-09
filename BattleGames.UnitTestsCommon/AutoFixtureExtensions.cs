@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Moq;
 using Stip.BattleGames.Common.Services;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Stip.BattleGames.UnitTestsCommon;
@@ -13,7 +14,7 @@ public static class AutoFixtureExtensions
         var parameters = Enumerable
             .Range(0, typeof(T).GetConstructors().FirstOrDefault()?.GetParameters().Length ?? 0)
             .Select(_ => (object)null)
-            .ToArray();
+            .ToImmutableArray();
 
         var mock = new Mock<T>(behavior, parameters);
         fixture.Inject(mock.Object);

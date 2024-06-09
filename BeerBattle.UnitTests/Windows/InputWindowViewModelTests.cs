@@ -93,7 +93,7 @@ public class InputWindowViewModelTests
 
         VerifyNoOtherCalls();
 
-        totalPointsChangedCallback();
+        totalPointsChangedCallback?.Invoke();
 
         mockPointsFormatHelper.Verify(x => x.Format(totalPoints), Times.Exactly(2));
         Assert.AreEqual(totalPointsStrings[1], target.TotalPointsString);

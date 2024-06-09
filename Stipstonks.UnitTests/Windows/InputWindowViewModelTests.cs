@@ -98,7 +98,7 @@ public class InputWindowViewModelTests
 
         VerifyNoOtherCalls();
 
-        totalPriceChangedCallback();
+        totalPriceChangedCallback?.Invoke();
 
         mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Exactly(2));
         Assert.AreEqual(totalPriceStrings[1], target.TotalPriceString);
@@ -274,7 +274,7 @@ public class InputWindowViewModelTests
 
         VerifyNoOtherCalls();
 
-        totalPriceChangedCallback();
+        totalPriceChangedCallback?.Invoke();
 
         mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Exactly(2));
         Assert.AreEqual(totalPriceStrings[1], target.TotalPriceString);
@@ -463,7 +463,7 @@ public class InputWindowViewModelTests
 
             VerifyNoOtherCalls();
 
-            totalPriceChangedCallback();
+            totalPriceChangedCallback?.Invoke();
 
             mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Exactly(2));
             Assert.AreEqual(totalPriceStrings[1], target.TotalPriceString);
@@ -568,7 +568,7 @@ public class InputWindowViewModelTests
 
         VerifyNoOtherCalls();
 
-        totalPriceChangedCallback();
+        totalPriceChangedCallback?.Invoke();
 
         mockPriceFormatHelper.Verify(x => x.Format(totalPrice), Times.Exactly(2));
         Assert.AreEqual(totalPriceStrings[1], target.TotalPriceString);

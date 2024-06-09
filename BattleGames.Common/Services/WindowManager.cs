@@ -21,7 +21,7 @@ public class WindowManager(
 
         var canClose = false;
 
-        window.Closing += async (_, e) =>
+        window.Closing += (_, e) =>
         {
             if (canClose)
             {

@@ -14,7 +14,7 @@ public abstract class AppBase : Application
         RequestedThemeVariant = ThemeVariant.Light;
     }
 
-    public Window? GetActiveWindow()
+    public Window GetActiveWindow()
     {
         var lifetime = ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
         return lifetime?.Windows.FirstOrDefault(x => x.IsActive) ?? lifetime?.Windows.FirstOrDefault();

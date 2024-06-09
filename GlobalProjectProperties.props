@@ -3,7 +3,6 @@
         <TargetFramework>net8.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <Nullable>warnings</Nullable>
-        <NoWarn>CA1416,CS1998</NoWarn>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>../BattleGames.Common/Icon.ico</ApplicationIcon>

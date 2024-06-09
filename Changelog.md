@@ -4,6 +4,7 @@
 ### Stipstonks
 * An option was added to hide the crash progress bar.
 * The application was ported to `Avalonia UI`.
+* The application size is greatly reduced.
 ### Beer Battle
 * This is the initial version.
 

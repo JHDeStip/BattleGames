@@ -36,7 +36,7 @@ public static class FixtureFactory
                 && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
             {
                 var items = context.Resolve(typeof(IEnumerable<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()));
-                return typeof(List<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()).GetConstructor([items.GetType()]).Invoke([items]);
+                return typeof(List<>).MakeGenericType(propertyInfo.PropertyType.GetGenericArguments()).GetConstructor([items.GetType()])?.Invoke([items]);
             }
 
             return new NoSpecimen();

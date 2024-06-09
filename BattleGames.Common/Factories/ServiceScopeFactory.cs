@@ -20,7 +20,10 @@ public class ServiceScopeFactory
             => _asyncServiceScope.ServiceProvider.GetServices<T>();
 
         public virtual ValueTask DisposeAsync()
-            => _asyncServiceScope.DisposeAsync();
+        {
+            GC.SuppressFinalize(this);
+            return _asyncServiceScope.DisposeAsync();
+        }
     }
 
     public virtual AsyncServiceScopeWrapper CreateAsyncScope()

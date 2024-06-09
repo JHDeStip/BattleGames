@@ -54,13 +54,16 @@ public class StonkMarketManagerTests
 
         VerifyNoOtherCalls();
 
-        await passedStonkMarketWillCrashFunc();
-
+        if (passedStonkMarketWillCrashFunc is not null)
+        {
+            await passedStonkMarketWillCrashFunc();
+        }
+        
         mockPriceUpdateManager.Verify(x => x.StopAsync(), Times.Once);
 
         VerifyNoOtherCalls();
 
-        passedStonkMarketCrashEndedAction();
+        passedStonkMarketCrashEndedAction?.Invoke();
 
         mockPriceUpdateManager.Verify(x => x.Start(), Times.Exactly(2));
     }
